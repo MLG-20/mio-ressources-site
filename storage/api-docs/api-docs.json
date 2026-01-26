@@ -1,0 +1,113 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "MIO Ressources API",
+    "version": "1.0.0",
+    "description": "API pour accéder aux ressources, publications et données de MIO Ressources"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000",
+      "description": "Développement"
+    }
+  ],
+  "paths": {
+    "/api/ressources": {
+      "get": {
+        "summary": "Récupérer toutes les ressources",
+        "tags": ["Ressources"],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Numéro de la page",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Nombre de résultats par page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 15
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des ressources",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "integer" },
+                          "titre": { "type": "string" },
+                          "description": { "type": "string" },
+                          "type": { "type": "string" },
+                          "prix": { "type": "number" },
+                          "gratuit": { "type": "boolean" }
+                        }
+                      }
+                    },
+                    "total": { "type": "integer" },
+                    "per_page": { "type": "integer" },
+                    "current_page": { "type": "integer" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ressources/{id}": {
+      "get": {
+        "summary": "Récupérer une ressource spécifique",
+        "tags": ["Ressources"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID de la ressource",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Détails de la ressource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "integer" },
+                    "titre": { "type": "string" },
+                    "description": { "type": "string" },
+                    "type": { "type": "string" },
+                    "prix": { "type": "number" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ressource non trouvée"
+          }
+        }
+      }
+    }
+  }
+}
