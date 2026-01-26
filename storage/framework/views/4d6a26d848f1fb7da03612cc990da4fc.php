@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIO Ressources - Excellence Académique</title>
+
+    <!-- Scripts & Polices -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="icon" type="image/svg+xml" href="<?php echo e(asset('favicon.svg')); ?>">
+
+    <?php echo $__env->make('components.analytics', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+
+    <style>
+        [x-cloak] { display: none !important; }
+        /* Scrollbar Personnalisée */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #2563eb; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+    </style>
+</head>
+<body class="bg-[#f8fafc] font-sans antialiased text-slate-900"
+      x-data="{ mobileMenuOpen: false, scrolled: false }"
+      @scroll.window="scrolled = (window.pageYOffset > 50)"
+      :class="{ 'overflow-hidden': mobileMenuOpen }">
+
+    <!-- NAVBAR PREMIUM -->
+    <nav class="fixed w-full z-[100] transition-all duration-500 px-4 md:px-8 py-4"
+         :class="scrolled ? 'bg-white/95 backdrop-blur-md shadow-lg py-2' : 'bg-transparent py-5'">
+
+        <div class="max-w-7xl mx-auto flex justify-between items-center h-14">
+
+            <!-- LOGO -->
+            <a href="/" class="flex items-center gap-3 z-[110] group">
+                <?php if (isset($component)) { $__componentOriginal8892e718f3d0d7a916180885c6f012e7 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal8892e718f3d0d7a916180885c6f012e7 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.application-logo','data' => ['class' => 'w-10 h-10']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('application-logo'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['class' => 'w-10 h-10']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal8892e718f3d0d7a916180885c6f012e7)): ?>
+<?php $attributes = $__attributesOriginal8892e718f3d0d7a916180885c6f012e7; ?>
+<?php unset($__attributesOriginal8892e718f3d0d7a916180885c6f012e7); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal8892e718f3d0d7a916180885c6f012e7)): ?>
+<?php $component = $__componentOriginal8892e718f3d0d7a916180885c6f012e7; ?>
+<?php unset($__componentOriginal8892e718f3d0d7a916180885c6f012e7); ?>
+<?php endif; ?>
+                <span class="text-xl font-bold tracking-tighter transition-colors duration-300"
+                      :class="(scrolled || mobileMenuOpen) ? 'text-slate-900' : 'text-white'">
+                    MIO <span class="font-light" :class="(scrolled || mobileMenuOpen) ? 'text-slate-500' : 'text-white/70'">RESSOURCES</span>
+                </span>
+            </a>
+
+            <!-- MENU DESKTOP -->
+            <div class="hidden lg:flex gap-8 font-semibold text-sm uppercase tracking-widest transition-colors duration-300"
+                 :class="scrolled ? 'text-slate-600' : 'text-white/90'">
+                <a href="/" class="relative group py-2">
+                    <span>Accueil</span>
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
+                </a>
+                <a href="#cours" class="relative group py-2">
+                    <span>Cours</span>
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
+                </a>
+                <a href="<?php echo e(route('forum.index')); ?>" class="relative group py-2">
+                    <span>Forum</span>
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
+                </a>
+                <a href="<?php echo e(route('library.index')); ?>" class="relative group py-2">
+                    <span>Bibliothèque</span>
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
+                </a>
+                <a href="<?php echo e(route('page.show', 'a-propos')); ?>" class="relative group py-2">
+                    <span>À Propos</span>
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
+                </a>
+                <a href="<?php echo e(route('page.show', 'club-mio')); ?>" class="relative group py-2">
+                    <span>Club MIO</span>
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
+                </a>
+            </div>
+
+            <!-- AUTH & BURGER -->
+            <div class="flex items-center gap-4 z-[110]">
+                <div class="hidden md:flex items-center">
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->check()): ?>
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(Auth::user()->role === 'admin'): ?>
+                            <!-- BOUTON ADMIN -->
+                            <a href="/admin" class="flex items-center gap-2 bg-slate-900 text-white px-5 py-2 rounded-full font-bold shadow-lg hover:bg-blue-600 transition-all transform hover:scale-105">
+                                <i class="fas fa-shield-check text-blue-400"></i>
+                                <span class="text-[10px] uppercase tracking-widest font-bold">Panel Admin</span>
+                            </a>
+                        <?php elseif(Auth::user()->user_type === 'teacher'): ?>
+                            <!-- BOUTON ENSEIGNANT -->
+                            <a href="<?php echo e(route('teacher.dashboard')); ?>" class="flex items-center gap-2 bg-slate-900 text-white px-5 py-2 rounded-full font-bold shadow-lg hover:bg-blue-600 transition-all transform hover:scale-105">
+                                <i class="fas fa-chalkboard-teacher text-blue-400"></i>
+                                <span class="text-[10px] uppercase tracking-widest font-bold">Espace Enseignant</span>
+                            </a>
+                        <?php else: ?>
+                            <!-- BOUTON ÉTUDIANT -->
+                            <a href="<?php echo e(route('user.dashboard')); ?>" class="flex items-center gap-2 bg-blue-600 text-white pl-1 pr-4 py-1.5 rounded-full font-bold shadow-lg hover:bg-blue-700 transition-all transform hover:scale-105">
+                                <img src="<?php echo e(Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=fff&color=2563eb&bold=true'); ?>"
+                                     class="w-7 h-7 rounded-full border border-white/30 object-cover">
+                                <span class="text-[10px] uppercase tracking-wider font-bold">Mon Espace</span>
+                            </a>
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    <?php else: ?>
+                        <a href="<?php echo e(route('login')); ?>" class="text-xs font-bold uppercase tracking-widest mr-6 transition-colors" :class="scrolled ? 'text-slate-900' : 'text-white'">Connexion</a>
+                        <a href="<?php echo e(route('register')); ?>" class="bg-blue-600 text-white px-6 py-2.5 rounded-full font-bold text-[10px] uppercase tracking-widest shadow-lg">S'inscrire</a>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                </div>
+
+                <button @click="mobileMenuOpen = !mobileMenuOpen" class="lg:hidden p-2 transition-colors" :class="(scrolled || mobileMenuOpen) ? 'text-slate-900' : 'text-white'">
+                    <i class="fas" :class="mobileMenuOpen ? 'fa-times' : 'fa-bars'" style="font-size: 1.5rem;"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- MENU MOBILE OVERLAY -->
+        <div x-show="mobileMenuOpen" x-cloak class="fixed inset-0 bg-white z-[105] lg:hidden flex flex-col h-screen overflow-hidden"
+             x-transition:enter="transition ease-out duration-300 transform" x-transition:enter-start="translate-y-[-100%]" x-transition:enter-end="translate-y-0">
+            <div class="flex-1 overflow-y-auto p-8 pt-32 space-y-2 text-center">
+                <a href="/" @click="mobileMenuOpen = false" class="block text-2xl font-bold py-4 border-b border-slate-50 uppercase tracking-tight">Accueil</a>
+                <a href="#cours" @click="mobileMenuOpen = false" class="block text-2xl font-bold py-4 border-b border-slate-50 uppercase tracking-tight">Cours</a>
+                <a href="<?php echo e(route('forum.index')); ?>" @click="mobileMenuOpen = false" class="block text-2xl font-bold py-4 border-b border-slate-50 uppercase tracking-tight">Forum</a>
+                <a href="<?php echo e(route('library.index')); ?>" @click="mobileMenuOpen = false" class="block text-2xl font-bold py-4 border-b border-slate-50 uppercase tracking-tight">Bibliothèque</a>
+                <a href="<?php echo e(route('page.show', 'a-propos')); ?>" @click="mobileMenuOpen = false" class="block text-2xl font-bold py-4 border-b border-slate-50 uppercase tracking-tight">À Propos</a>
+                <a href="<?php echo e(route('page.show', 'club-mio')); ?>" @click="mobileMenuOpen = false" class="block text-2xl font-bold py-4 uppercase tracking-tight">Club MIO</a>
+
+                <div class="pt-10">
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->check()): ?>
+                        <?php $isAdmin = (Auth::user()->role === 'admin' || Auth::user()->user_type === 'teacher'); ?>
+                        <a href="<?php echo e($isAdmin ? '/admin' : route('user.dashboard')); ?>"
+                           class="w-full <?php echo e($isAdmin ? 'bg-slate-900' : 'bg-blue-600'); ?> text-white py-5 rounded-2xl font-bold block shadow-lg uppercase tracking-widest text-sm">
+                           <?php echo e($isAdmin ? 'Accéder au Panel Pro' : 'Accéder à mon espace'); ?>
+
+                        </a>
+                    <?php else: ?>
+                        <a href="<?php echo e(route('login')); ?>" class="block w-full bg-slate-900 text-white py-5 rounded-2xl font-bold mb-4 uppercase text-sm">Connexion</a>
+                        <a href="<?php echo e(route('register')); ?>" class="block w-full bg-blue-600 text-white py-5 rounded-2xl font-bold shadow-lg uppercase text-sm">Créer un compte</a>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- POINTEUR BOUTON RETOUR EN HAUT -->
+    <button @click="window.scrollTo({top: 0, behavior: 'smooth'})"
+            x-show="scrolled" x-cloak
+            x-transition:enter="transition scale-0 rotate-180"
+            x-transition:enter-end="scale-100 rotate-0"
+            class="fixed bottom-10 right-10 z-[90] bg-blue-600 text-white w-14 h-14 rounded-2xl shadow-2xl flex items-center justify-center hover:bg-blue-700 transition-all transform hover:-translate-y-2 group border-4 border-white/20">
+        <i class="fas fa-arrow-up text-xl group-hover:animate-bounce"></i>
+    </button>
+
+    <!-- SLIDER -->
+    <section class="relative h-[85vh] md:h-screen bg-black overflow-hidden"
+             x-data="{ activeSlide: 0, slidesCount: <?php echo e($sliders->count()); ?>, init() { setInterval(() => { this.activeSlide = (this.activeSlide + 1) % this.slidesCount }, 6000) } }">
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $sliders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $slide): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <div class="absolute inset-0 transition-all duration-[1500ms]" x-show="activeSlide === <?php echo e($index); ?>" x-cloak
+                 x-transition:enter="opacity-0 scale-110" x-transition:enter-end="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-90">
+                <img src="<?php echo e(asset('storage/' . $slide->image_path)); ?>" class="w-full h-full object-cover opacity-50">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40"></div>
+                <div class="absolute inset-0 flex flex-col justify-center items-center text-center text-white px-6">
+                    <h1 class="text-4xl md:text-7xl font-black mb-4 uppercase tracking-tighter"><?php echo e($slide->titre); ?></h1>
+                    <p class="text-sm md:text-xl max-w-2xl font-light opacity-80 leading-relaxed"><?php echo e($slide->description); ?></p>
+                    <a href="#cours" class="mt-10 bg-blue-600 text-white px-10 py-4 rounded-full font-bold text-sm md:text-lg hover:bg-blue-500 shadow-2xl transition-all active:scale-95 uppercase tracking-widest">Découvrir les cours</a>
+                </div>
+            </div>
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+    </section>
+
+    <!-- SECTION CURSUS -->
+    <section id="cours" class="py-32 px-6 max-w-7xl mx-auto">
+        <div class="text-center mb-20">
+            <h2 class="text-4xl font-bold text-slate-900 tracking-tighter uppercase italic">Votre Cursus</h2>
+            <div class="h-1.5 w-20 bg-blue-600 mx-auto mt-4 rounded-full shadow-lg shadow-blue-200"></div>
+            <p class="mt-6 text-slate-500 text-lg">Accédez aux ressources par niveau d'étude</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $semestres; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $semestre): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <a href="<?php echo e(route('semestre.show', $semestre->id)); ?>"
+                   class="group relative h-[480px] rounded-[3rem] overflow-hidden shadow-2xl transition-all duration-500 hover:-translate-y-4 hover:shadow-blue-200/50 block">
+
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($semestre->image_path): ?>
+                        <img src="<?php echo e(asset('storage/' . $semestre->image_path)); ?>"
+                             class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    <?php else: ?>
+                        <div class="absolute inset-0 bg-gradient-to-br from-blue-600 to-indigo-900"></div>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
+
+                    <div class="absolute bottom-0 p-10 w-full">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="bg-blue-600 text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-lg"><?php echo e($semestre->niveau); ?></span>
+                            <span class="text-white/60 text-[10px] font-bold uppercase tracking-widest italic"><?php echo e($semestre->matieres_count); ?> matières</span>
+                        </div>
+                        <h3 class="text-3xl font-bold text-white leading-tight mb-2 tracking-tight group-hover:text-blue-400 transition-colors"><?php echo e($semestre->nom); ?></h3>
+
+                        <p class="text-white/70 text-sm mb-6 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
+                            Explorez les cours, TD et ressources pour ce semestre.
+                        </p>
+
+                        <div class="flex items-center gap-2 text-blue-400 font-bold text-xs uppercase tracking-widest transition-all group-hover:gap-4">
+                            Explorer le contenu <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </a>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+        </div>
+    </section>
+
+    <!-- SECTION AVIS -->
+    <section class="py-32 bg-[#0f172a] relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-[100px] -mr-48 -mt-48"></div>
+
+        <div class="max-w-6xl mx-auto px-6 relative z-10">
+            <h2 class="text-3xl font-bold text-center text-white mb-16 uppercase tracking-widest">L'avis de nos étudiants</h2>
+
+            <div class="max-w-xl mx-auto bg-white/5 backdrop-blur-xl p-10 rounded-[3rem] border border-white/10 shadow-2xl mb-20">
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(session('success_review')): ?>
+                    <div class="mb-6 p-4 bg-blue-600 text-white rounded-2xl font-bold text-center animate-bounce"><?php echo e(session('success_review')); ?></div>
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                <form action="<?php echo e(route('avis.store')); ?>" method="POST" class="space-y-6">
+                    <?php echo csrf_field(); ?>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->check()): ?>
+                        <div class="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/10">
+                            <img src="<?php echo e(Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=0D8ABC&color=fff'); ?>" class="w-14 h-14 rounded-2xl object-cover">
+                            <div><p class="text-[10px] font-bold text-blue-400 uppercase">Connecté en tant que</p><p class="text-xl font-bold text-white tracking-tight"><?php echo e(Auth::user()->name); ?></p></div>
+                        </div>
+                    <?php else: ?>
+                        <input type="text" name="nom" placeholder="Votre Prénom" class="w-full rounded-2xl bg-white/5 border-white/10 p-5 text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    <textarea name="message" rows="3" placeholder="Votre message pour la communauté..." class="w-full rounded-2xl bg-white/5 border-white/10 p-5 text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 outline-none" required></textarea>
+
+                    <div class="flex flex-col sm:flex-row gap-4 items-center">
+                        <select name="note" class="w-full sm:w-auto bg-white/5 border-white/10 text-white p-4 rounded-2xl font-bold focus:ring-0">
+                            <option value="5" class="bg-slate-900">⭐⭐⭐⭐⭐ Excellent</option>
+                            <option value="4" class="bg-slate-900">⭐⭐⭐⭐ Très bien</option>
+                            <option value="3" class="bg-slate-900">⭐⭐⭐ Bien</option>
+                        </select>
+                        <button type="submit" class="w-full flex-1 bg-blue-600 text-white font-bold py-5 rounded-[2rem] hover:bg-blue-500 transition shadow-xl shadow-blue-900/40">PUBLIER MON AVIS</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = \App\Models\Review::latest()->take(3)->get(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $review): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <div class="bg-white/5 border border-white/10 p-8 rounded-[2.5rem] hover:bg-white/10 transition">
+                        <div class="text-blue-500 mb-4 flex justify-center md:justify-start">
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php for($i=0; $i<$review->note; $i++): ?> <i class="fas fa-star text-xs"></i> <?php endfor; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                        </div>
+                        <p class="text-slate-300 italic mb-6 leading-relaxed">"<?php echo e($review->message); ?>"</p>
+                        <p class="text-white font-bold text-xs uppercase tracking-widest flex items-center justify-center md:justify-start gap-3">
+                            <span class="w-6 h-px bg-blue-500"></span> <?php echo e($review->nom); ?>
+
+                        </p>
+                    </div>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-950 text-white py-20 px-8 border-t border-white/5">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16 border-b border-white/5 pb-16">
+            <div class="space-y-6 text-center md:text-left">
+                <div class="flex items-center justify-center md:justify-start gap-2">
+                    <?php if (isset($component)) { $__componentOriginal8892e718f3d0d7a916180885c6f012e7 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal8892e718f3d0d7a916180885c6f012e7 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.application-logo','data' => ['class' => 'w-10 h-10']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('application-logo'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['class' => 'w-10 h-10']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal8892e718f3d0d7a916180885c6f012e7)): ?>
+<?php $attributes = $__attributesOriginal8892e718f3d0d7a916180885c6f012e7; ?>
+<?php unset($__attributesOriginal8892e718f3d0d7a916180885c6f012e7); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal8892e718f3d0d7a916180885c6f012e7)): ?>
+<?php $component = $__componentOriginal8892e718f3d0d7a916180885c6f012e7; ?>
+<?php unset($__componentOriginal8892e718f3d0d7a916180885c6f012e7); ?>
+<?php endif; ?>
+                    <span class="font-bold text-xl tracking-tighter uppercase tracking-widest">MIO <span class="font-light opacity-50">RESSOURCES</span></span>
+                </div>
+                <p class="text-slate-500 text-sm leading-relaxed max-w-sm mx-auto md:mx-0">La plateforme collaborative de référence pour les étudiants de l'Université Iba Der Thiam.</p>
+            </div>
+            <div>
+                <h4 class="font-bold text-[10px] uppercase tracking-[0.4em] text-blue-500 mb-8 text-center md:text-left">Contact Officiel</h4>
+                <div class="space-y-4 text-slate-400 text-sm text-center md:text-left">
+                    <p class="flex items-center justify-center md:justify-start gap-3"><i class="fas fa-envelope text-blue-500"></i> <?php echo e($globalSettings['contact_email'] ?? 'contact@mio.sn'); ?></p>
+                    <p class="flex items-center justify-center md:justify-start gap-3"><i class="fas fa-phone text-blue-500"></i> <?php echo e($globalSettings['contact_phone'] ?? ''); ?></p>
+                </div>
+            </div>
+            <div class="text-center md:text-left">
+                <h4 class="font-bold text-[10px] uppercase tracking-[0.4em] text-blue-500 mb-8">Réseaux Sociaux</h4>
+                <div class="flex justify-center md:justify-start gap-5">
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isset($globalSettings['social_linkedin'])): ?>
+                        <a href="<?php echo e($globalSettings['social_linkedin']); ?>" target="_blank" class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-white hover:bg-blue-600 transition-all shadow-lg"><i class="fab fa-linkedin-in text-xl"></i></a>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isset($globalSettings['social_github'])): ?>
+                        <a href="<?php echo e($globalSettings['social_github']); ?>" target="_blank" class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-white hover:bg-blue-600 transition-all shadow-lg"><i class="fab fa-github text-xl"></i></a>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-12 text-slate-700 text-[10px] font-bold uppercase tracking-[0.5em]">
+            &copy; <?php echo e(date('Y')); ?> MIO Ressources &bull; Excellence & Partage
+        </div>
+    </footer>
+
+</body>
+</html>
+<?php /**PATH C:\Users\Mamad\Documents\Dossier Mio-Ressource\mio_ressources\resources\views/welcome.blade.php ENDPATH**/ ?>

@@ -40,6 +40,7 @@ Route::get('/achat-livre/{id}', [HomeController::class, 'checkoutBook'])->name('
 
 // IPN (Webhook) - Doit être public
 Route::post('/paiement/ipn', [PaymentController::class, 'handleIPN'])->name('payment.ipn');
+Route::post('/payment/checkout', [PaymentController::class, 'checkout'])->name('payment.checkout');
 
 Route::get('/telechargement-invite/{token}/{type}/{id}', [HomeController::class, 'guestDownload'])
     ->name('guest.download')

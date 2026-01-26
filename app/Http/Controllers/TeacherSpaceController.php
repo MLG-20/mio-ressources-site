@@ -89,23 +89,29 @@ class TeacherSpaceController extends Controller
         return back()->with('success', 'Publication réussie.');
     }
 
-    public function destroy($id) {
+    public function destroy($id)
+    {
+        // 1. On récupère la publication ou on renvoie une erreur 404 si elle n'existe pas
         $publication = Publication::findOrFail($id);
-        
-        // Vérifier que l'utilisateur est propriétaire
+
+        // 2. Sécurité : On vérifie que la publication appartient bien à l'utilisateur connecté
         if ($publication->user_id !== Auth::id()) {
-            abort(403, 'Non autorisé.');
+            abort(403, 'Action non autorisée');
         }
 
-        // Supprimer les fichiers
-        if ($publication->file_path && Storage::disk('public')->exists($publication->file_path)) {
+        // 3. Suppression des fichiers physiques sur le disque (PDF et Image de couverture)
+        if ($publication->file_path) {
             Storage::disk('public')->delete($publication->file_path);
         }
-        if ($publication->cover_image && Storage::disk('public')->exists($publication->cover_image)) {
+
+        if ($publication->cover_image) {
             Storage::disk('public')->delete($publication->cover_image);
         }
 
+        // 4. Suppression de la ligne dans la base de données
         $publication->delete();
-        return back()->with('success', 'Publication supprimée avec succès.');
+
+        // 5. Redirection avec un message de succès
+        return back()->with('success', 'La publication a été supprimée avec succès.');
     }
 }
