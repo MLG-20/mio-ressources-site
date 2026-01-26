@@ -1,0 +1,115 @@
+/* Base */
+body,
+body *:not(html):not(style):not(br):not(tr):not(code) {
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    position: relative;
+}
+
+body {
+    -webkit-text-size-adjust: none;
+    background-color: #f1f5f9; /* Gris très clair premium */
+    color: #334155;
+    height: 100%;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    width: 100% !important;
+}
+
+p, ul, ol {
+    line-height: 1.6;
+    text-align: left;
+}
+
+/* On utilise ton bleu pour tous les liens */
+a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* Typography */
+h1 {
+    color: #1e293b;
+    font-size: 22px;
+    font-weight: 800; /* Très gras pour le titre */
+    margin-top: 0;
+    text-align: left;
+}
+
+/* Layout */
+.wrapper {
+    background-color: #f1f5f9;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+.inner-body {
+    background-color: #ffffff;
+    border-radius: 16px; /* Bords très arrondis style moderne */
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+    padding: 0;
+    width: 570px;
+}
+
+/* Header */
+.header {
+    padding: 40px 0;
+    text-align: center;
+}
+
+.header a {
+    color: #2563eb;
+    font-size: 24px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.05em;
+}
+
+/* Buttons - C'est ici qu'on met ton bleu pro */
+.button {
+    -webkit-text-size-adjust: none;
+    border-radius: 12px;
+    color: #fff !important;
+    display: inline-block;
+    overflow: hidden;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.button-blue,
+.button-primary {
+    background-color: #2563eb; /* Ton bleu */
+    border-bottom: 12px solid #2563eb;
+    border-left: 24px solid #2563eb;
+    border-right: 24px solid #2563eb;
+    border-top: 12px solid #2563eb;
+}
+
+.button-primary:hover {
+    background-color: #1d4ed8;
+}
+
+/* Footer */
+.footer {
+    margin: 0 auto;
+    padding: 32px;
+    text-align: center;
+    width: 570px;
+}
+
+.footer p {
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.content-cell {
+    padding: 40px;
+}
