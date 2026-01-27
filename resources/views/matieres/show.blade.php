@@ -22,6 +22,24 @@
         </a>
     </nav>
 
+    @if(session('error'))
+    <div class="mx-auto max-w-5xl px-6 mt-4">
+        <div class="rounded-2xl border border-red-200 bg-red-50 text-red-700 px-4 py-3 font-medium">
+            <i class="fas fa-exclamation-triangle mr-2"></i>
+            {{ session('error') }}
+        </div>
+    </div>
+    @endif
+
+    @if(session('success'))
+    <div class="mx-auto max-w-5xl px-6 mt-4">
+        <div class="rounded-2xl border border-green-200 bg-green-50 text-green-700 px-4 py-3 font-medium">
+            <i class="fas fa-check-circle mr-2"></i>
+            {{ session('success') }}
+        </div>
+    </div>
+    @endif
+
     <!-- HEADER MATIÈRE -->
     <header class="py-16 bg-white border-b border-slate-200">
         <div class="max-w-5xl mx-auto px-6 text-center md:text-left">
@@ -148,18 +166,18 @@
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8">
             <h2 class="text-2xl font-black text-slate-800 mb-2">Débloquer le document</h2>
             <p class="text-slate-600 text-sm mb-6">Entrez votre email pour procéder au paiement</p>
-            
+
             <form id="guestCheckoutForm" method="GET">
-                <input type="email" name="guest_email" placeholder="votre@email.com" 
+                <input type="email" name="guest_email" placeholder="votre@email.com"
                        class="w-full px-4 py-3 border border-slate-200 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-amber-500"
                        required>
-                
+
                 <div class="flex gap-3">
-                    <button type="button" onclick="closeGuestCheckoutModal()" 
+                    <button type="button" onclick="closeGuestCheckoutModal()"
                             class="flex-1 px-4 py-3 border border-slate-200 rounded-xl font-bold text-slate-800 hover:bg-slate-50 transition">
                         Annuler
                     </button>
-                    <button type="submit" 
+                    <button type="submit"
                             class="flex-1 px-4 py-3 bg-amber-500 text-white rounded-xl font-bold hover:bg-amber-600 transition">
                         Continuer
                     </button>
@@ -189,7 +207,7 @@
             const email = document.querySelector('input[name="guest_email"]').value;
             window.location.href = `{{ route('payment.pay', ['ID', 'TYPE']) }}`
                 .replace('ID', pendingResourceId)
-                .replace('TYPE', pendingResourceType) + 
+                .replace('TYPE', pendingResourceType) +
                 `?guest_email=${encodeURIComponent(email)}`;
         });
     </script>
