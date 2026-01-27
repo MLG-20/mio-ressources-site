@@ -20,7 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // On autorise PayTech à nous envoyer des données sans token de sécurité interne
         $middleware->validateCsrfTokens(except: [
-            'paiement/ipn', 
+            'api/paytech/callback',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
