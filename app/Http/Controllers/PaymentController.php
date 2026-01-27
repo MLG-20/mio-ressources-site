@@ -47,13 +47,17 @@ class PaymentController extends Controller
         }
 
         // Appel API PayTech
+        $apiKey = trim((string) env('PAYTECH_API_KEY'));
+        $apiSecret = trim((string) env('PAYTECH_API_SECRET'));
+        $paytechEnv = trim((string) env('PAYTECH_ENV', 'test'));
+
         $response = Http::asJson()
             ->withOptions([
                 'verify' => ! app()->environment('local'),
             ])
             ->withHeaders([
-                'API_KEY' => env('PAYTECH_API_KEY'),
-                'API_SECRET' => env('PAYTECH_API_SECRET'),
+                'API_KEY' => $apiKey,
+                'API_SECRET' => $apiSecret,
                 'Content-Type' => 'application/json'
             ])
             ->post('https://paytech.sn/api/payment/request-payment', [
@@ -62,7 +66,7 @@ class PaymentController extends Controller
                 'currency' => 'XOF',
                 'ref_command' => uniqid('MIO-'),
                 'command_name' => "Achat MIO : " . $item->titre,
-                'env' => env('PAYTECH_ENV', 'test'),
+                'env' => $paytechEnv,
                 'ipn_url' => $ipnUrl,
                 'success_url' => route('payment.success', ['id' => $id, 'type' => $type]),
                 'cancel_url' => route('home'), // Retour accueil si annulation
@@ -104,7 +108,7 @@ class PaymentController extends Controller
         // En local, on force la validation
         if (app()->environment('local')) {
             // On récupère l'email sauvegardé en session
-            $guestEmail = session('guest_email'); 
+            $guestEmail = session('guest_email');
             $userId = auth()->id();
 
             $this->validateOrder($userId, $guestEmail, $id, $type, 'TEST-' . uniqid());
@@ -298,7 +302,7 @@ class PaymentController extends Controller
             ]);
             return;
         }
-        
+
         // Enregistrement Achat
         $purchase = Purchase::create([
             'user_id' => $userId,
@@ -323,7 +327,7 @@ class PaymentController extends Controller
                 'description' => "Vente PayTech : " . $item->titre
             ]);
         }
-        
+
         // Historique (si connecté)
         if ($userId && $type === 'ressource') {
             DownloadHistory::updateOrCreate(['user_id' => $userId, 'ressource_id' => $item->id], ['downloaded_at' => now()]);
@@ -337,7 +341,7 @@ class PaymentController extends Controller
             if (app()->environment('local')) {
                 return;
             }
-            
+
             $pdf = Pdf::loadView('invoices.template', compact('purchase'));
             $pdfContent = $pdf->output();
 
@@ -364,7 +368,7 @@ class PaymentController extends Controller
                                     ? ("<h2>Merci !</h2><p>Votre paiement a été validé.</p><p><a href=\"" . e($downloadLink) . "\">Télécharger votre document</a> (lien valable 24h)</p><p>Voici votre facture en pièce jointe.</p>")
                                     : ("<h2>Merci !</h2><p>Voici votre document et votre facture.</p>")
                             );
-                    
+
                     // Si c'est un fichier local, on l'attache aussi
                     if (file_exists(storage_path('app/public/' . $item->file_path))) {
                          $message->attach(storage_path('app/public/' . $item->file_path));
