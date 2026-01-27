@@ -203,6 +203,8 @@ private function sendTriangularEmails($emailAcheteur, $item, $pdfContent)
 
         $currentUser = auth()->user();
 
+        $currentUser = auth()->user();
+
         $isAdmin = $currentUser && ($currentUser->role ?? null) === 'admin';
         $isOwner = $currentUser && ($ressource->user_id ?? null) && $currentUser->id === $ressource->user_id;
         $isFree = !$ressource->is_premium;
@@ -212,7 +214,7 @@ private function sendTriangularEmails($emailAcheteur, $item, $pdfContent)
 
         // Si ressource premium et l'utilisateur ne l'a pas achetée -> rediriger vers paiement
         if ($ressource->is_premium && !$isAdmin && !$isOwner && !$hasPurchase) {
-            return redirect()->route('ressource.checkout', $id);
+            return redirect()->route('payment.pay', ['id' => $id, 'type' => 'ressource']);
         }
 
         // Accès autorisé si : admin OR propriétaire OR ressource gratuite OR achat existant
