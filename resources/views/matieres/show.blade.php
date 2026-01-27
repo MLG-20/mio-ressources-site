@@ -105,12 +105,9 @@
                             </a>
                         @else
                             <!-- BOUTON ACHAT -->
-                            <form action="{{ route('payment.checkout', $ressource->id) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="flex items-center justify-center gap-2 bg-amber-500 text-white px-8 py-3 rounded-2xl font-bold hover:bg-amber-600">
-                                    <i class="fas fa-shopping-cart"></i> Débloquer ({{ $ressource->price }} CFA)
-                                </button>
-                            </form>
+                            <a href="{{ route('payment.pay', [$ressource->id, 'ressource']) }}" class="flex items-center justify-center gap-2 bg-amber-500 text-white px-8 py-3 rounded-2xl font-bold hover:bg-amber-600 transition-all">
+                                <i class="fas fa-shopping-cart"></i> Débloquer ({{ $ressource->price }} CFA)
+                            </a>
                         @endif
                     </div>
                 </div>
