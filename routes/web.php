@@ -5,6 +5,7 @@ use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\ForumAdminController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\TeacherSpaceController;
 use App\Http\Controllers\UserSpaceController;
 use App\Http\Controllers\PaymentController;
@@ -60,6 +61,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/mon-espace', [UserSpaceController::class, 'index'])->name('user.dashboard');
     Route::post('/mon-espace/update', [UserSpaceController::class, 'updateProfile'])->name('user.profile.update');
     Route::delete('/user/delete', [UserSpaceController::class, 'deleteAccount'])->name('user.account.delete');
+
+    // Révision instantanée (Jitsi)
+    Route::get('/revision-instantanee', [MeetingController::class, 'quick'])->name('meeting.quick');
 
     // Mémoires d'étudiants
     Route::post('/mon-espace/publier-memoire', [UserSpaceController::class, 'publishMemoir'])->name('user.memoire.store');

@@ -137,6 +137,28 @@
                            class="w-full bg-white border border-slate-200 rounded-2xl py-4 pl-12 pr-4 shadow-sm text-slate-700 font-bold focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all">
                 </div>
 
+                <!-- Révision instantanée (Jitsi) -->
+                <div class="bg-gradient-to-r from-sky-600 to-indigo-700 rounded-3xl p-6 text-white shadow-xl flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-white/15 flex items-center justify-center shadow-lg shadow-blue-900/30">
+                            <i class="fas fa-video text-2xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-black uppercase tracking-[0.3em] opacity-80">Révision instantanée</p>
+                            <h3 class="text-xl font-black leading-tight">Lance une salle vidéo en 1 clic</h3>
+                            <p class="text-sm opacity-90">Partage l'écran, discute et révise avec tes camarades sans rien installer.</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-3">
+                        <a href="{{ route('meeting.quick') }}" class="inline-flex items-center gap-2 bg-white text-slate-900 font-black px-5 py-3 rounded-xl shadow-lg shadow-blue-900/30 hover:-translate-y-0.5 hover:shadow-2xl transition">
+                            <i class="fas fa-bolt text-amber-500"></i> Démarrer maintenant
+                        </a>
+                        <a href="https://meet.jit.si" target="_blank" class="inline-flex items-center gap-2 bg-white/10 text-white border border-white/20 px-4 py-3 rounded-xl font-bold hover:bg-white/15 transition">
+                            <i class="fas fa-shield-alt"></i> Infos sécurité
+                        </a>
+                    </div>
+                </div>
+
                 <!-- NOUVEAUTÉS -->
                 @if(isset($nouveautes) && count($nouveautes) > 0)
                 <div class="bg-gradient-to-br from-blue-600 to-indigo-900 rounded-[3rem] p-8 shadow-xl text-white relative overflow-hidden group">
