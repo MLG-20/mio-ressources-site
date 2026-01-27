@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use App\Models\Visit;
 use App\Models\Slider;
 use App\Models\Semestre;
@@ -63,7 +64,7 @@ class HomeController extends Controller
 }
 
     /** 3. SYSTÈME DE PAIEMENT UNIQUE (LIVRES & COURS) **/
-    
+
     // Pour les Ressources (Cours/TD)
     public function checkout($id) {
         $item = Ressource::findOrFail($id);
@@ -77,7 +78,7 @@ class HomeController extends Controller
     }
 
     // Confirmation d'achat universelle
-    
+
    public function confirmPurchase(Request $request, $id)
 {
     // 1. SÉCURITÉ ANTI-DOUBLON
@@ -87,9 +88,9 @@ class HomeController extends Controller
     }
 
     // 2. RÉCUPÉRATION
-    $type = $request->input('item_type'); 
+    $type = $request->input('item_type');
     $item = ($type === 'publication') ? Publication::with('user')->findOrFail($id) : Ressource::with('user')->findOrFail($id);
-    
+
     $isGuest = !auth()->check();
     $emailDest = $isGuest ? $request->guest_email : auth()->user()->email;
     $nomDest = $isGuest ? 'Cher utilisateur' : auth()->user()->name;
@@ -114,13 +115,18 @@ class HomeController extends Controller
 
     // 5. ENVOI MAIL AVEC *DEUX* PIÈCES JOINTES
     try {
+        // Charger les relations nécessaires pour le template
+        $purchase->load(['ressource.user', 'publication.user', 'user']);
+
         $pdf = Pdf::loadView('invoices.template', compact('purchase'));
-        
+
         // Chemin physique du fichier à envoyer
         $filePath = storage_path('app/public/' . $item->file_path);
 
         Mail::send([], [], function ($message) use ($emailDest, $nomDest, $item, $pdf, $filePath) {
-            $email = $message->to($emailDest)
+            $email = $message
+                    ->from(env('MAIL_FROM_ADDRESS', 'noreply@mio.sn'), env('MAIL_FROM_NAME', 'MIO Ressources'))
+                    ->to($emailDest)
                     ->subject('✅ Votre commande est arrivée : ' . $item->titre)
                     ->html("<h2>Merci $nomDest !</h2>
                             <p>Voici votre commande MIO Ressources.</p>
@@ -135,20 +141,31 @@ class HomeController extends Controller
             $email->attachData($pdf->output(), 'Facture_MIO.pdf', ['mime' => 'application/pdf']);
 
             // Pièce jointe 2 : Le Document (Si c'est un fichier, pas une vidéo)
-            if ($item->type !== 'Vidéo' && file_exists($filePath)) {
-                $email->attach($filePath);
+            if ($item->type !== 'Vidéo') {
+                if (file_exists($filePath)) {
+                    $email->attach($filePath);
+                } else {
+                    \Illuminate\Support\Facades\Log::warning("Fichier document non trouvé: $filePath");
+                }
             }
         });
 
+        \Illuminate\Support\Facades\Log::info("Email d'achat envoyé avec succès à: $emailDest");
+
     } catch (\Exception $e) {
-        \Illuminate\Support\Facades\Log::error("Erreur Mail Achat : " . $e->getMessage());
+        \Illuminate\Support\Facades\Log::error("Erreur Mail Achat : " . $e->getMessage() . " - " . $e->getFile() . ":" . $e->getLine());
+        \Illuminate\Support\Facades\Log::error("Stack trace: " . $e->getTraceAsString());
     }
 
     // 6. REDIRECTION UNIVERSELLE VERS "MERCI"
     // On envoie tout le monde vers la page Merci, avec le lien de téléchargement direct en bonus
+    $downloadLink = $isGuest
+        ? URL::signedRoute('guest.download', ['token' => $purchase->payment_id, 'type' => $type, 'id' => $id])
+        : route('ressource.download', $id);
+
     return redirect()->route('payment.thankyou')
         ->with('success', 'Paiement validé !')
-        ->with('download_link', route('ressource.download', $id));
+        ->with('download_link', $downloadLink);
 }
 
 /**
@@ -158,7 +175,7 @@ private function sendTriangularEmails($emailAcheteur, $item, $pdfContent)
 {
     try {
         $fromEmail = env('MAIL_FROM_ADDRESS');
-        
+
         // Mail à l'Acheteur
         Mail::send([], [], function ($message) use ($emailAcheteur, $pdfContent, $item, $fromEmail) {
             $message->to($emailAcheteur)->from($fromEmail, 'MIO Ressources')
@@ -188,11 +205,18 @@ private function sendTriangularEmails($emailAcheteur, $item, $pdfContent)
 
         $isAdmin = $currentUser && ($currentUser->role ?? null) === 'admin';
         $isOwner = $currentUser && ($ressource->user_id ?? null) && $currentUser->id === $ressource->user_id;
+        $isFree = !$ressource->is_premium;
         $hasPurchase = $currentUser && Purchase::where('user_id', $currentUser->id)
             ->where('ressource_id', $id)
             ->exists();
 
-        if (!$isAdmin && !$isOwner && !$hasPurchase) {
+        // Si ressource premium et l'utilisateur ne l'a pas achetée -> rediriger vers paiement
+        if ($ressource->is_premium && !$isAdmin && !$isOwner && !$hasPurchase) {
+            return redirect()->route('ressource.checkout', $id);
+        }
+
+        // Accès autorisé si : admin OR propriétaire OR ressource gratuite OR achat existant
+        if (!$isAdmin && !$isOwner && !$isFree && !$hasPurchase) {
             abort(403);
         }
 

@@ -25,7 +25,12 @@
     <div class="details">
         <p><strong>Référence :</strong> #{{ $purchase->payment_id }}</p>
         <p><strong>Date d'achat :</strong> {{ $purchase->created_at->format('d/m/Y à H:i') }}</p>
-        <p><strong>Client :</strong> {{ $purchase->user->name }} ({{ $purchase->user->email }})</p>
+
+        @if($purchase->user)
+            <p><strong>Client :</strong> {{ $purchase->user->name }} ({{ $purchase->user->email }})</p>
+        @else
+            <p><strong>Client :</strong> {{ $purchase->guest_email ?? 'Client invité' }}</p>
+        @endif
 
         @php
             // On identifie l'objet acheté
@@ -69,7 +74,7 @@
     <div class="total">
         TOTAL PAYÉ : {{ number_format($purchase->amount, 0, ',', ' ') }} CFA
     </div>
-    
+
     <div class="footer">
         MIO Ressources &bull; Université Iba Der Thiam, Thiès, Sénégal &bull; {{ date('Y') }}<br>
         Ceci est une preuve de transaction électronique. Aucun cachet n'est requis.
