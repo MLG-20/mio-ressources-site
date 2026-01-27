@@ -105,9 +105,15 @@
                             </a>
                         @else
                             <!-- BOUTON ACHAT -->
-                            <a href="{{ route('payment.pay', [$ressource->id, 'ressource']) }}" class="flex items-center justify-center gap-2 bg-amber-500 text-white px-8 py-3 rounded-2xl font-bold hover:bg-amber-600 transition-all">
-                                <i class="fas fa-shopping-cart"></i> Débloquer ({{ $ressource->price }} CFA)
-                            </a>
+                            @auth
+                                <a href="{{ route('payment.pay', [$ressource->id, 'ressource']) }}" class="flex items-center justify-center gap-2 bg-amber-500 text-white px-8 py-3 rounded-2xl font-bold hover:bg-amber-600 transition-all">
+                                    <i class="fas fa-shopping-cart"></i> Débloquer ({{ $ressource->price }} CFA)
+                                </a>
+                            @else
+                                <button type="button" class="flex items-center justify-center gap-2 bg-amber-500 text-white px-8 py-3 rounded-2xl font-bold hover:bg-amber-600 transition-all w-full" onclick="openGuestCheckoutModal({{ $ressource->id }}, 'ressource')">
+                                    <i class="fas fa-shopping-cart"></i> Débloquer ({{ $ressource->price }} CFA)
+                                </button>
+                            @endauth
                         @endif
                     </div>
                 </div>
@@ -136,6 +142,57 @@
             &copy; {{ date('Y') }} MIO Ressources • Université Iba Der Thiam
         </p>
     </footer>
+
+    <!-- MODAL EMAIL POUR VISITEURS NON CONNECTÉS -->
+    <div id="guestCheckoutModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8">
+            <h2 class="text-2xl font-black text-slate-800 mb-2">Débloquer le document</h2>
+            <p class="text-slate-600 text-sm mb-6">Entrez votre email pour procéder au paiement</p>
+            
+            <form id="guestCheckoutForm" method="GET">
+                <input type="email" name="guest_email" placeholder="votre@email.com" 
+                       class="w-full px-4 py-3 border border-slate-200 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                       required>
+                
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeGuestCheckoutModal()" 
+                            class="flex-1 px-4 py-3 border border-slate-200 rounded-xl font-bold text-slate-800 hover:bg-slate-50 transition">
+                        Annuler
+                    </button>
+                    <button type="submit" 
+                            class="flex-1 px-4 py-3 bg-amber-500 text-white rounded-xl font-bold hover:bg-amber-600 transition">
+                        Continuer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let pendingResourceId = null;
+        let pendingResourceType = null;
+
+        function openGuestCheckoutModal(id, type) {
+            pendingResourceId = id;
+            pendingResourceType = type;
+            document.getElementById('guestCheckoutModal').classList.remove('hidden');
+        }
+
+        function closeGuestCheckoutModal() {
+            document.getElementById('guestCheckoutModal').classList.add('hidden');
+            pendingResourceId = null;
+            pendingResourceType = null;
+        }
+
+        document.getElementById('guestCheckoutForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.querySelector('input[name="guest_email"]').value;
+            window.location.href = `{{ route('payment.pay', ['ID', 'TYPE']) }}`
+                .replace('ID', pendingResourceId)
+                .replace('TYPE', pendingResourceType) + 
+                `?guest_email=${encodeURIComponent(email)}`;
+        });
+    </script>
 
 </body>
 </html>
