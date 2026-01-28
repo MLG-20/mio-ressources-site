@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('private_lessons', function (Blueprint $table) {
-            $table->dateTime('start_date')->nullable()->after('type')->comment('Date et heure de début du cours');
+            $table->dateTime('start_date')->nullable()->comment('Date et heure de début du cours');
         });
     }
 
