@@ -49,7 +49,7 @@
     <!-- NAVBAR MINI -->
     <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200 py-4 px-8 flex justify-between items-center sticky top-0 z-50">
         <a href="/" class="flex items-center gap-2 group">
-            <div class="bg-blue-600 text-white px-2 py-1 rounded-lg font-bold transition-transform group-hover:-rotate-6">MIO</div>
+            <x-application-logo class="w-8 md:w-10 h-8 md:h-10" />
             <span class="font-black text-slate-800 tracking-tight uppercase">Ressources</span>
         </a>
         <a href="/" class="text-slate-500 hover:text-blue-600 font-bold transition flex items-center gap-2">
@@ -92,14 +92,7 @@
         @endif
     </main>
 
-    <!-- FOOTER SIMPLE -->
-    <footer class="bg-slate-50 py-16 px-8 border-t border-slate-100">
-        <div class="max-w-4xl mx-auto text-center">
-            <p class="text-slate-400 text-xs font-black uppercase tracking-[0.3em]">
-                MIO Ressources &bull; Université Iba Der Thiam &bull; {{ date('Y') }}
-            </p>
-        </div>
-    </footer>
+    @include('layouts.footer')
 
     <!-- Style pour forcer l'iframe Google Maps à être responsive -->
     <style>

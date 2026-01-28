@@ -33,7 +33,8 @@ class PublicationResource extends Resource
             ->label('Image de couverture')
             ->image()->directory('covers'),
         Forms\Components\FileUpload::make('file_path')
-            ->label('Fichier PDF')
+            ->label('Fichier (PDF, DOC, ZIP, etc.)')
+            ->maxSize(51200)
             ->required()->directory('publications'),
         Forms\Components\Hidden::make('user_id')
             ->default(auth()->id()), // L'auteur est celui qui est connecté
@@ -96,11 +97,11 @@ class PublicationResource extends Resource
     public static function getEloquentQuery(): Builder
 {
     $query = parent::getEloquentQuery();
-    
+
     if (auth()->user()->role !== 'admin') {
         $query->where('user_id', auth()->id());
     }
-    
+
     return $query;
 }
 }

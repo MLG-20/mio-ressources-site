@@ -9,7 +9,14 @@ use Illuminate\Support\Facades\DB;
 class TopPagesChart extends ChartWidget
 {
     protected static ?string $heading = 'Pages les plus visitées';
-    protected static ?int $sort = 5; // Pour le mettre après les autres
+    protected static ?int $sort = 3;
+
+    protected int | string | array $columnSpan = 1;
+
+    public static function canView(): bool
+    {
+        return request()->get('tab') === 'visites';
+    }
 
     protected function getData(): array
     {

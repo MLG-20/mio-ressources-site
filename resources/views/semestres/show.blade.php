@@ -12,7 +12,7 @@
 
     <nav class="bg-white shadow-sm py-4 px-8 flex justify-between items-center sticky top-0 z-50">
         <a href="/" class="flex items-center gap-2 group">
-            <div class="bg-blue-600 text-white px-2 py-1 rounded-lg font-bold">MIO</div>
+            <x-application-logo class="w-8 md:w-10 h-8 md:h-10" />
             <span class="font-black text-gray-800">RESSOURCES</span>
         </a>
         <a href="/" class="text-gray-500 hover:text-blue-600 font-bold transition flex items-center gap-2">

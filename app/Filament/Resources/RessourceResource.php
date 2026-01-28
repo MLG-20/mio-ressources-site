@@ -25,7 +25,7 @@ class RessourceResource extends Resource
 
     // Icône du menu (on met un dossier pour les ressources)
     protected static ?string $navigationIcon = 'heroicon-o-folder-open';
-    
+
     protected static ?string $navigationLabel = 'Ressources Académiques';
 
     public static function form(Form $form): Form
@@ -59,8 +59,9 @@ class RessourceResource extends Resource
 
                     // CHAMP DYNAMIQUE : Soit un fichier, soit un lien
                     FileUpload::make('file_path')
-                        ->label('Téléverser le fichier PDF/Doc')
+                        ->label('Téléverser le fichier (PDF, DOC, ZIP, etc.)')
                         ->directory('ressources')
+                        ->maxSize(51200)
                         ->required()
                         ->visible(fn (Get $get): bool => $get('type') !== 'Vidéo'), // Caché si c'est une vidéo
 
@@ -88,7 +89,7 @@ class RessourceResource extends Resource
                 ])
         ]);
 }
-    
+
     public static function table(Table $table): Table
 {
     return $table
@@ -115,8 +116,8 @@ class RessourceResource extends Resource
                 ->sortable()
                 ->formatStateUsing(function ($record) {
                     // Si c'est premium, on affiche le prix, sinon "Gratuit"
-                    return $record->is_premium 
-                        ? $record->price . ' CFA' 
+                    return $record->is_premium
+                        ? $record->price . ' CFA'
                         : 'Gratuit';
                 })
                 ->badge() // Style pastille
@@ -147,7 +148,7 @@ class RessourceResource extends Resource
             Tables\Actions\DeleteAction::make(),
         ]);
 }
-    
+
     public static function getRelations(): array
     {
         return [];

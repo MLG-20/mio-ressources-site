@@ -2,22 +2,25 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Matiere;
-use App\Models\Ressource;
+use App\Models\DownloadHistory;
+use App\Models\FinancialTransaction;
 use App\Models\User;
-use App\Models\Visit;
+use App\Models\Meeting;
+use App\Models\PrivateLesson;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use App\Models\Review;
-use App\Models\Purchase;
+use Illuminate\Support\Carbon;
 
 class StatsOverview extends BaseWidget
 {
-     // On force l'affichage sur toute la largeur
-    // protected int | string | array $columnSpan = 'full';
-    
-    // On le met en premier (position 1)
     protected static ?int $sort = 1;
+
+    protected static ?string $pollingInterval = null;
+
+    public static function canView(): bool
+    {
+        return request()->get('tab') === 'vue-ensemble' || request()->get('tab') === null;
+    }
 
     protected function getStats(): array
 {
@@ -32,10 +35,15 @@ class StatsOverview extends BaseWidget
             ->descriptionIcon('heroicon-m-users')
             ->color('primary'),
 
-        Stat::make('Satisfaction', number_format(Review::avg('note') ?? 0, 1) . ' / 5')
-           ->description(Review::count() . ' avis reçus')
-           ->descriptionIcon('heroicon-m-star')
+        Stat::make('Transactions Complétées', FinancialTransaction::where('type', 'CREDIT_VENTE')->where('created_at', '>=', Carbon::now()->startOfMonth())->count())
+           ->description('Ce mois-ci')
+           ->descriptionIcon('heroicon-m-banknotes')
            ->color('warning'),
+
+        Stat::make('Téléchargements', DownloadHistory::where('downloaded_at', '>=', Carbon::now()->subDays(30))->count())
+            ->description('Derniers 30 jours')
+            ->descriptionIcon('heroicon-m-arrow-down-tray')
+            ->color('info'),
     ];
 }
 }

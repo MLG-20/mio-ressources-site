@@ -10,6 +10,11 @@ class AcademicOverview extends BaseWidget
     protected static ?int $sort = 2;
     protected int | string | array $columnSpan = 'full';
 
+    public static function canView(): bool
+    {
+        return request()->get('tab') === 'contenus' || (request()->get('tab') === null && request()->get('activeTab') === 'contenus');
+    }
+
     protected function getStats(): array
     {
         return [

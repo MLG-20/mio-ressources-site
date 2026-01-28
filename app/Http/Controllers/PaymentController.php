@@ -8,6 +8,8 @@ use App\Models\Publication;
 use App\Models\Purchase;
 use App\Models\FinancialTransaction;
 use App\Models\DownloadHistory;
+use App\Models\User;
+use App\Notifications\PurchaseInvoiceNotification;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
@@ -314,6 +316,14 @@ class PaymentController extends Controller
             'status' => 'valide',
             'item_type' => $type,
         ]);
+
+        // Envoyer la notification de facture si c'est un utilisateur enregistré
+        if ($userId) {
+            $user = User::find($userId);
+            if ($user) {
+                $user->notify(new PurchaseInvoiceNotification($purchase));
+            }
+        };
 
         // Commissions Prof
         if ($item->user && $item->user->user_type === 'teacher') {

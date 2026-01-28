@@ -7,8 +7,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Notifications\Messages\MailMessage;
-use Filament\Models\Contracts\FilamentUser; 
-use Filament\Panel; 
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 
 class User extends Authenticatable implements FilamentUser
 {
@@ -76,8 +76,46 @@ class User extends Authenticatable implements FilamentUser
     /**
      * HELPER : Vérifier si c'est un enseignant
      */
-    public function isTeacher() 
+    public function isTeacher()
     {
         return $this->user_type === 'teacher';
+    }
+
+    /**
+     * Relations
+     */
+    public function meetings()
+    {
+        return $this->hasMany(Meeting::class);
+    }
+
+    public function enrolledMeetings()
+    {
+        return $this->belongsToMany(Meeting::class, 'meeting_enrollments')->withTimestamps();
+    }
+
+    /**
+     * RELATION : Inscriptions aux cours particuliers (pour étudiants)
+     */
+    public function enrollments()
+    {
+        return $this->hasMany(PrivateLessonEnrollment::class, 'student_id');
+    }
+
+    /**
+     * RELATION : Groupes de travail dont l'utilisateur est membre
+     */
+    public function workGroups()
+    {
+        return $this->belongsToMany(WorkGroup::class, 'group_user')
+                    ->withTimestamps();
+    }
+
+    /**
+     * RELATION : Groupes de travail créés par l'utilisateur
+     */
+    public function createdWorkGroups()
+    {
+        return $this->hasMany(WorkGroup::class, 'creator_id');
     }
 }

@@ -6,6 +6,7 @@ use App\Models\ForumSujet;
 use App\Models\ForumMessage;
 use App\Models\DownloadHistory; // <--- Import Important
 use App\Models\Publication;
+use App\Models\PrivateLessonEnrollment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -20,6 +21,7 @@ class UserSpaceController extends Controller
 
     $mesSujets = ForumSujet::where('user_id', $user->id)->latest()->get();
     $mesMessages = ForumMessage::where('user_id', $user->id)->with('sujet')->latest()->get();
+    $userMessages = ForumMessage::where('user_id', $user->id)->latest()->get();
 
     $purchasedIds = \App\Models\Purchase::where('user_id', $user->id)->pluck('ressource_id')->toArray();
     $historyIds = DownloadHistory::where('user_id', $user->id)->pluck('ressource_id')->toArray();
@@ -30,6 +32,15 @@ class UserSpaceController extends Controller
     // Récupérer les mémoires publiés par l'étudiant
     $mesMemoires = Publication::where('user_id', $user->id)->where('type', 'Mémoire')->latest()->get();
 
+    // Récupérer les cours particuliers réservés par l'étudiant
+    $mesCoursParticuliers = \App\Models\PrivateLessonEnrollment::with(['privateLesson' => function($query) {
+        $query->with(['teacher', 'matiere']);
+    }])
+    ->where('student_id', $user->id)
+    ->where('payment_status', 'paid') // Seulement les cours payés/confirmés
+    ->orderBy('scheduled_at', 'asc')
+    ->get();
+
     // ON RÉCUPÈRE LES NOUVEAUTÉS DE SON NIVEAU (Ex: L3)
     $nouveautes = \App\Models\Ressource::whereHas('matiere.semestre', function($query) use ($user) {
             $query->where('niveau', $user->student_level);
@@ -38,7 +49,7 @@ class UserSpaceController extends Controller
         ->take(5)
         ->get();
 
-    return view('user.dashboard', compact('user', 'mesSujets', 'mesMessages', 'downloads', 'nouveautes', 'mesMemoires'));
+    return view('user.dashboard', compact('user', 'mesSujets', 'mesMessages', 'downloads', 'nouveautes', 'mesMemoires', 'userMessages', 'mesCoursParticuliers'));
 }
 
     public function updateProfile(Request $request) {
@@ -65,13 +76,13 @@ class UserSpaceController extends Controller
         }
 
         $user->save();
-        return back()->with('success', 'Profil mis à jour avec succès !');
+        return redirect()->route('user.dashboard')->with('success', 'Profil mis à jour avec succès !')->withFragment('profil');
     }
 
     public function destroyMessage($id) {
         $message = ForumMessage::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
         $message->delete();
-        return back()->with('success', 'Message supprimé.');
+        return redirect()->route('user.dashboard')->with('success', 'Message supprimé.')->withFragment('messages');
     }
 
     public function destroySujet($id) {
@@ -96,7 +107,7 @@ class UserSpaceController extends Controller
     // Supprimer une entrée de l'historique
 public function destroyHistory($id) {
     DownloadHistory::where('id', $id)->where('user_id', Auth::id())->delete();
-    return back()->with('success', 'Document retiré de l\'historique.');
+    return redirect()->route('user.dashboard')->with('success', 'Document retiré de l\'historique.')->withFragment('historique');
 }
 
 // Vider tout l'historique
@@ -108,7 +119,7 @@ public function clearHistory() {
 public function publishMemoir(Request $request) {
     $request->validate([
         'titre' => 'required|string|max:255',
-        'file_path' => 'required|file|mimes:pdf|max:20480',
+        'file_path' => 'required|file|mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,zip,rar,7z,txt,jpg,jpeg,png|max:51200',
         'cover_image' => 'nullable|image|max:2048',
     ]);
 
@@ -152,6 +163,45 @@ public function destroyMemoir($id) {
     }
 
     $publication->delete();
-    return back()->with('success', 'Mémoire supprimé de la bibliothèque.');
+    return redirect()->route('user.dashboard')->with('success', 'Mémoire supprimé de la bibliothèque.')->withFragment('historique');
 }
+
+    /**
+     * Créer un message direct depuis l'espace étudiant
+     */
+    public function storeMessage(Request $request) {
+        $request->validate([
+            'contenu' => 'required|string|min:3|max:1000',
+        ]);
+
+        ForumMessage::create([
+            'contenu' => $request->contenu,
+            'user_id' => Auth::id(),
+            'forum_sujet_id' => null, // Message standalone
+        ]);
+
+        return redirect()->route('user.dashboard')->with('success', 'Message partagé avec succès !')->withFragment('messages');
+    }
+
+    /**
+     * Mettre à jour un message
+     */
+    public function updateMessage(Request $request, $id) {
+        $message = ForumMessage::findOrFail($id);
+
+        // Vérifier que l'utilisateur est propriétaire
+        if ($message->user_id !== Auth::id()) {
+            abort(403, 'Non autorisé.');
+        }
+
+        $request->validate([
+            'contenu' => 'required|string|min:3|max:1000',
+        ]);
+
+        $message->update([
+            'contenu' => $request->contenu,
+        ]);
+
+        return redirect()->route('user.dashboard')->with('success', 'Message mis à jour !')->withFragment('messages');
+    }
 }

@@ -13,6 +13,11 @@ class LatestStudentsWidget extends BaseWidget
     protected static ?int $sort = 6;
     protected int | string | array $columnSpan = '1'; // Prend la moitié de l'écran
 
+    public static function canView(): bool
+    {
+        return request()->get('tab') === 'utilisateurs';
+    }
+
     public function table(Table $table): Table
     {
         return $table

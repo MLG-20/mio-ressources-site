@@ -9,40 +9,40 @@
 </head>
 <body class="bg-slate-50 text-slate-900">
 
-    <nav class="bg-white border-b py-4 px-8 flex justify-between items-center sticky top-0 z-50">
+    <nav class="bg-white border-b py-4 px-4 md:px-8 flex justify-between items-center sticky top-0 z-50">
         <a href="/" class="flex items-center gap-2">
-            <div class="bg-blue-600 text-white px-2 py-1 rounded font-bold text-sm">MIO</div>
-            <span class="font-black text-slate-800">FORUM</span>
+            <x-application-logo class="w-8 md:w-10 h-8 md:h-10" />
+            <span class="hidden sm:inline font-black text-slate-800 text-xs md:text-base">FORUM</span>
         </a>
-        <div class="flex items-center gap-4">
-            <span class="text-sm font-medium text-slate-500">Bonjour, {{ Auth::user()->name }}</span>
+        <div class="flex items-center gap-2 md:gap-4">
+            <span class="hidden md:inline text-sm font-medium text-slate-500">Bonjour, {{ Auth::user()->name }}</span>
             <form method="POST" action="{{ route('logout') }}">@csrf
-                <button type="submit" class="text-red-500 text-sm font-bold hover:underline">Déconnexion</button>
+                <button type="submit" class="text-red-500 text-xs md:text-sm font-bold hover:underline">Déco.</button>
             </form>
         </div>
     </nav>
 
-    <header class="bg-slate-900 py-12 px-6 text-center">
-        <h1 class="text-3xl md:text-5xl font-black text-white tracking-tighter uppercase">Espace Communautaire</h1>
-        <p class="text-slate-400 mt-2">Échangez avec les autres étudiants de l'université</p>
+    <header class="bg-slate-900 py-8 md:py-12 px-4 md:px-6 text-center">
+        <h1 class="text-2xl md:text-5xl font-black text-white tracking-tighter uppercase">Espace Communautaire</h1>
+        <p class="text-slate-400 mt-2 text-xs md:text-base">Échangez avec les autres étudiants de l'université</p>
     </header>
 
-    <main class="max-w-4xl mx-auto py-12 px-6">
-        <div class="grid gap-6">
+    <main class="max-w-4xl mx-auto py-8 md:py-12 px-4 md:px-6">
+        <div class="grid gap-4 md:gap-6">
             @foreach($categories as $cat)
-                <a href="{{ route('forum.category', $cat->id) }}" class="group bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-blue-500 transition-all flex items-center justify-between">
-                    <div class="flex items-center gap-6">
-                        <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
-                            <i class="fas fa-comments text-xl"></i>
+                <a href="{{ route('forum.category', $cat->id) }}" class="group bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-blue-500 transition-all flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-3 md:gap-6 min-w-0">
+                        <div class="w-12 md:w-14 h-12 md:h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all flex-shrink-0">
+                            <i class="fas fa-comments text-lg md:text-xl"></i>
                         </div>
-                        <div>
-                            <h3 class="text-xl font-black text-slate-800">{{ $cat->nom }}</h3>
-                            <p class="text-slate-500 text-sm">{{ $cat->description }}</p>
+                        <div class="min-w-0">
+                            <h3 class="text-base md:text-xl font-black text-slate-800 truncate">{{ $cat->nom }}</h3>
+                            <p class="text-slate-500 text-xs md:text-sm line-clamp-1">{{ $cat->description }}</p>
                         </div>
                     </div>
-                    <div class="bg-slate-50 px-4 py-2 rounded-2xl text-center min-w-[80px]">
-                        <span class="block font-black text-slate-800">{{ $cat->sujets_count }}</span>
-                        <span class="text-[10px] uppercase font-bold text-slate-400">Sujets</span>
+                    <div class="bg-slate-50 px-3 md:px-4 py-2 rounded-2xl text-center min-w-[70px] md:min-w-[80px] flex-shrink-0">
+                        <span class="block font-black text-slate-800 text-base md:text-lg">{{ $cat->sujets_count }}</span>
+                        <span class="text-[9px] md:text-[10px] uppercase font-bold text-slate-400">Sujets</span>
                     </div>
                 </a>
             @endforeach

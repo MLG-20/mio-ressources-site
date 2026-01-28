@@ -10,6 +10,11 @@ class FinanceOverview extends BaseWidget
     protected int | string | array $columnSpan = 'full';
     protected static ?int $sort = 2;
 
+    public static function canView(): bool
+    {
+        return request()->get('tab') === 'finances';
+    }
+
     protected function getStats(): array
     {
         // 1. CALCUL DES VENTES DIRECTES (Tes documents à toi - ID 1)

@@ -12,6 +12,11 @@ class VisitChart extends ChartWidget
     protected static ?string $heading = 'Analyse du Trafic';
     public ?string $filter = 'week'; // Filtre par défaut
     protected static ?int $sort = 4;
+
+    public static function canView(): bool
+    {
+        return request()->get('tab') === 'visites';
+    }
     // 1. Définir le menu déroulant
     protected function getFilters(): ?array
     {
@@ -49,7 +54,7 @@ class VisitChart extends ChartWidget
 
         // 3. Exécuter la requête
         $data = $query->select(
-            DB::raw("$select as date"), 
+            DB::raw("$select as date"),
             DB::raw('count(*) as views')
         )
         ->groupBy('date')

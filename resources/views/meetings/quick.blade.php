@@ -3,48 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Révision instantanée</title>
+    <title>Révision instantanée - MIO</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f8fafc; }
-        .container { max-width: 1080px; margin: 24px auto; padding: 0 16px; }
-        .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06); }
-        .title { margin: 0 0 8px 0; font-size: 24px; color: #0f172a; }
-        .muted { color: #475569; margin: 0 0 16px 0; }
-        .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 12px; }
-        .pill { background: #e0f2fe; color: #0ea5e9; padding: 6px 12px; border-radius: 999px; font-weight: 600; font-size: 14px; }
-        .input { width: 100%; max-width: 640px; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; color: #0f172a; background: #f8fafc; }
-        .btn { display: inline-flex; align-items: center; gap: 8px; border: none; cursor: pointer; padding: 10px 16px; border-radius: 10px; font-weight: 700; font-size: 14px; }
-        .btn-primary { background: #2563eb; color: #fff; }
-        .btn-secondary { background: #0f172a; color: #fff; }
-        .btn:active { transform: translateY(1px); }
-        #jitsi-container { width: 100%; height: 640px; margin-top: 18px; border-radius: 12px; overflow: hidden; background: #0f172a; }
-        .small { font-size: 13px; color: #475569; }
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&display=swap');
+        body { font-family: 'Outfit', sans-serif; }
+        /* Scrollbar Personnalisée - BLEU MAGNIFIQUE */
+        ::-webkit-scrollbar { width: 12px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, #2563eb, #1d4ed8); border-radius: 10px; box-shadow: 0 0 6px rgba(37, 99, 235, 0.5); }
+        ::-webkit-scrollbar-thumb:hover { background: linear-gradient(to bottom, #1d4ed8, #1e40af); box-shadow: 0 0 12px rgba(37, 99, 235, 0.8); }
+        * { scrollbar-color: #2563eb transparent; scrollbar-width: thin; }
+        #jitsi-container { width: 100%; height: 400px; border-radius: 1rem; overflow: hidden; background: #0f172a; }
+        @media (min-width: 768px) { #jitsi-container { height: 640px; } }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="card">
-            <p class="pill">Révision instantanée</p>
-            <h1 class="title">Salle rapide</h1>
-            <p class="muted">Partage le lien ci-dessous avec tes camarades. Pas d'enregistrement, pas de base de données : la salle vit seulement pendant votre session.</p>
+<body class="bg-[#f8fafc] text-slate-900">
 
-            <div class="row">
-                <input id="share-link" class="input" type="text" readonly value="{{ $shareUrl }}">
-                <button id="copy-btn" class="btn btn-primary">Copier le lien</button>
-                <button id="reload-btn" class="btn btn-secondary">Nouvelle salle</button>
+    <!-- NAVBAR -->
+    <nav class="bg-slate-900 text-white py-4 px-4 md:px-8 flex justify-between items-center sticky top-0 z-50 shadow-xl">
+        <a href="{{ route('user.dashboard') }}">
+           <div class="flex items-center gap-2 md:gap-3">
+                <x-application-logo class="w-8 md:w-10 h-8 md:h-10" />
+                <span class="hidden sm:inline font-black uppercase tracking-tighter text-xs md:text-base">Révision Instantanée</span>
             </div>
-            <p class="small">Salle : <strong>{{ $room }}</strong> · Domaine Jitsi : {{ $domain }}</p>
+        </a>
+        <div class="flex items-center gap-2 md:gap-4">
+            @auth
+            <div class="bg-white/10 px-3 md:px-4 py-2 rounded-2xl flex items-center gap-2 md:gap-3">
+                <img src="{{ auth()->user()->avatar ? asset('storage/'.auth()->user()->avatar) : 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name).'&background=0D8ABC&color=fff' }}" class="w-6 md:w-8 h-6 md:h-8 rounded-lg object-cover">
+                <span class="text-xs md:text-sm font-bold hidden md:inline truncate">{{ auth()->user()->name }}</span>
+            </div>
+            @endauth
+            <a href="{{ route('user.dashboard') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4 py-2 rounded-xl font-bold text-xs uppercase shadow-lg transition">
+                <i class="fas fa-arrow-left md:hidden"></i>
+                <span class="hidden md:inline">Retour</span>
+            </a>
+        </div>
+    </nav>
 
-            <!-- Toggle Lobby -->
-            <div style="display: flex; align-items: center; gap: 12px; margin-top: 16px; padding: 12px 14px; background: #f1f5f9; border-radius: 10px; border: 1px solid #cbd5e1;">
-                <input type="checkbox" id="lobby-toggle" {{ $lobbyEnabled ? 'checked' : '' }} style="cursor: pointer; width: 18px; height: 18px;">
-                <label for="lobby-toggle" style="cursor: pointer; margin: 0; font-weight: 600; color: #475569; font-size: 14px;">Activer la salle d'attente (lobby)</label>
-                <span style="font-size: 12px; color: #64748b; margin-left: auto;">Les nouveaux entrants doivent être acceptés.</span>
+    <main class="max-w-7xl mx-auto py-6 md:py-10 px-4 md:px-6">
+
+        <!-- CARTE PRINCIPALE -->
+        <div class="bg-gradient-to-br from-sky-600 to-indigo-700 rounded-2xl md:rounded-3xl p-6 md:p-8 text-white shadow-2xl mb-6">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
+                    <i class="fas fa-video text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] font-black uppercase tracking-[0.3em] opacity-80">Révision instantanée</p>
+                    <h1 class="text-xl md:text-3xl font-black">Salle rapide · {{ $room }}</h1>
+                </div>
+            </div>
+            <p class="text-sm md:text-base opacity-90 mb-6">Partage le lien ci-dessous avec tes camarades. Pas d'enregistrement, la salle vit seulement pendant votre session.</p>
+
+            <!-- ACTIONS -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+                <div class="md:col-span-2">
+                    <label class="block text-[10px] font-black uppercase tracking-widest mb-2 opacity-80">Lien de partage</label>
+                    <input id="share-link" type="text" readonly value="{{ $shareUrl }}" class="w-full bg-white/20 border-2 border-white/30 text-white placeholder-white/60 rounded-xl px-4 py-3 font-bold text-sm focus:bg-white/30 focus:outline-none transition">
+                </div>
+                <div class="flex gap-2">
+                    <button id="copy-btn" class="flex-1 bg-white text-blue-600 font-black py-3 px-4 rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition text-sm flex items-center justify-center gap-2">
+                        <i class="fas fa-copy"></i> Copier
+                    </button>
+                    <button id="reload-btn" class="bg-white/20 hover:bg-white/30 text-white font-black p-3 rounded-xl border-2 border-white/30 transition" title="Nouvelle salle">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
             </div>
 
+            <!-- SALLE D'ATTENTE -->
+            <div class="mt-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex items-center gap-3">
+                <input type="checkbox" id="lobby-toggle" {{ $lobbyEnabled ? 'checked' : '' }} class="w-5 h-5 rounded cursor-pointer accent-white">
+                <div class="flex-1">
+                    <label for="lobby-toggle" class="cursor-pointer font-bold text-sm block">Salle d'attente activée</label>
+                    <p class="text-[11px] opacity-70">Les nouveaux participants doivent être acceptés par un modérateur</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTENEUR JITSI -->
+        <div class="bg-white rounded-2xl md:rounded-3xl p-4 md:p-6 shadow-xl">
             <div id="jitsi-container"></div>
         </div>
-    </div>
+
+        <!-- INFO DOMAINE -->
+        <div class="mt-4 text-center">
+            <p class="text-xs text-slate-400 font-medium">
+                <i class="fas fa-server text-blue-500"></i> Domaine Jitsi : <span class="font-bold text-slate-600">{{ $domain }}</span>
+            </p>
+        </div>
+
+    </main>
 
     <script src="https://meet.jit.si/external_api.js"></script>
     <script>

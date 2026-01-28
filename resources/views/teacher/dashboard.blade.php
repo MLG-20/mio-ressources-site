@@ -12,69 +12,71 @@
 <body class="bg-[#f8fafc] text-slate-900" x-data="{ tab: 'bureau' }">
 
     <!-- NAVBAR -->
-    <nav class="bg-slate-900 text-white py-4 px-8 flex justify-between items-center sticky top-0 z-50">
+    <nav class="bg-slate-900 text-white py-4 px-4 md:px-8 flex justify-between items-center sticky top-0 z-50">
         <a href="/">
-           <div class="flex items-center gap-3">
-                <x-application-logo class="w-10 h-10" />
-                <span class="font-black uppercase tracking-tighter">Espace Enseignant</span>
+           <div class="flex items-center gap-2 md:gap-3">
+                <x-application-logo class="w-8 md:w-10 h-8 md:h-10" />
+                <span class="hidden sm:inline font-black uppercase tracking-tighter text-xs md:text-base">Espace Enseignant</span>
             </div>
         </a>
-        <div class="flex items-center gap-4">
-            <div class="bg-white/10 px-4 py-2 rounded-2xl flex items-center gap-3">
-                <img src="{{ $user->avatar ? asset('storage/'.$user->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($user->name) }}" class="w-8 h-8 rounded-lg object-cover">
-                <span class="text-xs font-bold">{{ $user->name }}</span>
+        <div class="flex items-center gap-2 md:gap-4">
+            <div class="bg-white/10 px-3 md:px-4 py-2 rounded-2xl flex items-center gap-2 md:gap-3">
+                <img src="{{ $user->avatar ? asset('storage/'.$user->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($user->name) }}" class="w-6 md:w-8 h-6 md:h-8 rounded-lg object-cover">
+                <span class="text-xs md:text-sm font-bold hidden md:inline truncate">{{ $user->name }}</span>
             </div>
             <form method="POST" action="{{ route('logout') }}"> @csrf
-                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-xl font-bold text-xs uppercase shadow-lg">Déconnexion</button>
+                <button type="submit" class="bg-red-500 text-white px-3 md:px-4 py-2 rounded-xl font-bold text-xs uppercase shadow-lg">Déconnexion</button>
             </form>
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto py-10 px-6">
+    <main class="max-w-7xl mx-auto py-6 md:py-10 px-4 md:px-6">
 
         <!-- MENU NAVIGATION PAR ONGRETS -->
-        <div class="flex gap-4 mb-10 overflow-x-auto pb-2">
-            <button @click="tab = 'bureau'" :class="tab === 'bureau' ? 'bg-blue-600 text-white shadow-blue-200' : 'bg-white text-slate-500'" class="px-8 py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all whitespace-nowrap">📊 Mon Bureau</button>
-            <button @click="tab = 'forum'" :class="tab === 'forum' ? 'bg-blue-600 text-white shadow-blue-200' : 'bg-white text-slate-500'" class="px-8 py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all whitespace-nowrap">💬 Forum Étudiant</button>
-            <button @click="tab = 'settings'" :class="tab === 'settings' ? 'bg-slate-900 text-white' : 'bg-white text-slate-500'" class="px-8 py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all whitespace-nowrap">⚙️ Paramètres Compte</button>
+        <div class="flex gap-2 md:gap-4 mb-8 md:mb-10 overflow-x-auto pb-2 scrollbar-hide">
+            <button @click="tab = 'bureau'" :class="tab === 'bureau' ? 'bg-blue-600 text-white shadow-blue-200' : 'bg-white text-slate-500'" class="px-4 md:px-8 py-3 md:py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all whitespace-nowrap">📊 Bureau</button>
+            <button @click="tab = 'cours'" :class="tab === 'cours' ? 'bg-purple-600 text-white shadow-purple-200' : 'bg-white text-slate-500'" class="px-4 md:px-8 py-3 md:py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all whitespace-nowrap">🎥 Cours</button>
+            <a href="{{ route('teacher.private-lessons.index') }}" class="px-4 md:px-8 py-3 md:py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all whitespace-nowrap bg-amber-600 text-white hover:bg-amber-700">💼 Cours Particuliers</a>
+            <button @click="tab = 'forum'" :class="tab === 'forum' ? 'bg-blue-600 text-white shadow-blue-200' : 'bg-white text-slate-500'" class="px-4 md:px-8 py-3 md:py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all whitespace-nowrap">💬 Forum</button>
+            <button @click="tab = 'settings'" :class="tab === 'settings' ? 'bg-slate-900 text-white' : 'bg-white text-slate-500'" class="px-4 md:px-8 py-3 md:py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all whitespace-nowrap">⚙️ Params</button>
         </div>
 
         <!-- 1. ONGLET BUREAU -->
-        <div x-show="tab === 'bureau'" x-cloak class="space-y-8 animate-in fade-in duration-500">
+        <div x-show="tab === 'bureau'" x-cloak class="space-y-6 md:space-y-8 animate-in fade-in duration-500">
             <!-- KPI -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white p-8 rounded-[2.5rem] shadow-xl border-b-4 border-blue-600">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                <div class="bg-white p-6 md:p-8 rounded-xl md:rounded-[2.5rem] shadow-xl border-b-4 border-blue-600">
                     <span class="text-[10px] font-black text-slate-400 uppercase mb-2 block">Publications</span>
-                    <span class="text-4xl font-black text-slate-800">{{ $mesPublications->count() }}</span>
+                    <span class="text-3xl md:text-4xl font-black text-slate-800">{{ $mesPublications->count() }}</span>
                 </div>
-                <div class="bg-slate-900 p-8 rounded-[2.5rem] shadow-xl border-b-4 border-amber-500 text-white">
+                <div class="bg-slate-900 p-6 md:p-8 rounded-xl md:rounded-[2.5rem] shadow-xl border-b-4 border-amber-500 text-white">
                     <span class="text-[10px] font-black text-amber-500 uppercase mb-2 block">Mon Solde</span>
-                    <span class="text-3xl font-black">{{ number_format($totalRevenus, 0, ',', ' ') }} F</span>
+                    <span class="text-2xl md:text-3xl font-black line-clamp-1">{{ number_format($totalRevenus, 0, ',', ' ') }} F</span>
                 </div>
-                <div class="bg-white p-8 rounded-[2.5rem] shadow-xl border-b-4 border-purple-600">
+                <div class="bg-white p-6 md:p-8 rounded-xl md:rounded-[2.5rem] shadow-xl border-b-4 border-purple-600">
                     <span class="text-[10px] font-black text-slate-400 uppercase mb-2 block">Spécialité</span>
-                    <span class="text-sm font-black text-purple-600 uppercase">{{ $user->specialty ?? 'À renseigner' }}</span>
+                    <span class="text-sm md:text-base font-black text-purple-600 uppercase line-clamp-2">{{ $user->specialty ?? 'À renseigner' }}</span>
                 </div>
             </div>
 
             <!-- Publier -->
-            <div class="bg-white rounded-[3rem] p-10 shadow-xl border border-slate-100">
-                <h3 class="text-xl font-black text-slate-800 uppercase mb-8">Nouvel Ouvrage</h3>
-                <form action="{{ route('teacher.publication.store') }}" method="POST" enctype="multipart/form-data" x-data="{ isPremium: false }" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white rounded-xl md:rounded-[3rem] p-6 md:p-10 shadow-xl border border-slate-100">
+                <h3 class="text-lg md:text-xl font-black text-slate-800 uppercase mb-6 md:mb-8">Nouvel Ouvrage</h3>
+                <form action="{{ route('teacher.publication.store') }}" method="POST" enctype="multipart/form-data" x-data="{ isPremium: false }" class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                     @csrf
-                    <input type="text" name="titre" placeholder="Titre" class="md:col-span-2 w-full bg-slate-50 border-0 rounded-2xl p-4 font-bold" required>
-                    <select name="type" class="bg-slate-50 border-0 rounded-2xl p-4 font-bold">
+                    <input type="text" name="titre" placeholder="Titre" class="md:col-span-2 w-full bg-slate-50 border-0 rounded-2xl p-3 md:p-4 font-bold text-sm md:text-base" required>
+                    <select name="type" class="bg-slate-50 border-0 rounded-2xl p-3 md:p-4 font-bold text-sm md:text-base">
                         <option value="Livre">📚 Livre</option>
                         <option value="Mémoire">🎓 Mémoire</option>
                     </select>
-                    <div class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl">
-                        <label class="flex items-center gap-2"><input type="checkbox" name="is_premium" x-model="isPremium"> <span class="text-xs font-bold uppercase">Vendre</span></label>
-                        <input type="number" name="price" x-show="isPremium" placeholder="Prix CFA" class="w-24 p-2 rounded-xl border-0 font-bold">
+                    <div class="flex items-center justify-between bg-slate-50 p-3 md:p-4 rounded-2xl">
+                        <label class="flex items-center gap-2 text-sm md:text-base"><input type="checkbox" name="is_premium" x-model="isPremium"> <span class="text-xs md:text-sm font-bold uppercase">Vendre</span></label>
+                        <input type="number" name="price" x-show="isPremium" placeholder="Prix CFA" class="w-24 p-2 rounded-xl border-0 font-bold text-xs md:text-sm">
                     </div>
-                    <textarea name="description" placeholder="Résumé..." class="md:col-span-2 w-full bg-slate-50 border-0 rounded-2xl p-4"></textarea>
-                    <input type="file" name="file_path" class="text-xs" required>
-                    <input type="file" name="cover_image" class="text-xs">
-                    <button type="submit" class="md:col-span-2 bg-blue-600 text-white py-5 rounded-[2rem] font-black shadow-xl uppercase">Publier</button>
+                    <textarea name="description" placeholder="Résumé..." class="md:col-span-2 w-full bg-slate-50 border-0 rounded-2xl p-3 md:p-4 text-sm md:text-base"></textarea>
+                    <input type="file" name="file_path" class="text-xs md:text-sm" required>
+                    <input type="file" name="cover_image" class="text-xs md:text-sm">
+                    <button type="submit" class="md:col-span-2 bg-blue-600 text-white py-4 md:py-5 rounded-2xl md:rounded-[2rem] font-black shadow-xl uppercase text-sm md:text-base">Publier</button>
                 </form>
             </div>
 
@@ -97,28 +99,123 @@
                                             <span class="inline-block bg-green-100 text-green-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase">✓ Gratuit</span>
                                         @endif
                                     </div>
-                                    <p class="text-[10px] text-slate-400 uppercase font-bold mt-3">Publié le {{ $pub->created_at->format('d/m/Y à H:i') }}</p>
+                                    <p class="text-[10px] text-slate-400 uppercase font-bold mt-3">Publié le {{ $pub->created_at->format('d/m/Y H:i') }}</p>
                                 </div>
-                                <div class="flex gap-2 ml-4">
+                                <div class="flex gap-2 ml-2 md:ml-4 flex-shrink-0">
                                     <form action="{{ route('teacher.publication.destroy', $pub->id) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette publication ?');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="bg-red-500 text-white px-6 py-3 rounded-2xl font-black text-xs shadow-lg hover:bg-red-600 transition uppercase">🗑️ Supprimer</button>
+                                        <button type="submit" class="bg-red-500 text-white px-4 md:px-6 py-2 md:py-3 rounded-2xl font-black text-xs shadow-lg hover:bg-red-600 transition uppercase">🗑️ <span class="hidden md:inline">Supprimer</span></button>
                                     </form>
                                 </div>
                             </div>
                         @endforeach
                     </div>
                 @else
-                    <div class="text-center py-12">
-                        <p class="text-slate-400 font-bold text-lg">Aucune publication pour le moment</p>
-                        <p class="text-slate-300 text-sm mt-2">Publiez votre premier ouvrage dans la section ci-dessus</p>
+                    <div class="text-center py-8 md:py-12">
+                        <p class="text-slate-400 font-bold text-base md:text-lg">Aucune publication pour le moment</p>
+                        <p class="text-slate-300 text-xs md:text-sm mt-2">Publiez votre premier ouvrage dans la section ci-dessus</p>
                     </div>
                 @endif
             </div>
         </div>
 
-        <!-- 2. ONGLET FORUM -->
+        <!-- 2. ONGLET COURS VIDÉO -->
+        <div x-show="tab === 'cours'" x-cloak class="space-y-6 md:space-y-8 animate-in fade-in duration-500">
+            <!-- Stats Cours -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                <div class="bg-white p-6 md:p-8 rounded-xl md:rounded-[2.5rem] shadow-xl border-b-4 border-amber-500">
+                    <span class="text-[10px] font-black text-slate-400 uppercase mb-2 block">Planifiés</span>
+                    <span class="text-3xl md:text-4xl font-black text-amber-600">{{ $meetings->where('status', 'scheduled')->count() }}</span>
+                </div>
+                <div class="bg-gradient-to-br from-green-500 to-emerald-600 p-6 md:p-8 rounded-xl md:rounded-[2.5rem] shadow-xl text-white">
+                    <span class="text-[10px] font-black text-green-100 uppercase mb-2 block">En Direct</span>
+                    <span class="text-3xl md:text-4xl font-black">{{ $meetings->where('status', 'active')->count() }}</span>
+                </div>
+                <div class="bg-white p-6 md:p-8 rounded-xl md:rounded-[2.5rem] shadow-xl border-b-4 border-slate-400">
+                    <span class="text-[10px] font-black text-slate-400 uppercase mb-2 block">Terminés</span>
+                    <span class="text-3xl md:text-4xl font-black text-slate-600">{{ $meetings->where('status', 'closed')->count() }}</span>
+                </div>
+            </div>
+
+            <!-- Créer un cours -->
+            <div class="bg-white rounded-xl md:rounded-[3rem] p-6 md:p-10 shadow-xl border border-slate-100">
+                <h3 class="text-lg md:text-xl font-black text-slate-800 uppercase mb-6 md:mb-8">🎥 Planifier un Cours Vidéo</h3>
+                <form action="{{ route('scheduled-meetings.store') }}" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                    @csrf
+                    <input type="text" name="title" placeholder="Titre du cours (ex: Algèbre Linéaire - Chapitre 3)" class="md:col-span-2 w-full bg-slate-50 border-0 rounded-2xl p-3 md:p-4 font-bold text-sm md:text-base" required>
+                    <div class="md:col-span-2">
+                        <label class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-2 block">Date et Heure du cours</label>
+                        <input type="datetime-local" name="scheduled_at" class="w-full bg-slate-50 border-0 rounded-2xl p-3 md:p-4 font-bold text-sm md:text-base" required>
+                    </div>
+                    <button type="submit" class="md:col-span-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-4 md:py-5 rounded-2xl md:rounded-[2rem] font-black shadow-xl uppercase text-sm md:text-base hover:from-purple-700 hover:to-indigo-700 transition-all">
+                        <i class="fas fa-video mr-2"></i> Créer le Cours
+                    </button>
+                </form>
+            </div>
+
+            <!-- Liste des cours -->
+            <div class="bg-white rounded-[3rem] p-10 shadow-xl border border-slate-100">
+                <h3 class="text-xl font-black text-slate-800 uppercase mb-8">📋 Mes Cours Vidéo</h3>
+                @if($meetings->count() > 0)
+                    <div class="space-y-4">
+                        @foreach($meetings as $meeting)
+                            <div class="p-6 bg-slate-50 rounded-3xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 group hover:bg-purple-50 transition border-l-4 {{ $meeting->status === 'scheduled' ? 'border-amber-500' : ($meeting->status === 'active' ? 'border-green-500' : 'border-slate-400') }}">
+                                <div class="flex-1">
+                                    <p class="font-black text-slate-800 text-lg">{{ $meeting->title }}</p>
+                                    <div class="flex flex-wrap gap-3 mt-3">
+                                        @if($meeting->status === 'scheduled')
+                                            <span class="inline-block bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase">
+                                                <i class="fas fa-clock mr-1"></i> Planifié
+                                            </span>
+                                        @elseif($meeting->status === 'active')
+                                            <span class="inline-block bg-green-100 text-green-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase animate-pulse">
+                                                <i class="fas fa-broadcast-tower mr-1"></i> EN DIRECT
+                                            </span>
+                                        @else
+                                            <span class="inline-block bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase">
+                                                <i class="fas fa-check mr-1"></i> Terminé
+                                            </span>
+                                        @endif
+                                        <span class="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-[10px] font-bold">
+                                            <i class="fas fa-calendar mr-1"></i> {{ $meeting->scheduled_at->format('d/m/Y à H:i') }}
+                                        </span>
+                                        <span class="inline-block bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-[10px] font-bold font-mono">
+                                            {{ $meeting->room_name }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    @if($meeting->status !== 'closed')
+                                        <a href="{{ route('scheduled-meetings.show', $meeting) }}" class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-3 rounded-2xl font-black text-xs shadow-lg hover:from-purple-700 hover:to-indigo-700 transition uppercase">
+                                            <i class="fas fa-play mr-1"></i> Rejoindre
+                                        </a>
+                                    @endif
+                                    @if($meeting->status === 'active')
+                                        <form action="{{ route('scheduled-meetings.close', $meeting) }}" method="POST" onsubmit="return confirm('Fermer ce cours ?');">
+                                            @csrf
+                                            <button type="submit" class="bg-red-500 text-white px-6 py-3 rounded-2xl font-black text-xs shadow-lg hover:bg-red-600 transition uppercase">
+                                                <i class="fas fa-stop mr-1"></i> Fermer
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="text-center py-12">
+                        <div class="inline-flex items-center justify-center w-20 h-20 bg-purple-100 rounded-full mb-6">
+                            <i class="fas fa-video text-3xl text-purple-500"></i>
+                        </div>
+                        <p class="text-slate-400 font-bold text-lg">Aucun cours vidéo pour le moment</p>
+                        <p class="text-slate-300 text-sm mt-2">Créez votre premier cours dans la section ci-dessus</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- 3. ONGLET FORUM -->
         <div x-show="tab === 'forum'" x-cloak class="bg-white rounded-[3rem] p-10 shadow-xl animate-in slide-in-from-bottom-4 duration-500">
             <h3 class="text-xl font-black text-slate-800 uppercase mb-8">Interagir avec les étudiants</h3>
             <div class="space-y-4">

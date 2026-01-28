@@ -28,56 +28,60 @@
       :class="{ 'overflow-hidden': mobileMenuOpen }">
 
     <!-- NAVBAR PREMIUM -->
-    <nav class="fixed w-full z-[100] transition-all duration-500 px-4 md:px-8 py-4"
-         :class="scrolled ? 'bg-white/95 backdrop-blur-md shadow-lg py-2' : 'bg-transparent py-5'">
+    <nav class="fixed w-full z-[100] transition-all duration-500 px-3 md:px-4 lg:px-8 py-3 md:py-4"
+         :class="scrolled ? 'bg-white/95 backdrop-blur-md shadow-lg py-2' : 'bg-transparent py-4 md:py-5'">
 
-        <div class="max-w-7xl mx-auto flex justify-between items-center h-14">
+        <div class="max-w-7xl mx-auto flex justify-between items-center h-12 md:h-14">
 
             <!-- LOGO -->
-            <a href="/" class="flex items-center gap-3 z-[110] group">
-                <x-application-logo class="w-10 h-10" />
-                <span class="text-xl font-bold tracking-tighter transition-colors duration-300"
+            <a href="/" class="flex items-center gap-2 md:gap-3 z-[110] group">
+                <x-application-logo class="w-8 md:w-10 h-8 md:h-10" />
+                <span class="text-base md:text-xl font-bold tracking-tighter transition-colors duration-300"
                       :class="(scrolled || mobileMenuOpen) ? 'text-slate-900' : 'text-white'">
-                    MIO <span class="font-light" :class="(scrolled || mobileMenuOpen) ? 'text-slate-500' : 'text-white/70'">RESSOURCES</span>
+                    MIO <span class="font-light text-xs md:text-base" :class="(scrolled || mobileMenuOpen) ? 'text-slate-500' : 'text-white/70'">RESSOURCES</span>
                 </span>
             </a>
 
             <!-- MENU DESKTOP -->
-            <div class="hidden lg:flex gap-8 font-semibold text-sm uppercase tracking-widest transition-colors duration-300"
+            <div class="hidden lg:flex gap-4 xl:gap-8 font-semibold text-xs xl:text-sm uppercase tracking-widest transition-colors duration-300"
                  :class="scrolled ? 'text-slate-600' : 'text-white/90'">
-                <a href="/" class="relative group py-2">
+                <a href="/" class="relative group py-2 hover:text-blue-600 transition">
                     <span>Accueil</span>
                     <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
                 </a>
-                <a href="#cours" class="relative group py-2">
+                <a href="#cours" class="relative group py-2 hover:text-blue-600 transition">
                     <span>Cours</span>
                     <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
                 </a>
-                <a href="{{ route('forum.index') }}" class="relative group py-2">
+                <a href="{{ route('private-lessons.browse') }}" class="relative group py-2 hover:text-purple-600 transition">
+                    <span>💼 Cours Particuliers</span>
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-purple-600 transition-all group-hover:w-full"></span>
+                </a>
+                <a href="{{ route('forum.index') }}" class="relative group py-2 hover:text-blue-600 transition">
                     <span>Forum</span>
                     <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
                 </a>
-                <a href="{{ route('library.index') }}" class="relative group py-2">
-                    <span>Bibliothèque</span>
+                <a href="{{ route('library.index') }}" class="relative group py-2 hover:text-blue-600 transition">
+                    <span>Biblio.</span>
                     <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
                 </a>
-                <a href="{{ route('page.show', 'a-propos') }}" class="relative group py-2">
+                <a href="{{ route('page.show', 'a-propos') }}" class="relative group py-2 hover:text-blue-600 transition">
                     <span>À Propos</span>
                     <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
                 </a>
-                <a href="{{ route('page.show', 'club-mio') }}" class="relative group py-2">
-                    <span>Club MIO</span>
+                <a href="{{ route('page.show', 'club-mio') }}" class="relative group py-2 hover:text-blue-600 transition">
+                    <span>Club</span>
                     <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
                 </a>
             </div>
 
             <!-- AUTH & BURGER -->
-            <div class="flex items-center gap-4 z-[110]">
+            <div class="flex items-center gap-2 md:gap-4 z-[110]">
                 <div class="hidden md:flex items-center">
                     @auth
                         @if(Auth::user()->role === 'admin')
                             <!-- BOUTON ADMIN -->
-                            <a href="/admin" class="flex items-center gap-2 bg-slate-900 text-white px-5 py-2 rounded-full font-bold shadow-lg hover:bg-blue-600 transition-all transform hover:scale-105">
+                            <a href="/admin" class="flex items-center gap-2 bg-slate-900 text-white px-4 md:px-5 py-2 rounded-full font-bold shadow-lg hover:bg-blue-600 transition-all transform hover:scale-105 text-xs md:text-sm">
                                 <i class="fas fa-shield-check text-blue-400"></i>
                                 <span class="text-[10px] uppercase tracking-widest font-bold">Panel Admin</span>
                             </a>
@@ -113,6 +117,7 @@
             <div class="flex-1 overflow-y-auto p-8 pt-32 space-y-2 text-center">
                 <a href="/" @click="mobileMenuOpen = false" class="block text-2xl font-bold py-4 border-b border-slate-50 uppercase tracking-tight">Accueil</a>
                 <a href="#cours" @click="mobileMenuOpen = false" class="block text-2xl font-bold py-4 border-b border-slate-50 uppercase tracking-tight">Cours</a>
+                <a href="{{ route('private-lessons.browse') }}" @click="mobileMenuOpen = false" class="block text-2xl font-bold py-4 border-b border-slate-50 uppercase tracking-tight text-purple-600">💼 Cours Particuliers</a>
                 <a href="{{ route('forum.index') }}" @click="mobileMenuOpen = false" class="block text-2xl font-bold py-4 border-b border-slate-50 uppercase tracking-tight">Forum</a>
                 <a href="{{ route('library.index') }}" @click="mobileMenuOpen = false" class="block text-2xl font-bold py-4 border-b border-slate-50 uppercase tracking-tight">Bibliothèque</a>
                 <a href="{{ route('page.show', 'a-propos') }}" @click="mobileMenuOpen = false" class="block text-2xl font-bold py-4 border-b border-slate-50 uppercase tracking-tight">À Propos</a>

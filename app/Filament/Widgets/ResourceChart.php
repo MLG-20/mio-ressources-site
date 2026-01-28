@@ -11,6 +11,11 @@ class ResourceChart extends ChartWidget
     protected static ?int $sort = 4; // Position 3
     protected int | string | array $columnSpan = 1; // 50% de la largeur
 
+    public static function canView(): bool
+    {
+        return false; // Désactivé - doublon avec ResourcesDistributionChart
+    }
+
     protected function getData(): array
     {
         return [

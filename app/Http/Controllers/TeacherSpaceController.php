@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Publication;
 use App\Models\ForumSujet;
+use App\Models\Meeting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -18,8 +19,9 @@ class TeacherSpaceController extends Controller
         $recentSujets = ForumSujet::with(['user', 'category'])->latest()->paginate(10);
         $totalVues = 0; // À lier avec tes analytics
         $totalRevenus = $user->wallet_balance;
+        $meetings = Meeting::where('user_id', $user->id)->orderBy('scheduled_at', 'desc')->get();
 
-        return view('teacher.dashboard', compact('user', 'mesPublications', 'recentSujets', 'totalRevenus', 'totalVues'));
+        return view('teacher.dashboard', compact('user', 'mesPublications', 'recentSujets', 'totalRevenus', 'totalVues', 'meetings'));
     }
 
     public function updateProfile(Request $request) {
@@ -68,7 +70,7 @@ class TeacherSpaceController extends Controller
         $request->validate([
             'titre' => 'required|string|max:255',
             'type' => 'required',
-            'file_path' => 'required|file|mimes:pdf|max:20480',
+            'file_path' => 'required|file|mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,zip,rar,7z,txt,jpg,jpeg,png|max:51200',
         ]);
 
         $file = $request->file('file_path')->store('publications', 'public');

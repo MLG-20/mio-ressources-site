@@ -11,7 +11,7 @@
 
     <nav class="bg-white border-b py-4 px-8 flex justify-between items-center sticky top-0 z-50">
         <a href="{{ route('forum.index') }}" class="flex items-center gap-2">
-            <div class="bg-blue-600 text-white px-2 py-1 rounded font-bold text-sm">MIO</div>
+            <x-application-logo class="w-8 md:w-10 h-8 md:h-10" />
             <span class="font-black text-slate-800 uppercase">Forum</span>
         </a>
         <a href="{{ route('forum.index') }}" class="text-slate-500 font-bold hover:text-blue-600">

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Visit;
 use App\Models\Slider;
 use App\Models\Semestre;
@@ -203,8 +204,6 @@ private function sendTriangularEmails($emailAcheteur, $item, $pdfContent)
 
         $currentUser = auth()->user();
 
-        $currentUser = auth()->user();
-
         $isAdmin = $currentUser && ($currentUser->role ?? null) === 'admin';
         $isOwner = $currentUser && ($ressource->user_id ?? null) && $currentUser->id === $ressource->user_id;
         $isFree = !$ressource->is_premium;
@@ -229,9 +228,65 @@ private function sendTriangularEmails($emailAcheteur, $item, $pdfContent)
             );
         }
 
-        return ($ressource->type === 'Vidéo')
-            ? redirect()->away($ressource->file_path)
-            : redirect()->to(asset('storage/' . $ressource->file_path));
+        // Pour les vidéos, rediriger vers l'URL externe
+        if ($ressource->type === 'Vidéo') {
+            return redirect()->away($ressource->file_path);
+        }
+
+        // Pour les fichiers locaux, télécharger avec le nom de la ressource
+        $filePath = storage_path('app/public/' . $ressource->file_path);
+        $fileName = $ressource->titre . '.' . pathinfo($ressource->file_path, PATHINFO_EXTENSION);
+        return response()->download($filePath, $fileName);
+    }
+
+    public function viewRessource($id) {
+        $ressource = Ressource::findOrFail($id);
+
+        $currentUser = auth()->user();
+
+        $isAdmin = $currentUser && ($currentUser->role ?? null) === 'admin';
+        $isOwner = $currentUser && ($ressource->user_id ?? null) && $currentUser->id === $ressource->user_id;
+        $isFree = !$ressource->is_premium;
+        $hasPurchase = $currentUser && Purchase::where('user_id', $currentUser->id)
+            ->where('ressource_id', $id)
+            ->exists();
+
+        // Si ressource premium et l'utilisateur ne l'a pas achetée -> rediriger vers paiement
+        if ($ressource->is_premium && !$isAdmin && !$isOwner && !$hasPurchase) {
+            return redirect()->route('payment.pay', ['id' => $id, 'type' => 'ressource']);
+        }
+
+        // Accès autorisé si : admin OR propriétaire OR ressource gratuite OR achat existant
+        if (!$isAdmin && !$isOwner && !$isFree && !$hasPurchase) {
+            abort(403);
+        }
+
+        // Pour les vidéos, rediriger
+        if ($ressource->type === 'Vidéo') {
+            return redirect()->away($ressource->file_path);
+        }
+
+        // Pour les fichiers locaux, afficher dans le navigateur
+        $filePath = storage_path('app/public/' . $ressource->file_path);
+
+        // Vérifier si le fichier existe
+        if (!file_exists($filePath)) {
+            abort(404, 'Fichier non trouvé');
+        }
+
+        $extension = strtolower(pathinfo($ressource->file_path, PATHINFO_EXTENSION));
+
+        // Pour les PDF, afficher directement dans le navigateur
+        if ($extension === 'pdf') {
+            return response()->file($filePath, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . $ressource->titre . '.pdf"'
+            ]);
+        }
+
+        // Pour les autres types de fichiers, télécharger
+        $fileName = $ressource->titre . '.' . $extension;
+        return response()->download($filePath, $fileName);
     }
 
     public function guestDownload(Request $request, $token, $type, $id)
@@ -257,11 +312,16 @@ private function sendTriangularEmails($emailAcheteur, $item, $pdfContent)
             ? Publication::findOrFail($id)
             : Ressource::findOrFail($id);
 
+        // Pour les vidéos, rediriger vers l'URL externe
         if ($type === 'ressource' && $item->type === 'Vidéo') {
             return redirect()->away($item->file_path);
         }
 
-        return redirect()->to(asset('storage/' . $item->file_path));
+        // Pour les fichiers locaux, télécharger avec le nom du titre
+        $filePath = storage_path('app/public/' . $item->file_path);
+        $extension = pathinfo($item->file_path, PATHINFO_EXTENSION);
+        $fileName = $item->titre . '.' . $extension;
+        return response()->download($filePath, $fileName);
     }
 
      public function storeResourceRating(Request $request, $id, $type)

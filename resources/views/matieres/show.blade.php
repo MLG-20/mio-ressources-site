@@ -13,7 +13,7 @@
     <!-- NAVBAR MINI -->
     <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200 py-4 px-8 flex justify-between items-center sticky top-0 z-50">
         <a href="/" class="flex items-center gap-2 group">
-            <div class="bg-blue-600 text-white px-2 py-1 rounded-lg font-bold transition-transform group-hover:-rotate-6">MIO</div>
+            <x-application-logo class="w-8 md:w-10 h-8 md:h-10" />
             <span class="font-black text-slate-800 tracking-tight">RESSOURCES</span>
         </a>
         <a href="{{ route('semestre.show', $matiere->semestre_id) }}" class="text-slate-500 hover:text-blue-600 font-bold transition flex items-center gap-2">
@@ -115,12 +115,36 @@
 
                         @if(!$ressource->is_premium || $hasPurchased)
                             <!-- BOUTON ACCÈS LIBRE -->
-                            <a href="{{ auth()->check() ? route('ressource.download', $ressource->id) : (asset('storage/' . $ressource->file_path)) }}"
-                               target="_blank"
-                               class="flex items-center justify-center gap-2 bg-slate-900 text-white px-8 py-3 rounded-2xl font-bold hover:bg-blue-600 transition-all shadow-lg shadow-slate-200 w-full min-w-[160px]">
-                                <i class="fas {{ $ressource->type == 'Vidéo' ? 'fa-play-circle' : 'fa-cloud-download-alt' }}"></i>
-                                {{ $ressource->type == 'Vidéo' ? 'Regarder' : 'Ouvrir' }}
-                            </a>
+                            <div class="flex gap-2 w-full">
+                                @php
+                                    $extension = strtolower(pathinfo($ressource->file_path, PATHINFO_EXTENSION));
+                                    $isPdf = $extension === 'pdf';
+                                @endphp
+
+                                @if($isPdf && $ressource->type !== 'Vidéo')
+                                    <!-- Bouton Voir (pour PDF) -->
+                                    <a href="{{ route('ressource.view', $ressource->id) }}"
+                                       target="_blank"
+                                       class="flex items-center justify-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-lg flex-1">
+                                        <i class="fas fa-eye"></i>
+                                        Voir
+                                    </a>
+                                    <!-- Bouton Télécharger -->
+                                    <a href="{{ auth()->check() ? route('ressource.download', $ressource->id) : (asset('storage/' . $ressource->file_path)) }}"
+                                       class="flex items-center justify-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-2xl font-bold hover:bg-slate-700 transition-all shadow-lg flex-1">
+                                        <i class="fas fa-download"></i>
+                                        Télécharger
+                                    </a>
+                                @else
+                                    <!-- Bouton Ouvrir/Regarder (pour autres fichiers/vidéos) -->
+                                    <a href="{{ auth()->check() ? route('ressource.download', $ressource->id) : (asset('storage/' . $ressource->file_path)) }}"
+                                       target="_blank"
+                                       class="flex items-center justify-center gap-2 bg-slate-900 text-white px-8 py-3 rounded-2xl font-bold hover:bg-blue-600 transition-all shadow-lg shadow-slate-200 w-full">
+                                        <i class="fas {{ $ressource->type == 'Vidéo' ? 'fa-play-circle' : 'fa-cloud-download-alt' }}"></i>
+                                        {{ $ressource->type == 'Vidéo' ? 'Regarder' : 'Ouvrir' }}
+                                    </a>
+                                @endif
+                            </div>
                         @else
                             <!-- BOUTON ACHAT -->
                             @auth
@@ -154,12 +178,7 @@
 
     </main>
 
-    <footer class="py-12 text-center">
-        <div class="h-px w-20 bg-slate-200 mx-auto mb-8"></div>
-        <p class="text-slate-400 text-sm font-medium">
-            &copy; {{ date('Y') }} MIO Ressources • Université Iba Der Thiam
-        </p>
-    </footer>
+    @include('layouts.footer')
 
     <!-- MODAL EMAIL POUR VISITEURS NON CONNECTÉS -->
     <div id="guestCheckoutModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">

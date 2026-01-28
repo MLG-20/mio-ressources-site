@@ -8,17 +8,23 @@ use App\Models\Purchase;
 class RevenueChart extends ChartWidget
 {
     protected static ?string $heading = 'Répartition des Revenus (Mois en cours)';
-     protected static ?int $sort = 3; // Position 2
-    // Pas besoin de columnSpan, par défaut il prend 1 colonne sur 2
+    protected static ?int $sort = 4;
+
+    protected int | string | array $columnSpan = 1;
+
+    public static function canView(): bool
+    {
+        return request()->get('tab') === 'finances';
+    }
 
     protected function getData(): array
     {
         // On récupère toutes les ventes
         $totalSales = Purchase::sum('amount');
-        
+
         // On calcule ta commission (ex: 30%)
         $myCommission = $totalSales * 0.30;
-        
+
         // On calcule la part reversée aux profs (70%)
         $teachersShare = $totalSales * 0.70;
 
