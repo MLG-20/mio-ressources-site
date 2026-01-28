@@ -140,11 +140,13 @@
                         <p class="text-xs md:text-sm opacity-90 mt-1">Inscris-toi aux cours programmés et participe aux sessions en temps réel.</p>
                     </div>
                 </div>
+                @if(Auth::user()->role !== 'admin')
                 <div class="flex flex-wrap gap-2 md:gap-3">
                     <a href="{{ route('student.courses') }}" class="inline-flex items-center gap-2 bg-white text-purple-900 font-black px-4 md:px-5 py-2 md:py-3 rounded-xl shadow-lg shadow-purple-900/30 hover:-translate-y-0.5 hover:shadow-2xl transition text-xs md:text-sm whitespace-nowrap">
                         <i class="fas fa-graduation-cap text-pink-500"></i> <span class="hidden md:inline">Voir mes cours</span><span class="md:hidden">Cours</span>
                     </a>
                 </div>
+                @endif
             </div>
 
             <!-- NOUVEAUTÉS -->
@@ -677,6 +679,7 @@
 
             <!-- MES COURS VIDÉO (Sessions avec professeurs) -->
             <div class="bg-white rounded-xl md:rounded-[2.5rem] p-6 md:p-10 shadow-xl border border-slate-100 text-center">
+                @if(Auth::user()->role !== 'admin')
                 <div class="w-20 h-20 bg-purple-100 rounded-full mx-auto mb-4 flex items-center justify-center">
                     <i class="fas fa-graduation-cap text-purple-600 text-3xl"></i>
                 </div>
@@ -685,6 +688,7 @@
                 <a href="{{ route('student.courses') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-black px-6 py-3 rounded-2xl shadow-lg hover:shadow-2xl transition">
                     <i class="fas fa-chalkboard-teacher"></i> Voir mes cours
                 </a>
+                @endif
             </div>
         </div>
 
