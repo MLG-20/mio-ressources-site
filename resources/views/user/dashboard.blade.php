@@ -34,10 +34,12 @@
         tab: window.location.hash ? window.location.hash.substring(1) : (localStorage.getItem('activeTab') || 'bureau'),
         search: '',
         showScrollTop: false,
+        mobileMenuOpen: false,
         setTab(newTab) {
             this.tab = newTab;
             window.location.hash = newTab;
             localStorage.setItem('activeTab', newTab);
+            this.mobileMenuOpen = false;
         }
     }" @scroll.window="showScrollTop = window.scrollY > 300" x-init="
         // Forcer la détection du hash au chargement
@@ -54,7 +56,7 @@
                 tab = window.location.hash.substring(1);
             }
         }, 100);
-    ">
+    " :class="{ 'overflow-hidden': mobileMenuOpen }">
 
     <!-- NAVBAR -->
     <nav class="bg-slate-900 text-white py-4 px-4 md:px-8 flex justify-between items-center sticky top-0 z-50">
@@ -65,10 +67,10 @@
             </div>
         </a>
         <div class="flex items-center gap-2 md:gap-4">
-            <div class="bg-white/10 px-3 md:px-4 py-2 rounded-2xl flex items-center gap-2 md:gap-3">
-                <img src="{{ $user->avatar ? asset('storage/'.$user->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&background=0D8ABC&color=fff' }}" class="w-6 md:w-8 h-6 md:h-8 rounded-lg object-cover">
-                <span class="text-xs md:text-sm font-bold hidden md:inline truncate">{{ $user->name }}</span>
-            </div>
+            <button @click="setTab('profil')" class="bg-white/10 hover:bg-white/20 px-3 md:px-4 py-2 rounded-2xl flex items-center gap-2 md:gap-3 transition-all transform hover:scale-105">
+                <img src="{{ $user->avatar ? asset('storage/'.$user->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&background=0D8ABC&color=fff' }}" class="w-6 md:w-8 h-6 md:h-8 rounded-lg object-cover cursor-pointer">
+                <span class="text-xs md:text-sm font-bold hidden md:inline truncate cursor-pointer">{{ $user->name }}</span>
+            </button>
             <form method="POST" action="{{ route('logout') }}"> @csrf
                 <button type="submit" class="bg-red-500 text-white px-3 md:px-4 py-2 rounded-xl font-bold text-xs uppercase shadow-lg">Déconnexion</button>
             </form>
@@ -77,14 +79,63 @@
 
     <main class="max-w-7xl mx-auto py-6 md:py-10 px-4 md:px-6">
 
-        <!-- MENU NAVIGATION PAR ONGLETS -->
-        <div class="flex gap-2 md:gap-4 mb-8 md:mb-10 overflow-x-auto pb-2 scrollbar-hide">
+        <!-- MENU NAVIGATION - DESKTOP VERSION -->
+        <div class="hidden md:flex gap-2 md:gap-4 mb-8 md:mb-10 overflow-x-auto pb-2 scrollbar-hide">
             <button @click="setTab('bureau')" :class="tab === 'bureau' ? 'bg-blue-600 text-white shadow-blue-200' : 'bg-white text-slate-500'" class="px-4 md:px-8 py-3 md:py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all whitespace-nowrap">📊 Bureau</button>
             <button @click="setTab('profil')" :class="tab === 'profil' ? 'bg-purple-600 text-white shadow-purple-200' : 'bg-white text-slate-500'" class="px-4 md:px-8 py-3 md:py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all whitespace-nowrap">👤 Profil</button>
             <button @click="setTab('messages')" :class="tab === 'messages' ? 'bg-pink-600 text-white shadow-pink-200' : 'bg-white text-slate-500'" class="px-4 md:px-8 py-3 md:py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all whitespace-nowrap">💬 Messages</button>
             <button @click="setTab('groupes')" :class="tab === 'groupes' ? 'bg-indigo-600 text-white shadow-indigo-200' : 'bg-white text-slate-500'" class="px-4 md:px-8 py-3 md:py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all whitespace-nowrap">👥 Groupes</button>
             <button @click="setTab('cours')" :class="tab === 'cours' ? 'bg-green-600 text-white shadow-green-200' : 'bg-white text-slate-500'" class="px-4 md:px-8 py-3 md:py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all whitespace-nowrap">🎓 Cours</button>
             <button @click="setTab('historique')" :class="tab === 'historique' ? 'bg-amber-600 text-white shadow-amber-200' : 'bg-white text-slate-500'" class="px-4 md:px-8 py-3 md:py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all whitespace-nowrap">📚 Historique</button>
+        </div>
+
+        <!-- MENU MOBILE - HAMBURGER VERSION -->
+        <div class="md:hidden mb-6 flex items-center justify-between bg-white rounded-2xl p-3 shadow-lg border border-slate-100">
+            <div class="font-black uppercase text-xs tracking-widest text-slate-700">
+                <span v-if="tab === 'bureau'">📊 Bureau</span>
+                <span v-else-if="tab === 'profil'">👤 Profil</span>
+                <span v-else-if="tab === 'messages'">💬 Messages</span>
+                <span v-else-if="tab === 'groupes'">👥 Groupes</span>
+                <span v-else-if="tab === 'cours'">🎓 Cours</span>
+                <span v-else-if="tab === 'historique'">📚 Historique</span>
+            </div>
+            <button @click="mobileMenuOpen = !mobileMenuOpen" class="p-2 hover:bg-slate-100 rounded-lg transition">
+                <i :class="mobileMenuOpen ? 'fa-times' : 'fa-bars'" class="fas text-lg text-slate-700"></i>
+            </button>
+        </div>
+
+        <!-- MENU MOBILE DROPDOWN -->
+        <div x-show="mobileMenuOpen" x-cloak x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 -translate-y-2"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 -translate-y-2"
+             class="md:hidden mb-6 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
+            <button @click="setTab('bureau')" :class="tab === 'bureau' ? 'bg-blue-50 border-l-4 border-blue-600 text-blue-600' : 'text-slate-700 hover:bg-slate-50'" class="w-full text-left px-4 py-3 font-bold uppercase text-xs tracking-wide flex items-center gap-3 transition border-l-4 border-transparent">
+                <i class="fas fa-chart-pie text-lg w-5 flex-shrink-0"></i>
+                <span>Bureau</span>
+            </button>
+            <button @click="setTab('profil')" :class="tab === 'profil' ? 'bg-purple-50 border-l-4 border-purple-600 text-purple-600' : 'text-slate-700 hover:bg-slate-50'" class="w-full text-left px-4 py-3 font-bold uppercase text-xs tracking-wide flex items-center gap-3 transition border-l-4 border-transparent">
+                <i class="fas fa-user text-lg w-5 flex-shrink-0"></i>
+                <span>Profil</span>
+            </button>
+            <button @click="setTab('messages')" :class="tab === 'messages' ? 'bg-pink-50 border-l-4 border-pink-600 text-pink-600' : 'text-slate-700 hover:bg-slate-50'" class="w-full text-left px-4 py-3 font-bold uppercase text-xs tracking-wide flex items-center gap-3 transition border-l-4 border-transparent">
+                <i class="fas fa-comments text-lg w-5 flex-shrink-0"></i>
+                <span>Messages</span>
+            </button>
+            <button @click="setTab('groupes')" :class="tab === 'groupes' ? 'bg-indigo-50 border-l-4 border-indigo-600 text-indigo-600' : 'text-slate-700 hover:bg-slate-50'" class="w-full text-left px-4 py-3 font-bold uppercase text-xs tracking-wide flex items-center gap-3 transition border-l-4 border-transparent">
+                <i class="fas fa-users text-lg w-5 flex-shrink-0"></i>
+                <span>Groupes</span>
+            </button>
+            <button @click="setTab('cours')" :class="tab === 'cours' ? 'bg-green-50 border-l-4 border-green-600 text-green-600' : 'text-slate-700 hover:bg-slate-50'" class="w-full text-left px-4 py-3 font-bold uppercase text-xs tracking-wide flex items-center gap-3 transition border-l-4 border-transparent">
+                <i class="fas fa-graduation-cap text-lg w-5 flex-shrink-0"></i>
+                <span>Cours</span>
+            </button>
+            <button @click="setTab('historique')" :class="tab === 'historique' ? 'bg-amber-50 border-l-4 border-amber-600 text-amber-600' : 'text-slate-700 hover:bg-slate-50'" class="w-full text-left px-4 py-3 font-bold uppercase text-xs tracking-wide flex items-center gap-3 transition border-l-4 border-transparent">
+                <i class="fas fa-book text-lg w-5 flex-shrink-0"></i>
+                <span>Historique</span>
+            </button>
         </div>
 
         @if(session('success'))

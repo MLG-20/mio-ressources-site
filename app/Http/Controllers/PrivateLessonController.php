@@ -23,17 +23,56 @@ class PrivateLessonController extends Controller
         $query = PrivateLesson::with(['teacher', 'matiere'])
             ->active();
 
-        // Filtres
+        // Recherche textuelle
+        if ($request->filled('q')) {
+            $searchTerm = $request->q;
+            $query->where(function($q) use ($searchTerm) {
+                // Recherche dans le titre
+                $q->where('titre', 'LIKE', "%{$searchTerm}%")
+                  // Recherche dans la description
+                  ->orWhere('description', 'LIKE', "%{$searchTerm}%")
+                  // Recherche par nom de matière
+                  ->orWhereHas('matiere', function($q) use ($searchTerm) {
+                      $q->where('nom', 'LIKE', "%{$searchTerm}%");
+                  })
+                  // Recherche par nom de professeur
+                  ->orWhereHas('teacher', function($q) use ($searchTerm) {
+                      $q->where('name', 'LIKE', "%{$searchTerm}%");
+                  });
+
+                // Recherche par type (gratuit/payant)
+                if (stripos($searchTerm, 'gratuit') !== false || stripos($searchTerm, 'tutoriel') !== false) {
+                    $q->orWhere('type', 'tutoriel');
+                }
+                if (stripos($searchTerm, 'payant') !== false) {
+                    $q->orWhere('type', 'payant');
+                }
+
+                // Recherche par durée
+                if (stripos($searchTerm, '1 heure') !== false || stripos($searchTerm, '60') !== false) {
+                    $q->orWhere('duree_minutes', 60);
+                }
+                if (stripos($searchTerm, '30') !== false) {
+                    $q->orWhere('duree_minutes', 30);
+                }
+                if (stripos($searchTerm, '90') !== false || stripos($searchTerm, '1h30') !== false) {
+                    $q->orWhere('duree_minutes', 90);
+                }
+                if (stripos($searchTerm, '2 heure') !== false || stripos($searchTerm, '120') !== false) {
+                    $q->orWhere('duree_minutes', 120);
+                }
+            });
+        }
+
+        // Anciens filtres (gardés pour compatibilité si besoin)
         if ($request->filled('matiere_id')) {
             $query->where('matiere_id', $request->matiere_id);
         }
 
-        // Filtre par type de cours
         if ($request->filled('type')) {
             $query->where('type', $request->type);
         }
 
-        // Filtres de prix - exclure les tutoriels gratuits du filtre prix
         if ($request->filled('prix_min') || $request->filled('prix_max')) {
             $query->where('type', '!=', 'tutoriel');
 
@@ -234,6 +273,7 @@ class PrivateLessonController extends Controller
             'prix' => 'required|numeric|min:0',
             'duree_minutes' => 'required|integer|in:30,60,90,120',
             'matiere_id' => 'nullable|exists:matieres,id',
+            'student_level' => 'required|in:L1,L2,L3',
             'places_max' => 'required|integer|min:1',
             'disponibilites' => 'required|array',
             'type' => 'required|in:payant,tutoriel',
@@ -247,6 +287,7 @@ class PrivateLessonController extends Controller
             'duree_minutes' => $request->duree_minutes,
             'teacher_id' => Auth::id(),
             'matiere_id' => $request->matiere_id,
+            'student_level' => $request->student_level,
             'disponibilites' => $request->disponibilites,
             'places_max' => $request->places_max,
             'type' => $request->type,
@@ -284,6 +325,7 @@ class PrivateLessonController extends Controller
             'prix' => 'required|numeric|min:0',
             'duree_minutes' => 'required|integer|in:30,60,90,120',
             'matiere_id' => 'nullable|exists:matieres,id',
+            'student_level' => 'required|in:L1,L2,L3',
             'places_max' => 'required|integer|min:1',
             'disponibilites' => 'required|array',
             'type' => 'required|in:payant,tutoriel',
@@ -296,6 +338,7 @@ class PrivateLessonController extends Controller
             'prix' => $request->type === 'tutoriel' ? 0 : $request->prix,
             'duree_minutes' => $request->duree_minutes,
             'matiere_id' => $request->matiere_id,
+            'student_level' => $request->student_level,
             'disponibilites' => $request->disponibilites,
             'places_max' => $request->places_max,
             'type' => $request->type,

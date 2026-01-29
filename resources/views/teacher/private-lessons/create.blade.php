@@ -146,6 +146,19 @@
                     </select>
                 </div>
 
+                <!-- NIVEAU D'ÉTUDE -->
+                <div>
+                    <label class="block text-xs md:text-sm font-bold text-slate-700 mb-2 uppercase">Niveau d'étude visé *</label>
+                    <select name="student_level" required
+                        class="w-full bg-slate-50 border-2 border-slate-200 rounded-lg md:rounded-2xl p-3 md:p-4 font-bold text-xs md:text-base focus:border-blue-500 focus:outline-none">
+                        <option value="">-- Sélectionner un niveau --</option>
+                        <option value="L1" {{ old('student_level') == 'L1' ? 'selected' : '' }}>L1 - Première Année</option>
+                        <option value="L2" {{ old('student_level') == 'L2' ? 'selected' : '' }}>L2 - Deuxième Année</option>
+                        <option value="L3" {{ old('student_level') == 'L3' ? 'selected' : '' }}>L3 - Troisième Année</option>
+                    </select>
+                    <p class="text-[10px] md:text-xs text-slate-500 mt-1">📚 Ce cours sera proposé à tous les étudiants du niveau sélectionné</p>
+                </div>
+
                 <!-- DISPONIBILITÉS -->
                 <div>
                     <label class="block text-xs md:text-sm font-bold text-slate-700 mb-2 uppercase">Disponibilités *</label>

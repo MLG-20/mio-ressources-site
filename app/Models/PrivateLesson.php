@@ -13,6 +13,7 @@ class PrivateLesson extends Model
         'duree_minutes',
         'teacher_id',
         'matiere_id',
+        'student_level',
         'disponibilites',
         'places_max',
         'statut',

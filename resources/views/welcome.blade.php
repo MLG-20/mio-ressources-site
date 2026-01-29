@@ -113,28 +113,59 @@
 
         <!-- MENU MOBILE OVERLAY -->
         <div x-show="mobileMenuOpen" x-cloak class="fixed inset-0 bg-white z-[105] lg:hidden flex flex-col h-screen overflow-hidden"
-             x-transition:enter="transition ease-out duration-300 transform" x-transition:enter-start="translate-y-[-100%]" x-transition:enter-end="translate-y-0">
-            <div class="flex-1 overflow-y-auto p-8 pt-32 space-y-2 text-center">
-                <a href="/" @click="mobileMenuOpen = false" class="block text-2xl font-bold py-4 border-b border-slate-50 uppercase tracking-tight">Accueil</a>
-                <a href="#cours" @click="mobileMenuOpen = false" class="block text-2xl font-bold py-4 border-b border-slate-50 uppercase tracking-tight">Cours</a>
-                <a href="{{ route('private-lessons.browse') }}" @click="mobileMenuOpen = false" class="block text-2xl font-bold py-4 border-b border-slate-50 uppercase tracking-tight text-purple-600">💼 Cours Particuliers</a>
-                <a href="{{ route('forum.index') }}" @click="mobileMenuOpen = false" class="block text-2xl font-bold py-4 border-b border-slate-50 uppercase tracking-tight">Forum</a>
-                <a href="{{ route('library.index') }}" @click="mobileMenuOpen = false" class="block text-2xl font-bold py-4 border-b border-slate-50 uppercase tracking-tight">Bibliothèque</a>
-                <a href="{{ route('page.show', 'a-propos') }}" @click="mobileMenuOpen = false" class="block text-2xl font-bold py-4 border-b border-slate-50 uppercase tracking-tight">À Propos</a>
-                <a href="{{ route('page.show', 'club-mio') }}" @click="mobileMenuOpen = false" class="block text-2xl font-bold py-4 uppercase tracking-tight">Club MIO</a>
+             x-transition:enter="transition ease-out duration-300 transform"
+             x-transition:enter-start="translate-y-[-100%]"
+             x-transition:enter-end="translate-y-0"
+             @click.away="mobileMenuOpen = false">
 
-                <div class="pt-10">
-                    @auth
-                        @php $isAdmin = (Auth::user()->role === 'admin' || Auth::user()->user_type === 'teacher'); @endphp
-                        <a href="{{ $isAdmin ? '/admin' : route('user.dashboard') }}"
-                           class="w-full {{ $isAdmin ? 'bg-slate-900' : 'bg-blue-600' }} text-white py-5 rounded-2xl font-bold block shadow-lg uppercase tracking-widest text-sm">
-                           {{ $isAdmin ? 'Accéder au Panel Pro' : 'Accéder à mon espace' }}
-                        </a>
-                    @else
-                        <a href="{{ route('login') }}" class="block w-full bg-slate-900 text-white py-5 rounded-2xl font-bold mb-4 uppercase text-sm">Connexion</a>
-                        <a href="{{ route('register') }}" class="block w-full bg-blue-600 text-white py-5 rounded-2xl font-bold shadow-lg uppercase text-sm">Créer un compte</a>
-                    @endauth
-                </div>
+            <!-- Navigation Items -->
+            <div class="flex-1 px-3 py-20 space-y-0.5 overflow-hidden">
+                <a href="/" @click="mobileMenuOpen = false" class="block text-sm font-bold py-3 px-3 rounded-lg hover:bg-slate-100 uppercase tracking-tight text-slate-900 transition-colors">
+                    <i class="fas fa-home mr-2 text-blue-600"></i>Accueil
+                </a>
+                <a href="#cours" @click="mobileMenuOpen = false" class="block text-sm font-bold py-3 px-3 rounded-lg hover:bg-slate-100 uppercase tracking-tight text-slate-900 transition-colors">
+                    <i class="fas fa-graduation-cap mr-2 text-purple-600"></i>Cours
+                </a>
+                <a href="{{ route('private-lessons.browse') }}" @click="mobileMenuOpen = false" class="block text-sm font-bold py-3 px-3 rounded-lg hover:bg-slate-100 uppercase tracking-tight text-purple-600 transition-colors">
+                    <i class="fas fa-chalkboard-teacher mr-2"></i>Particuliers
+                </a>
+                <a href="{{ route('forum.index') }}" @click="mobileMenuOpen = false" class="block text-sm font-bold py-3 px-3 rounded-lg hover:bg-slate-100 uppercase tracking-tight text-slate-900 transition-colors">
+                    <i class="fas fa-comments mr-2 text-green-600"></i>Forum
+                </a>
+                <a href="{{ route('library.index') }}" @click="mobileMenuOpen = false" class="block text-sm font-bold py-3 px-3 rounded-lg hover:bg-slate-100 uppercase tracking-tight text-slate-900 transition-colors">
+                    <i class="fas fa-book mr-2 text-orange-600"></i>Bibliothèque
+                </a>
+                <a href="{{ route('page.show', 'a-propos') }}" @click="mobileMenuOpen = false" class="block text-sm font-bold py-3 px-3 rounded-lg hover:bg-slate-100 uppercase tracking-tight text-slate-900 transition-colors">
+                    <i class="fas fa-info-circle mr-2 text-red-600"></i>À Propos
+                </a>
+                <a href="{{ route('page.show', 'club-mio') }}" @click="mobileMenuOpen = false" class="block text-sm font-bold py-3 px-3 rounded-lg hover:bg-slate-100 uppercase tracking-tight text-slate-900 transition-colors">
+                    <i class="fas fa-users mr-2 text-indigo-600"></i>Club MIO
+                </a>
+            </div>
+
+            <!-- Auth Section -->
+            <div class="bg-white border-t border-slate-200 px-3 py-3 space-y-2">
+                @auth
+                    @php $isAdmin = (Auth::user()->role === 'admin' || Auth::user()->user_type === 'teacher'); @endphp
+                    <a href="{{ $isAdmin ? '/admin' : route('user.dashboard') }}"
+                       @click="mobileMenuOpen = false"
+                       class="w-full {{ $isAdmin ? 'bg-slate-900 hover:bg-slate-800' : 'bg-blue-600 hover:bg-blue-700' }} text-white py-2.5 px-3 rounded-lg font-bold block uppercase tracking-widest text-xs transition-colors">
+                       <i class="fas fa-dashboard mr-2"></i>{{ $isAdmin ? 'Panel' : 'Espace' }}
+                    </a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="w-full bg-red-50 text-red-600 hover:bg-red-100 py-2.5 px-3 rounded-lg font-bold block uppercase tracking-widest text-xs transition-colors">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
+                        </button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}" @click="mobileMenuOpen = false" class="block w-full bg-slate-900 hover:bg-slate-800 text-white py-2.5 px-3 rounded-lg font-bold uppercase text-xs text-center transition-colors">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Connexion
+                    </a>
+                    <a href="{{ route('register') }}" @click="mobileMenuOpen = false" class="block w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-3 rounded-lg font-bold shadow-lg uppercase text-xs text-center transition-colors">
+                        <i class="fas fa-user-plus mr-2"></i>S'inscrire
+                    </a>
+                @endauth
             </div>
         </div>
     </nav>
@@ -204,6 +235,149 @@
                     </div>
                 </a>
             @endforeach
+        </div>
+    </section>
+
+    <!-- SECTION COURS PARTICULIERS PREMIUM -->
+    <section class="py-32 px-6 w-full bg-gradient-to-b from-white to-slate-50 relative overflow-hidden">
+        <!-- Fond décoratif -->
+        <div class="absolute -top-40 -left-40 w-80 h-80 bg-purple-600/5 rounded-full blur-[120px]"></div>
+        <div class="absolute -bottom-40 -right-40 w-80 h-80 bg-blue-600/5 rounded-full blur-[120px]"></div>
+
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-20 relative z-10">
+                <div class="inline-block mb-6">
+                    <span class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-purple-600/40">✨ NOUVEAUTÉ</span>
+                </div>
+                <h2 class="text-4xl font-bold text-slate-900 tracking-tighter uppercase italic mb-4">Cours Particuliers Premium</h2>
+                <div class="h-1.5 w-24 bg-gradient-to-r from-purple-600 to-blue-600 mx-auto rounded-full shadow-lg shadow-blue-200"></div>
+                <p class="mt-6 text-slate-600 text-lg max-w-2xl mx-auto">Découvrez les 5 derniers cours particuliers disponibles. Des sessions de révision personnalisées avec les meilleurs enseignants</p>
+            </div>
+
+            @php
+                $privateLessons = \App\Models\PrivateLesson::with('teacher', 'matiere')
+                    ->active()
+                    ->latest()
+                    ->take(6)
+                    ->get();
+            @endphp
+
+            @if($privateLessons->count() > 0)
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-12 relative z-10 w-full">
+                    @foreach($privateLessons as $lesson)
+                        <div class="group relative h-[350px] md:h-[420px] lg:h-[480px] rounded-2xl md:rounded-3xl lg:rounded-[3rem] overflow-hidden shadow-xl md:shadow-2xl transition-all duration-500 hover:-translate-y-2 md:hover:-translate-y-4 hover:shadow-purple-200/50 block cursor-pointer">
+
+                            <!-- FOND DÉGRADÉ -->
+                            <div class="absolute inset-0 bg-gradient-to-br from-purple-600 via-blue-500 to-indigo-900"></div>
+
+                            <!-- OVERLAY -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
+
+                            <!-- BADGES EN HAUT -->
+                            <div class="absolute top-4 md:top-6 lg:top-10 left-4 md:left-6 lg:left-10 right-4 md:right-6 lg:right-10 flex items-center gap-2 md:gap-3 flex-wrap">
+                                <div class="min-w-[80px] md:min-w-[100px]">
+                                    @if($lesson->type === 'payant' && $lesson->prix > 0)
+                                        <span class="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-3 md:px-4 py-0.5 md:py-1 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-widest shadow-lg inline-block">{{ number_format((float)$lesson->prix, 0, ',', ' ') }} F</span>
+                                    @else
+                                        <span class="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-3 md:px-4 py-0.5 md:py-1 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-widest shadow-lg inline-block">GRATUIT</span>
+                                    @endif
+                                </div>
+                                <span class="text-white/60 text-[9px] md:text-xs font-bold uppercase tracking-widest italic truncate">{{ $lesson->matiere?->nom ?? 'Cours' }}</span>
+                            </div>
+
+                            <!-- TITRE AU MILIEU -->
+                            <div class="absolute top-1/2 left-4 md:left-6 lg:left-10 right-4 md:right-6 lg:right-10 -translate-y-1/2">
+                                <h3 class="text-lg md:text-2xl lg:text-3xl font-bold text-white leading-tight tracking-tight group-hover:text-purple-400 transition-colors line-clamp-2 md:line-clamp-3">{{ $lesson->titre }}</h3>
+                            </div>
+
+                            <!-- CONTENU EN BAS -->
+                            <div class="absolute bottom-0 p-4 md:p-6 lg:p-10 w-full">
+                                <!-- INFOS AU SURVOL -->
+                                <div class="mb-3 md:mb-6 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-2 md:translate-y-4 group-hover:translate-y-0">
+                                    <!-- Bouton Description -->
+                                    <div class="mb-2 md:mb-3" x-data="{ showDesc: false }">
+                                        <button type="button" @click.prevent="showDesc = true"
+                                                class="w-full flex items-center justify-between gap-2 md:gap-3 bg-white/5 hover:bg-white/10 backdrop-blur-sm rounded-lg md:rounded-xl p-2 md:p-3 border border-white/10 transition-all">
+                                            <div class="flex items-center gap-1.5 md:gap-2 min-w-0">
+                                                <i class="fas fa-info-circle text-blue-300 text-xs md:text-sm flex-shrink-0"></i>
+                                                <span class="text-white text-[10px] md:text-xs font-bold uppercase tracking-wide truncate">Description</span>
+                                            </div>
+                                            <i class="fas fa-chevron-right text-white/50 text-xs flex-shrink-0"></i>
+                                        </button>
+
+                                        <!-- Popup Description -->
+                                        <div x-show="showDesc" x-cloak
+                                             class="fixed inset-0 z-[9999] flex items-center justify-center p-2 md:p-4 bg-black/50"
+                                             @click.prevent.stop="showDesc = false">
+                                            <div @click.prevent.stop class="bg-white rounded-xl md:rounded-2xl shadow-2xl max-w-2xl md:max-w-4xl w-full max-h-[90vh] md:max-h-[80vh] p-4 md:p-6 lg:p-8 flex flex-col overflow-hidden" x-transition>
+                                                <div class="flex items-center justify-between mb-4 md:mb-6 pb-4 md:pb-6 border-b border-slate-200 flex-shrink-0">
+                                                    <h3 class="text-lg md:text-2xl font-bold text-slate-900">Description</h3>
+                                                    <button @click.prevent.stop="showDesc = false" class="text-slate-400 hover:text-slate-600 text-2xl flex-shrink-0">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                                <div class="flex-1 overflow-y-auto">
+                                                    <div class="text-slate-700 text-sm md:text-base leading-relaxed font-medium pr-2">
+                                                        {{ $lesson->description ?? 'Aucune description disponible pour ce cours.' }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Info Professeur -->
+                                    <div class="flex items-center gap-2 md:gap-3 bg-white/5 backdrop-blur-sm rounded-lg md:rounded-xl p-2 md:p-3 border border-white/10 mb-2 md:mb-3">
+                                        <img src="{{ $lesson->teacher?->avatar ? asset('storage/' . $lesson->teacher->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode($lesson->teacher?->name ?? 'Prof') . '&background=7c3aed&color=fff' }}"
+                                             class="w-8 md:w-10 h-8 md:h-10 rounded-lg object-cover border-2 border-white/30 shadow-md flex-shrink-0">
+                                        <div class="min-w-0">
+                                            <p class="text-white/50 text-[9px] md:text-xs uppercase tracking-wide font-semibold">Enseignant</p>
+                                            <p class="text-white font-bold text-xs md:text-sm truncate">{{ $lesson->teacher?->name ?? 'Professeur' }}</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Badges d'info -->
+                                    <div class="flex items-center gap-1 md:gap-2 flex-wrap">
+                                        <div class="flex items-center gap-1 md:gap-1.5 bg-white/10 backdrop-blur-sm px-2 md:px-3 py-1 md:py-1.5 rounded-lg border border-white/10">
+                                            <i class="fas fa-clock text-blue-300 text-[9px] md:text-xs"></i>
+                                            <span class="text-white text-[9px] md:text-xs font-bold">{{ $lesson->duree_minutes ?? 60 }}m</span>
+                                        </div>
+                                        <div class="flex items-center gap-1 md:gap-1.5 bg-white/10 backdrop-blur-sm px-2 md:px-3 py-1 md:py-1.5 rounded-lg border border-white/10">
+                                            <i class="fas fa-users text-purple-300 text-[9px] md:text-xs"></i>
+                                            <span class="text-white text-[9px] md:text-xs font-bold">{{ $lesson->places_max ?? '∞' }}</span>
+                                        </div>
+                                        <div class="flex items-center gap-1 md:gap-1.5 bg-white/10 backdrop-blur-sm px-2 md:px-3 py-1 md:py-1.5 rounded-lg border border-white/10">
+                                            <i class="fas fa-calendar text-green-300 text-[9px] md:text-xs"></i>
+                                            <span class="text-white text-[9px] md:text-xs font-bold">{{ \Carbon\Carbon::parse($lesson->start_date)->format('d M') }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- CTA BOUTON RÉSERVER -->
+                                <a href="{{ route('private-lessons.show', $lesson->id) }}"
+                                   class="inline-flex items-center gap-1 md:gap-2 text-purple-400 font-bold text-[10px] md:text-xs uppercase tracking-widest transition-all hover:gap-3 hover:text-purple-300">
+                                    Réserver <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <!-- BOUTON VOIR TOUS -->
+                <div class="text-center mt-16 relative z-10">
+                    <a href="{{ route('private-lessons.browse') }}"
+                       class="inline-flex items-center gap-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-10 py-4 rounded-full font-bold text-sm md:text-base hover:shadow-2xl hover:shadow-purple-600/50 transition-all transform hover:-translate-y-1 uppercase tracking-widest shadow-xl">
+                        Voir tous les cours particuliers
+                        <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+            @else
+                <div class="text-center py-16 relative z-10">
+                    <p class="text-slate-600 text-lg mb-6">Aucun cours particulier disponible pour le moment.</p>
+                    <a href="{{ route('private-lessons.browse') }}" class="inline-block bg-blue-600 text-white px-8 py-3 rounded-full font-bold hover:bg-blue-700 transition">
+                        Consulter les autres cours
+                    </a>
+                </div>
+            @endif
         </div>
     </section>
 

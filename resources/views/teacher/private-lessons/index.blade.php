@@ -18,12 +18,17 @@
 
     <!-- NAVBAR -->
     <nav class="bg-slate-900 text-white py-4 px-4 md:px-8 flex justify-between items-center sticky top-0 z-50">
-        <a href="{{ route('teacher.dashboard') }}">
-            <div class="flex items-center gap-2 md:gap-3">
-                <x-application-logo class="w-8 md:w-10 h-8 md:h-10" />
-                <span class="hidden sm:inline font-black uppercase tracking-tighter text-xs md:text-base">Cours Particuliers</span>
-            </div>
-        </a>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('teacher.dashboard') }}">
+                <div class="flex items-center gap-2 md:gap-3">
+                    <x-application-logo class="w-8 md:w-10 h-8 md:h-10" />
+                    <span class="hidden sm:inline font-black uppercase tracking-tighter text-xs md:text-base">Cours Particuliers</span>
+                </div>
+            </a>
+            <a href="{{ route('teacher.dashboard') }}" class="hidden md:flex bg-white/10 hover:bg-white/20 px-3 md:px-4 py-2 rounded-xl text-xs font-bold uppercase transition">
+                ← Dashboard
+            </a>
+        </div>
         <div class="flex items-center gap-2 md:gap-4">
             <div class="bg-white/10 px-3 md:px-4 py-2 rounded-2xl flex items-center gap-2 md:gap-3">
                 <img src="{{ Auth::user()->avatar ? asset('storage/'.Auth::user()->avatar) : 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name) }}" class="w-6 md:w-8 h-6 md:h-8 rounded-lg object-cover">
@@ -41,9 +46,14 @@
         <div class="mb-8">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                 <h1 class="text-2xl md:text-4xl font-black text-slate-800">💼 Mes Cours Particuliers</h1>
-                <a href="{{ route('teacher.private-lessons.create') }}" class="w-full sm:w-auto bg-blue-600 text-white px-6 py-3 rounded-xl md:rounded-2xl font-bold text-xs md:text-sm uppercase shadow-lg hover:bg-blue-700 transition text-center">
-                    ➕ Créer un cours
-                </a>
+                <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                    <a href="{{ route('teacher.dashboard') }}" class="md:hidden bg-slate-600 text-white px-6 py-3 rounded-xl md:rounded-2xl font-bold text-xs md:text-sm uppercase shadow-lg hover:bg-slate-700 transition text-center">
+                        ← Dashboard
+                    </a>
+                    <a href="{{ route('teacher.private-lessons.create') }}" class="w-full sm:w-auto bg-blue-600 text-white px-6 py-3 rounded-xl md:rounded-2xl font-bold text-xs md:text-sm uppercase shadow-lg hover:bg-blue-700 transition text-center">
+                        ➕ Créer un cours
+                    </a>
+                </div>
             </div>
 
             <!-- STATS CARDS -->
