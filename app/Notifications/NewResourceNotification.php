@@ -8,7 +8,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use App\Models\Ressource; // Chemin bien présent
 
-class NewResourceNotification extends Notification
+class NewResourceNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
