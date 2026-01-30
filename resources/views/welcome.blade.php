@@ -144,26 +144,26 @@
             </div>
 
             <!-- Auth Section -->
-            <div class="bg-white border-t border-slate-200 px-3 py-3 space-y-2">
+            <div class="bg-slate-50 border-t-4 border-blue-600 px-3 py-4 space-y-3 shadow-lg">
                 @auth
                     @php $isAdmin = (Auth::user()->role === 'admin' || Auth::user()->user_type === 'teacher'); @endphp
                     <a href="{{ $isAdmin ? '/admin' : route('user.dashboard') }}"
                        @click="mobileMenuOpen = false"
-                       class="w-full {{ $isAdmin ? 'bg-slate-900 hover:bg-slate-800' : 'bg-blue-600 hover:bg-blue-700' }} text-white py-2.5 px-3 rounded-lg font-bold block uppercase tracking-widest text-xs transition-colors">
-                       <i class="fas fa-dashboard mr-2"></i>{{ $isAdmin ? 'Panel' : 'Espace' }}
+                       class="w-full {{ $isAdmin ? 'bg-slate-900 hover:bg-slate-800' : 'bg-blue-600 hover:bg-blue-700' }} text-white py-3.5 px-4 rounded-xl font-black block uppercase tracking-widest text-sm transition-all shadow-lg">
+                       <i class="fas fa-dashboard mr-2"></i>{{ $isAdmin ? 'Panel Admin' : 'Mon Espace' }}
                     </a>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="w-full bg-red-50 text-red-600 hover:bg-red-100 py-2.5 px-3 rounded-lg font-bold block uppercase tracking-widest text-xs transition-colors">
+                        <button type="submit" class="w-full bg-red-600 text-white hover:bg-red-700 py-3.5 px-4 rounded-xl font-black block uppercase tracking-widest text-sm transition-all shadow-lg">
                             <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
                         </button>
                     </form>
                 @else
-                    <a href="{{ route('login') }}" @click="mobileMenuOpen = false" class="block w-full bg-slate-900 hover:bg-slate-800 text-white py-2.5 px-3 rounded-lg font-bold uppercase text-xs text-center transition-colors">
+                    <a href="{{ route('login') }}" @click="mobileMenuOpen = false" class="block w-full bg-slate-900 hover:bg-slate-800 text-white py-4 px-4 rounded-xl font-black uppercase text-sm text-center transition-all shadow-lg">
                         <i class="fas fa-sign-in-alt mr-2"></i>Connexion
                     </a>
-                    <a href="{{ route('register') }}" @click="mobileMenuOpen = false" class="block w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-3 rounded-lg font-bold shadow-lg uppercase text-xs text-center transition-colors">
-                        <i class="fas fa-user-plus mr-2"></i>S'inscrire
+                    <a href="{{ route('register') }}" @click="mobileMenuOpen = false" class="block w-full bg-blue-600 hover:bg-blue-700 text-white py-4 px-4 rounded-xl font-black shadow-2xl uppercase text-sm text-center transition-all">
+                        <i class="fas fa-user-plus mr-2"></i>S'inscrire Gratuitement
                     </a>
                 @endauth
             </div>

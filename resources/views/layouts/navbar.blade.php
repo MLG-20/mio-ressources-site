@@ -59,20 +59,20 @@
          @click.away="mobileMenuOpen = false"
          class="md:hidden bg-slate-800 border-t border-white/10">
         <div class="px-4 py-4 space-y-3">
-            <a href="/" class="block py-3 px-4 rounded-xl text-sm font-bold uppercase hover:bg-white/10 transition">
+            <a href="/" class="block py-3 px-4 rounded-xl text-sm font-bold uppercase text-white hover:bg-white/10 transition">
                 <i class="fas fa-home mr-2"></i>Accueil
             </a>
-            <a href="{{ route('private-lessons.browse') }}" class="block py-3 px-4 rounded-xl text-sm font-bold uppercase hover:bg-white/10 transition">
+            <a href="{{ route('private-lessons.browse') }}" class="block py-3 px-4 rounded-xl text-sm font-bold uppercase text-white hover:bg-white/10 transition">
                 <i class="fas fa-chalkboard-teacher mr-2"></i>Cours Particuliers
             </a>
 
             @auth
                 @if(Auth::user()->role === 'professeur')
-                    <a href="{{ route('teacher.dashboard') }}" class="block py-3 px-4 rounded-xl text-sm font-bold uppercase bg-white/10 hover:bg-white/20 transition">
+                    <a href="{{ route('teacher.dashboard') }}" class="block py-3 px-4 rounded-xl text-sm font-bold uppercase text-white bg-white/10 hover:bg-white/20 transition">
                         <i class="fas fa-th-large mr-2"></i>Tableau de bord
                     </a>
                 @else
-                    <a href="{{ route('user.dashboard') }}" class="block py-3 px-4 rounded-xl text-sm font-bold uppercase bg-white/10 hover:bg-white/20 transition">
+                    <a href="{{ route('user.dashboard') }}" class="block py-3 px-4 rounded-xl text-sm font-bold uppercase text-white bg-white/10 hover:bg-white/20 transition">
                         <i class="fas fa-user-circle mr-2"></i>Mon Espace
                     </a>
                 @endif
@@ -84,18 +84,21 @@
                     </div>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="w-full text-left py-3 px-4 rounded-xl text-sm font-bold uppercase hover:bg-red-600/20 text-red-400 transition">
+                        <button type="submit" class="w-full text-center py-3 px-4 rounded-xl text-sm font-bold uppercase bg-red-600 hover:bg-red-700 text-white transition shadow-lg">
                             <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
                         </button>
                     </form>
                 </div>
             @else
-                <a href="{{ route('login') }}" class="block py-3 px-4 rounded-xl text-sm font-bold uppercase hover:bg-white/10 transition">
-                    <i class="fas fa-sign-in-alt mr-2"></i>Connexion
-                </a>
-                <a href="{{ route('register') }}" class="block py-3 px-4 rounded-xl text-sm font-bold uppercase bg-blue-600 hover:bg-blue-700 transition text-center">
-                    <i class="fas fa-user-plus mr-2"></i>S'inscrire
-                </a>
+                <!-- Boutons Connexion/Inscription bien visibles -->
+                <div class="pt-3 border-t-2 border-blue-600 space-y-3">
+                    <a href="{{ route('login') }}" class="block py-4 px-4 rounded-xl text-sm font-black uppercase bg-slate-900 hover:bg-slate-700 text-white transition text-center shadow-lg">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Connexion
+                    </a>
+                    <a href="{{ route('register') }}" class="block py-4 px-4 rounded-xl text-sm font-black uppercase bg-blue-600 hover:bg-blue-700 text-white transition text-center shadow-2xl">
+                        <i class="fas fa-user-plus mr-2"></i>S'inscrire Gratuitement
+                    </a>
+                </div>
             @endauth
         </div>
     </div>
