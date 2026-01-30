@@ -11,7 +11,7 @@ class ResourceRatingsChart extends ChartWidget
 
     protected static ?string $description = 'Répartition des notes (1-5 étoiles)';
 
-    protected static ?int $sort = 1;
+    protected static ?int $sort = 3;
 
     public static function canView(): bool
     {

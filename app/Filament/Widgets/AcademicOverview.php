@@ -7,7 +7,7 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class AcademicOverview extends BaseWidget
 {
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 1;
     protected int | string | array $columnSpan = 'full';
 
     public static function canView(): bool
