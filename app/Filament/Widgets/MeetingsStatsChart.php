@@ -12,7 +12,7 @@ class MeetingsStatsChart extends ChartWidget
 
     protected static ?string $description = 'Nombre de réunions par statut';
 
-    protected static ?int $sort = 6;
+    protected static ?int $sort = 2;
 
     public static function canView(): bool
     {

@@ -23,23 +23,23 @@ class MainPagesVisitsChart extends ChartWidget
 
     protected function getData(): array
     {
-        // Définir les pages principales à surveiller
+        // Définir les pages principales à surveiller (basées sur les vraies routes)
         $mainPages = [
             '/' => 'Accueil',
-            '/browse' => 'Parcourir les Cours',
-            '/publications' => 'Publications',
+            '/bibliotheque' => 'Bibliothèque',
             '/cours-particuliers' => 'Cours Particuliers',
-            '/meetings' => 'Réunions',
+            '/revision-instantanee' => 'Révision Instantanée',
             '/forum' => 'Forum',
-            '/contact' => 'Contact',
-            '/about' => 'À Propos',
+            '/mon-espace' => 'Mon Espace',
+            '/groupes' => 'Groupes de Travail',
+            '/page/' => 'Pages Info', // Contact, À propos, etc.
         ];
 
         $labels = [];
         $data = [];
         $colors = [
             '#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b',
-            '#10b981', '#06b6d4', '#f43f5e', '#8b5cf6'
+            '#10b981', '#06b6d4', '#f43f5e', '#f97316'
         ];
 
         $colorIndex = 0;
@@ -49,6 +49,7 @@ class MainPagesVisitsChart extends ChartWidget
             // Compter les visites exactes pour cette page
             $count = Visit::where('page_visited', $url)
                 ->orWhere('page_visited', 'LIKE', $url . '?%')
+                ->orWhere('page_visited', 'LIKE', $url . '%') // Pour /page/ qui capture contact, about, etc.
                 ->count();
 
             if ($count > 0) {

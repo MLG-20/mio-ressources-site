@@ -11,7 +11,7 @@ class PrivateLessonsStatsChart extends ChartWidget
 
     protected static ?string $description = 'Répartition des états';
 
-    protected static ?int $sort = 7;
+    protected static ?int $sort = 2;
 
     protected int | string | array $columnSpan = 1;
 

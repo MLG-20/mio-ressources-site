@@ -9,7 +9,7 @@ class ResourcesDistributionChart extends ChartWidget
 {
     protected static ?string $heading = 'Répartition des Ressources';
 
-    protected static ?int $sort = 6;
+    protected static ?int $sort = 1;
 
     protected int | string | array $columnSpan = 1;
 
