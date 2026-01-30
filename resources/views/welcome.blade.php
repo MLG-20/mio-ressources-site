@@ -112,14 +112,14 @@
         </div>
 
         <!-- MENU MOBILE OVERLAY -->
-        <div x-show="mobileMenuOpen" x-cloak class="fixed inset-0 bg-white z-[105] lg:hidden flex flex-col h-screen overflow-hidden"
+        <div x-show="mobileMenuOpen" x-cloak class="fixed inset-0 bg-white z-[105] lg:hidden flex flex-col h-screen overflow-y-auto"
              x-transition:enter="transition ease-out duration-300 transform"
              x-transition:enter-start="translate-y-[-100%]"
              x-transition:enter-end="translate-y-0"
              @click.away="mobileMenuOpen = false">
 
             <!-- Navigation Items -->
-            <div class="flex-1 px-3 py-20 space-y-0.5 overflow-hidden">
+            <div class="flex-1 px-3 py-20 space-y-0.5">
                 <a href="/" @click="mobileMenuOpen = false" class="block text-sm font-bold py-3 px-3 rounded-lg hover:bg-slate-100 uppercase tracking-tight text-slate-900 transition-colors">
                     <i class="fas fa-home mr-2 text-blue-600"></i>Accueil
                 </a>

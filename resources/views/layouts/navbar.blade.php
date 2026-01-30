@@ -57,7 +57,7 @@
          x-transition:leave-start="opacity-100 translate-y-0"
          x-transition:leave-end="opacity-0 -translate-y-4"
          @click.away="mobileMenuOpen = false"
-         class="md:hidden bg-slate-800 border-t border-white/10">
+         class="md:hidden bg-slate-800 border-t border-white/10 max-h-[80vh] overflow-y-auto">
         <div class="px-4 py-4 space-y-3">
             <a href="/" class="block py-3 px-4 rounded-xl text-sm font-bold uppercase text-white hover:bg-white/10 transition">
                 <i class="fas fa-home mr-2"></i>Accueil
