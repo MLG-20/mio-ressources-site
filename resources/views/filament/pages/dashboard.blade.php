@@ -18,7 +18,7 @@
                class="px-6 py-3 rounded-lg font-bold text-sm whitespace-nowrap transition-all shadow hover:shadow-lg">
                 <span class="flex items-center gap-2">
                     <x-heroicon-o-eye class="w-5 h-5" />
-                    <span>👁️ Visites & Pages</span>
+                    <span>� Visites</span>
                 </span>
             </a>
 

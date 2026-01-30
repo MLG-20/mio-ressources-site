@@ -15,7 +15,7 @@ class TopPagesChart extends ChartWidget
 
     public static function canView(): bool
     {
-        return request()->get('tab') === 'visites';
+        return false; // Désactivé - remplacé par SemesterVisitsChart et MainPagesVisitsChart
     }
 
     protected function getData(): array
