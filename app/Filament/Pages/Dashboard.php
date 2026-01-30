@@ -10,7 +10,7 @@ class Dashboard extends BaseDashboard
 
     protected static ?string $navigationLabel = 'Tableau de bord';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = -1;
 
     protected static string $view = 'filament.pages.dashboard';
 

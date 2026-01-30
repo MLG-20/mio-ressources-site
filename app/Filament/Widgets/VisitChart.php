@@ -11,7 +11,7 @@ class VisitChart extends ChartWidget
 {
     protected static ?string $heading = 'Analyse du Trafic';
     public ?string $filter = 'week'; // Filtre par défaut
-    protected static ?int $sort = 4;
+    protected static ?int $sort = 2;
 
     public static function canView(): bool
     {
