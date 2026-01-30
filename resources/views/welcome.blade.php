@@ -146,12 +146,22 @@
                 <!-- Auth Section (déplacée ici) -->
                 <div class="bg-slate-50 border-t-4 border-blue-600 rounded-xl px-3 py-3 space-y-2.5 shadow-lg mt-4">
                     @auth
-                        @php $isAdmin = (Auth::user()->role === 'admin' || Auth::user()->user_type === 'teacher'); @endphp
-                        <a href="{{ $isAdmin ? '/admin' : route('user.dashboard') }}"
-                           @click="mobileMenuOpen = false"
-                           class="w-full {{ $isAdmin ? 'bg-slate-900 hover:bg-slate-800' : 'bg-blue-600 hover:bg-blue-700' }} text-white py-3 px-4 rounded-xl font-black block uppercase tracking-widest text-xs transition-all shadow-lg">
-                           <i class="fas fa-dashboard mr-2"></i>{{ $isAdmin ? 'Panel' : 'Espace' }}
-                        </a>
+                        @if(Auth::user()->role === 'admin')
+                            <!-- Admin uniquement -->
+                            <a href="/admin" @click="mobileMenuOpen = false" class="w-full bg-slate-900 hover:bg-slate-800 text-white py-3 px-4 rounded-xl font-black block uppercase tracking-widest text-xs transition-all shadow-lg">
+                                <i class="fas fa-shield-check mr-2"></i>Panel Admin
+                            </a>
+                        @elseif(Auth::user()->user_type === 'teacher')
+                            <!-- Enseignant uniquement -->
+                            <a href="{{ route('teacher.dashboard') }}" @click="mobileMenuOpen = false" class="w-full bg-slate-900 hover:bg-slate-800 text-white py-3 px-4 rounded-xl font-black block uppercase tracking-widest text-xs transition-all shadow-lg">
+                                <i class="fas fa-chalkboard-teacher mr-2"></i>Espace Enseignant
+                            </a>
+                        @else
+                            <!-- Étudiant -->
+                            <a href="{{ route('user.dashboard') }}" @click="mobileMenuOpen = false" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-xl font-black block uppercase tracking-widest text-xs transition-all shadow-lg">
+                                <i class="fas fa-user mr-2"></i>Mon Espace
+                            </a>
+                        @endif
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="w-full bg-red-600 text-white hover:bg-red-700 py-3 px-4 rounded-xl font-black block uppercase tracking-widest text-xs transition-all shadow-lg">
