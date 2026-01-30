@@ -17,6 +17,8 @@ class SemesterVisitsChart extends ChartWidget
 
     protected int | string | array $columnSpan = 1;
 
+    protected static ?string $pollingInterval = '30s'; // Rafraîchissement automatique
+
     public static function canView(): bool
     {
         return request()->get('tab') === 'visites';

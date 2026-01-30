@@ -14,6 +14,8 @@ class MeetingsStatsChart extends ChartWidget
 
     protected static ?int $sort = 4;
 
+    protected static ?string $pollingInterval = '30s'; // Rafraîchissement automatique
+
     public static function canView(): bool
     {
         return request()->get('tab') === 'contenus';
