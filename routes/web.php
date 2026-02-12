@@ -143,18 +143,37 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // --- FORUM ---
+    Route::middleware(['auth'])->group(function () {
+
+    // --- 1. ROUTES D'AFFICHAGE (ForumController) ---
+    // Celles-ci servent à naviguer dans le forum quand on clique sur "Voir"
     Route::prefix('forum')->group(function () {
         Route::get('/', [ForumController::class, 'index'])->name('forum.index');
         Route::get('/categorie/{id}', [ForumController::class, 'showCategory'])->name('forum.category');
         Route::get('/sujet/{id}', [ForumController::class, 'showSujet'])->name('forum.sujet');
-        Route::post('/sujet/creer', [ForumController::class, 'storeSujet'])->name('forum.sujet.store');
+
+        // Répondre à un sujet existant (depuis la page show.blade.php)
         Route::post('/sujet/{id}/repondre', [ForumController::class, 'storeMessage'])->name('forum.sujet.reply');
-        Route::delete('/message/{id}', [UserSpaceController::class, 'destroyMessage'])->name('forum.message.destroy');
-        Route::delete('/sujet-perso/{id}', [UserSpaceController::class, 'destroySujet'])->name('user.sujet.destroy');
-        // Routes pour les messages directs depuis l'espace étudiant
-        Route::post('/message/store', [UserSpaceController::class, 'storeMessage'])->name('forum.message.store');
-        Route::put('/message/{id}', [UserSpaceController::class, 'updateMessage'])->name('forum.message.update');
     });
+
+    // --- 2. ROUTES D'ACTION DASHBOARD (UserSpaceController) ---
+    // Celles-ci font fonctionner votre formulaire sur le bureau
+
+    // C'est LA route utilisée par votre formulaire "Lancer une discussion"
+    Route::post('/forum/message/store', [UserSpaceController::class, 'storeMessage'])->name('forum.message.store');
+
+    // Pour supprimer une discussion (Titre + Messages)
+    Route::delete('/forum/sujet-perso/{id}', [UserSpaceController::class, 'destroySujet'])->name('user.sujet.destroy');
+
+    // Pour supprimer un message unique
+    Route::delete('/forum/message/{id}', [UserSpaceController::class, 'destroyMessage'])->name('forum.message.destroy');
+
+    // Pour modifier un message
+    Route::put('/forum/message/{id}', [UserSpaceController::class, 'updateMessage'])->name('forum.message.update');
+
+});
+
+
 });
 
 require __DIR__.'/auth.php';

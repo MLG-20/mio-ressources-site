@@ -44,10 +44,10 @@
     }
 </style>
 </head>
-<body class="bg-white text-slate-900 font-sans">
+<body class="bg-white text-slate-900 font-sans overflow-x-hidden">
 
     <!-- NAVBAR MINI -->
-    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200 py-4 px-8 flex justify-between items-center sticky top-0 z-50">
+    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200 py-4 px-4 md:px-8 flex justify-between items-center sticky top-0 z-50">
         <a href="/" class="flex items-center gap-2 group">
             <x-application-logo class="w-8 md:w-10 h-8 md:h-10" />
             <span class="font-black text-slate-800 tracking-tight uppercase">Ressources</span>
@@ -58,7 +58,7 @@
     </nav>
 
     <!-- HEADER DE LA PAGE -->
-    <header class="py-20 bg-slate-900 text-white relative overflow-hidden">
+    <header class="py-12 md:py-20 bg-slate-900 text-white relative overflow-hidden">
         <div class="absolute top-0 right-0 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl -mr-32 -mt-32"></div>
         <div class="max-w-4xl mx-auto px-6 relative z-10 text-center md:text-left">
             <h1 class="text-4xl md:text-7xl font-black tracking-tighter leading-tight uppercase">{{ $page->titre }}</h1>
@@ -76,7 +76,7 @@
     @endif
 
     <!-- CONTENU DYNAMIQUE -->
-    <main class="max-w-4xl mx-auto py-20 px-6">
+    <main class="max-w-4xl mx-auto py-10 md:py-20 px-6">
         <div class="prose prose-slate lg:prose-lg max-w-none text-slate-700 leading-relaxed">
             {!! $page->contenu !!}
         </div>

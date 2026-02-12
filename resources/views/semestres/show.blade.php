@@ -8,9 +8,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-gray-50 text-gray-900">
+<body class="bg-gray-50 text-gray-900 overflow-x-hidden">
 
-    <nav class="bg-white shadow-sm py-4 px-8 flex justify-between items-center sticky top-0 z-50">
+    <nav class="bg-white shadow-sm py-4 px-4 md:px-8 flex justify-between items-center sticky top-0 z-50">
         <a href="/" class="flex items-center gap-2 group">
             <x-application-logo class="w-8 md:w-10 h-8 md:h-10" />
             <span class="font-black text-gray-800">RESSOURCES</span>
@@ -20,7 +20,7 @@
         </a>
     </nav>
 
-    <header class="relative py-20 bg-blue-900 text-white text-center overflow-hidden">
+    <header class="relative py-12 md:py-20 bg-blue-900 text-white text-center overflow-hidden">
         @if($semestre->image_path)
             <img src="{{ asset('storage/' . $semestre->image_path) }}" class="absolute inset-0 w-full h-full object-cover opacity-20">
         @endif
@@ -31,7 +31,7 @@
         </div>
     </header>
 
-    <main class="py-16 px-6 max-w-7xl mx-auto">
+    <main class="py-10 md:py-16 px-6 max-w-7xl mx-auto">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($semestre->matieres as $matiere)
                 <!-- LA CORRECTION EST ICI : href="{{ route('matiere.show', $matiere->id) }}" -->

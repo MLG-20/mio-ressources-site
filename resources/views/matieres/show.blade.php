@@ -8,10 +8,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-[#f8fafc] text-slate-900 font-sans">
+<body class="bg-[#f8fafc] text-slate-900 font-sans overflow-x-hidden">
 
     <!-- NAVBAR MINI -->
-    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200 py-4 px-8 flex justify-between items-center sticky top-0 z-50">
+    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200 py-4 px-4 md:px-8 flex justify-between items-center sticky top-0 z-50">
         <a href="/" class="flex items-center gap-2 group">
             <x-application-logo class="w-8 md:w-10 h-8 md:h-10" />
             <span class="font-black text-slate-800 tracking-tight">RESSOURCES</span>
@@ -41,7 +41,7 @@
     @endif
 
     <!-- HEADER MATIÈRE -->
-    <header class="py-16 bg-white border-b border-slate-200">
+    <header class="py-10 md:py-16 bg-white border-b border-slate-200">
         <div class="max-w-5xl mx-auto px-6 text-center md:text-left">
             <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
                 <div>
@@ -57,7 +57,7 @@
         </div>
     </header>
 
-    <main class="py-12 max-w-5xl mx-auto px-6">
+    <main class="py-8 md:py-12 max-w-5xl mx-auto px-6">
 
         <h2 class="text-sm font-black text-slate-400 uppercase tracking-[0.2em] mb-8 flex items-center gap-3">
             <i class="fas fa-folder-open text-blue-500"></i> Ressources disponibles

@@ -92,7 +92,7 @@
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
-            <form action="{{ route('forum.sujet.store') }}" method="POST" class="p-8 space-y-6">
+            <form action="{{ route('forum.message.store') }}" method="POST" class="p-8 space-y-6">
                 @csrf
                 <input type="hidden" name="forum_category_id" value="{{ $category->id }}">
                 <div>

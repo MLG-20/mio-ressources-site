@@ -22,7 +22,7 @@
         ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
     </style>
 </head>
-<body class="bg-[#f8fafc] font-sans antialiased text-slate-900"
+<body class="bg-[#f8fafc] font-sans antialiased text-slate-900 overflow-x-hidden"
       x-data="{ mobileMenuOpen: false, scrolled: false }"
       @scroll.window="scrolled = (window.pageYOffset > 50)"
       :class="{ 'overflow-hidden': mobileMenuOpen }">
@@ -186,7 +186,7 @@
             x-show="scrolled" x-cloak
             x-transition:enter="transition scale-0 rotate-180"
             x-transition:enter-end="scale-100 rotate-0"
-            class="fixed bottom-10 right-10 z-[90] bg-blue-600 text-white w-14 h-14 rounded-2xl shadow-2xl flex items-center justify-center hover:bg-blue-700 transition-all transform hover:-translate-y-2 group border-4 border-white/20">
+            class="fixed bottom-6 right-6 md:bottom-10 md:right-10 z-[90] bg-blue-600 text-white w-12 h-12 md:w-14 md:h-14 rounded-2xl shadow-2xl flex items-center justify-center hover:bg-blue-700 transition-all transform hover:-translate-y-2 group border-4 border-white/20">
         <i class="fas fa-arrow-up text-xl group-hover:animate-bounce"></i>
     </button>
 
@@ -208,7 +208,7 @@
     </section>
 
     <!-- SECTION CURSUS -->
-    <section id="cours" class="py-32 px-6 max-w-7xl mx-auto">
+    <section id="cours" class="py-16 md:py-32 px-6 max-w-7xl mx-auto">
         <div class="text-center mb-20">
             <h2 class="text-4xl font-bold text-slate-900 tracking-tighter uppercase italic">Votre Cursus</h2>
             <div class="h-1.5 w-20 bg-blue-600 mx-auto mt-4 rounded-full shadow-lg shadow-blue-200"></div>
@@ -229,7 +229,7 @@
 
                     <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
 
-                    <div class="absolute bottom-0 p-10 w-full">
+                    <div class="absolute bottom-0 p-6 md:p-10 w-full">
                         <div class="flex items-center gap-3 mb-4">
                             <span class="bg-blue-600 text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-lg">{{ $semestre->niveau }}</span>
                             <span class="text-white/60 text-[10px] font-bold uppercase tracking-widest italic">{{ $semestre->matieres_count }} matières</span>
@@ -250,7 +250,7 @@
     </section>
 
     <!-- SECTION COURS PARTICULIERS PREMIUM -->
-    <section class="py-32 px-6 w-full bg-gradient-to-b from-white to-slate-50 relative overflow-hidden">
+    <section class="py-16 md:py-32 px-6 w-full bg-gradient-to-b from-white to-slate-50 relative overflow-hidden">
         <!-- Fond décoratif -->
         <div class="absolute -top-40 -left-40 w-80 h-80 bg-purple-600/5 rounded-full blur-[120px]"></div>
         <div class="absolute -bottom-40 -right-40 w-80 h-80 bg-blue-600/5 rounded-full blur-[120px]"></div>
@@ -393,13 +393,13 @@
     </section>
 
     <!-- SECTION AVIS -->
-    <section class="py-32 bg-[#0f172a] relative overflow-hidden">
+    <section class="py-16 md:py-32 bg-[#0f172a] relative overflow-hidden">
         <div class="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-[100px] -mr-48 -mt-48"></div>
 
         <div class="max-w-6xl mx-auto px-6 relative z-10">
             <h2 class="text-3xl font-bold text-center text-white mb-16 uppercase tracking-widest">L'avis de nos étudiants</h2>
 
-            <div class="max-w-xl mx-auto bg-white/5 backdrop-blur-xl p-10 rounded-[3rem] border border-white/10 shadow-2xl mb-20">
+            <div class="max-w-xl mx-auto bg-white/5 backdrop-blur-xl p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] border border-white/10 shadow-2xl mb-20">
                 @if(session('success_review'))
                     <div class="mb-6 p-4 bg-blue-600 text-white rounded-2xl font-bold text-center animate-bounce">{{ session('success_review') }}</div>
                 @endif
@@ -411,24 +411,24 @@
                             <div><p class="text-[10px] font-bold text-blue-400 uppercase">Connecté en tant que</p><p class="text-xl font-bold text-white tracking-tight">{{ Auth::user()->name }}</p></div>
                         </div>
                     @else
-                        <input type="text" name="nom" placeholder="Votre Prénom" class="w-full rounded-2xl bg-white/5 border-white/10 p-5 text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                        <input type="text" name="nom" placeholder="Votre Prénom" class="w-full rounded-2xl bg-white/5 border-white/10 p-4 md:p-5 text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 outline-none" required>
                     @endauth
-                    <textarea name="message" rows="3" placeholder="Votre message pour la communauté..." class="w-full rounded-2xl bg-white/5 border-white/10 p-5 text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 outline-none" required></textarea>
+                    <textarea name="message" rows="3" placeholder="Votre message pour la communauté..." class="w-full rounded-2xl bg-white/5 border-white/10 p-4 md:p-5 text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 outline-none" required></textarea>
 
                     <div class="flex flex-col sm:flex-row gap-4 items-center">
-                        <select name="note" class="w-full sm:w-auto bg-white/5 border-white/10 text-white p-4 rounded-2xl font-bold focus:ring-0">
+                        <select name="note" class="w-full sm:w-auto bg-white/5 border-white/10 text-white p-4 md:p-5 rounded-2xl font-bold focus:ring-0">
                             <option value="5" class="bg-slate-900">⭐⭐⭐⭐⭐ Excellent</option>
                             <option value="4" class="bg-slate-900">⭐⭐⭐⭐ Très bien</option>
                             <option value="3" class="bg-slate-900">⭐⭐⭐ Bien</option>
                         </select>
-                        <button type="submit" class="w-full flex-1 bg-blue-600 text-white font-bold py-5 rounded-[2rem] hover:bg-blue-500 transition shadow-xl shadow-blue-900/40">PUBLIER MON AVIS</button>
+                        <button type="submit" class="w-full flex-1 bg-blue-600 text-white font-bold py-4 md:py-5 rounded-[2rem] hover:bg-blue-500 transition shadow-xl shadow-blue-900/40">PUBLIER MON AVIS</button>
                     </div>
                 </form>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
                 @foreach(\App\Models\Review::latest()->take(3)->get() as $review)
-                    <div class="bg-white/5 border border-white/10 p-8 rounded-[2.5rem] hover:bg-white/10 transition">
+                    <div class="bg-white/5 border border-white/10 p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] hover:bg-white/10 transition">
                         <div class="text-blue-500 mb-4 flex justify-center md:justify-start">
                             @for($i=0; $i<$review->note; $i++) <i class="fas fa-star text-xs"></i> @endfor
                         </div>
@@ -443,7 +443,7 @@
     </section>
 
     <!-- FOOTER -->
-    <footer class="bg-slate-950 text-white py-20 px-8 border-t border-white/5">
+    <footer class="bg-slate-950 text-white py-12 md:py-20 px-6 md:px-8 border-t border-white/5">
         <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16 border-b border-white/5 pb-16">
             <div class="space-y-6 text-center md:text-left">
                 <div class="flex items-center justify-center md:justify-start gap-2">

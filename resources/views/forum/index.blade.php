@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-slate-50 text-slate-900">
+<body class="bg-slate-50 text-slate-900 overflow-x-hidden">
 
     <nav class="bg-white border-b py-4 px-4 md:px-8 flex justify-between items-center sticky top-0 z-50">
         <a href="/" class="flex items-center gap-2">
@@ -27,8 +27,8 @@
         <p class="text-slate-400 mt-2 text-xs md:text-base">Échangez avec les autres étudiants de l'université</p>
     </header>
 
-    <main class="max-w-4xl mx-auto py-8 md:py-12 px-4 md:px-6">
-        <div class="grid gap-4 md:gap-6">
+    <main class="max-w-7xl mx-auto py-8 md:py-12 px-4 md:px-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             @foreach($categories as $cat)
                 <a href="{{ route('forum.category', $cat->id) }}" class="group bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-blue-500 transition-all flex items-center justify-between gap-4">
                     <div class="flex items-center gap-3 md:gap-6 min-w-0">

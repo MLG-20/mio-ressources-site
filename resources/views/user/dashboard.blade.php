@@ -30,7 +30,7 @@
         .btn-retour:hover::before { left: 100%; }
     </style>
 </head>
-<body class="bg-[#f8fafc] text-slate-900" x-data="{
+<body class="bg-[#f8fafc] text-slate-900 overflow-x-hidden" x-data="{
         tab: window.location.hash ? window.location.hash.substring(1) : (localStorage.getItem('activeTab') || 'bureau'),
         search: '',
         showScrollTop: false,
@@ -318,75 +318,96 @@
             </div>
 
             <!-- FORMULAIRE ÉCRIRE UN MESSAGE -->
-            <div class="bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl md:rounded-3xl p-6 md:p-8 shadow-xl border border-pink-200">
-                <h3 class="text-lg md:text-xl font-black text-slate-800 uppercase mb-6 flex items-center gap-2">
-                    <i class="fas fa-pen-fancy text-pink-600"></i> Partager un message
-                </h3>
-                <form action="{{ route('forum.message.store') }}" method="POST" class="space-y-4 md:space-y-5">
-                    @csrf
-                    <textarea name="contenu" placeholder="Écris ton message ici... (idées, questions, partages)" class="w-full bg-white border border-pink-200 rounded-2xl p-4 md:p-5 text-slate-700 focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none resize-none h-24 md:h-32 font-medium text-sm md:text-base" required></textarea>
-                    <button type="submit" class="w-full bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white font-black py-3 md:py-4 rounded-2xl shadow-lg transition-all transform active:scale-95 uppercase tracking-widest text-sm md:text-base flex items-center justify-center gap-2">
-                        <i class="fas fa-paper-plane"></i> Partager
-                    </button>
-                </form>
+
+    <div class="flex items-center gap-3 mb-2">
+        <span class="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest shadow-md">
+            FORUM {{ Auth::user()->student_level ?? 'Général' }}
+        </span>
+        <p class="text-slate-500 text-sm font-bold">Espace de discussion de votre classe</p>
+    </div>
+
+    <div class="bg-white rounded-2xl md:rounded-3xl p-6 md:p-8 shadow-xl border border-slate-100">
+        <h3 class="text-lg md:text-xl font-black text-slate-800 uppercase mb-6 flex items-center gap-2">
+            <i class="fas fa-edit text-blue-600"></i> Lancer une discussion
+        </h3>
+
+        <form action="{{ route('forum.message.store') }}" method="POST" class="space-y-4">
+            @csrf
+
+            <div>
+                <label class="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Sujet</label>
+                <input type="text" name="titre" placeholder="Ex: Problème exercice Java..."
+                       class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-4 text-slate-700 font-bold outline-none focus:border-blue-500 transition-all" required>
             </div>
 
-            <!-- MES MESSAGES -->
-            <div class="bg-white rounded-2xl md:rounded-3xl p-6 md:p-8 shadow-xl border border-slate-100">
-                <h3 class="text-lg md:text-xl font-black text-slate-800 uppercase mb-6 flex items-center gap-2">
-                    <i class="fas fa-comments text-pink-500"></i> Mes messages ({{ isset($userMessages) ? count($userMessages) : 0 }})
-                </h3>
+            <div>
+                <label class="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Message</label>
+                <textarea name="contenu" placeholder="Écrivez votre message pour la classe ici..." class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 text-slate-700 outline-none h-32 font-medium focus:border-blue-500 transition-all" required></textarea>
+            </div>
 
-                <div class="space-y-4">
-                    @if(isset($userMessages) && count($userMessages) > 0)
-                        @foreach($userMessages as $message)
-                        <div class="group p-4 md:p-6 bg-slate-50 hover:bg-pink-50 border border-slate-200 hover:border-pink-300 rounded-2xl transition-all">
-                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 md:gap-4 mb-3">
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-slate-700 text-sm md:text-base break-words">{{ $message->contenu }}</p>
-                                    <p class="text-[10px] md:text-xs text-slate-400 uppercase font-bold mt-2">{{ $message->created_at->format('d/m/Y à H:i') }}</p>
-                                </div>
-                                <div class="flex gap-2 flex-shrink-0">
-                                    <button onclick="document.getElementById('edit-msg-{{ $message->id }}').classList.remove('hidden')" class="w-9 h-9 rounded-xl bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white transition shadow-sm flex items-center justify-center" title="Modifier">
-                                        <i class="fas fa-edit text-xs md:text-sm"></i>
-                                    </button>
-                                    <form action="{{ route('forum.message.destroy', $message->id) }}" method="POST" class="inline" onsubmit="return confirm('Supprimer ce message ?');">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="w-9 h-9 rounded-xl bg-red-100 text-red-600 hover:bg-red-600 hover:text-white transition shadow-sm flex items-center justify-center" title="Supprimer">
-                                            <i class="fas fa-trash text-xs md:text-sm"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
+            <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black py-4 rounded-2xl shadow-lg transition-all uppercase tracking-widest text-sm flex items-center justify-center gap-2">
+                <i class="fas fa-paper-plane"></i> Publier pour la classe
+            </button>
+        </form>
+    </div>
 
-                            <!-- MODAL MODIFICATION MESSAGE -->
-                            <div id="edit-msg-{{ $message->id }}" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                                <div class="bg-white w-full max-w-lg rounded-2xl md:rounded-3xl p-6 md:p-8 shadow-2xl">
-                                    <h4 class="text-lg font-black text-slate-800 mb-4 uppercase">Modifier le message</h4>
-                                    <form action="{{ route('forum.message.update', $message->id) }}" method="POST">
-                                        @csrf @method('PUT')
-                                        <textarea name="contenu" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none resize-none h-24 md:h-28 font-medium" required>{{ $message->contenu }}</textarea>
-                                        <div class="flex gap-3 mt-4">
-                                            <button type="button" onclick="document.getElementById('edit-msg-{{ $message->id }}').classList.add('hidden')" class="flex-1 bg-slate-200 text-slate-800 font-black py-2 md:py-3 rounded-xl hover:bg-slate-300 transition">ANNULER</button>
-                                            <button type="submit" class="flex-1 bg-blue-600 text-white font-black py-2 md:py-3 rounded-xl hover:bg-blue-700 transition">SAUVEGARDER</button>
-                                        </div>
-                                    </form>
-                                </div>
+    <div class="space-y-4 pt-4">
+        <h3 class="text-lg font-black text-slate-800 uppercase pl-2 border-l-4 border-blue-500 ml-1">
+            Discussions récentes ({{ Auth::user()->student_level ?? 'Général' }})
+        </h3>
+
+        @if(isset($sujetsDeMaClasse) && count($sujetsDeMaClasse) > 0)
+            @foreach($sujetsDeMaClasse as $sujet)
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md hover:border-blue-200 transition group">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+
+                    <div class="flex items-start gap-4 min-w-0">
+                        <div class="flex-shrink-0">
+                            <img src="{{ $sujet->user->avatar ? asset('storage/'.$sujet->user->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($sujet->user->name).'&background=random&color=fff' }}"
+                                 class="w-12 h-12 rounded-full object-cover border-2 border-slate-100 shadow-sm">
+                        </div>
+
+                        <div class="min-w-0 flex-1">
+                            <a href="{{ route('forum.sujet', $sujet->id) }}" class="font-black text-slate-800 text-lg hover:text-blue-600 transition line-clamp-1 block">
+                                {{ $sujet->titre }}
+                            </a>
+                            <div class="flex items-center gap-2 mt-1 text-xs">
+                                <span class="font-bold text-slate-500">{{ $sujet->user->name }}</span>
+                                <span class="text-slate-300">•</span>
+                                <span class="text-slate-400">{{ $sujet->created_at->diffForHumans() }}</span>
+                                @if($sujet->user_id === Auth::id())
+                                    <span class="bg-blue-100 text-blue-600 px-2 py-0.5 rounded text-[10px] font-black uppercase">MOI</span>
+                                @endif
                             </div>
                         </div>
-                        @endforeach
-                    @else
-                        <div class="text-center py-12">
-                            <div class="w-16 h-16 bg-pink-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-                                <i class="fas fa-comments text-pink-400 text-2xl"></i>
-                            </div>
-                            <p class="text-slate-400 font-bold">Aucun message pour le moment</p>
-                            <p class="text-slate-300 text-sm">Sois le premier à partager un message !</p>
-                        </div>
-                    @endif
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <a href="{{ route('forum.sujet', $sujet->id) }}" class="bg-slate-50 text-slate-600 px-4 py-3 rounded-xl font-bold text-xs hover:bg-blue-600 hover:text-white transition flex items-center gap-2">
+                            Voir <i class="fas fa-arrow-right"></i>
+                        </a>
+
+                        @if($sujet->user_id === Auth::id())
+                            <form action="{{ route('user.sujet.destroy', $sujet->id) }}" method="POST" onsubmit="return confirm('Voulez-vous vraiment supprimer cette discussion ?');">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="bg-red-50 text-red-500 px-4 py-3 rounded-xl font-bold text-xs hover:bg-red-600 hover:text-white transition">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+                        @endif
+                    </div>
+
                 </div>
             </div>
-        </div>
+            @endforeach
+        @else
+            <div class="text-center py-12 bg-white rounded-2xl border-2 border-dashed border-slate-200">
+                <p class="text-slate-500 font-bold">Aucune discussion pour le moment.</p>
+                <p class="text-slate-400 text-sm mt-1">Lancez le premier sujet pour votre classe !</p>
+            </div>
+        @endif
+    </div>
+</div>
 
         <!-- 4. ONGLET GROUPES DE TRAVAIL -->
         <div x-show="tab === 'groupes'" x-cloak class="space-y-6 md:space-y-8 animate-in fade-in duration-500" x-data="{ showCreateModal: false, showInviteModal: false, showMembersModal: false, selectedGroup: null, selectedMembers: null }">
@@ -839,7 +860,7 @@
 
     <!-- MODAL SUPPRESSION -->
     <div id="delete-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-6">
-        <div class="bg-white w-full max-w-md rounded-[3rem] p-10 text-center shadow-2xl">
+        <div class="bg-white w-full max-w-md rounded-2xl md:rounded-[3rem] p-6 md:p-10 text-center shadow-2xl">
             <h3 class="text-2xl font-black text-slate-900 mb-4 uppercase">Supprimer le compte ?</h3>
             <p class="text-slate-500 mb-8 text-sm">Cette action est définitive. Confirmez avec votre mot de passe.</p>
             <form action="{{ route('user.account.delete') }}" method="POST">

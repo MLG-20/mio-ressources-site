@@ -7,9 +7,20 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <style>@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&display=swap'); body { font-family: 'Outfit', sans-serif; } [x-cloak] { display: none !important; }</style>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&display=swap');
+        body { font-family: 'Outfit', sans-serif; }
+        [x-cloak] { display: none !important; }
+        /* Scrollbar Personnalisée - BLEU MAGNIFIQUE */
+        ::-webkit-scrollbar { width: 12px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, #2563eb, #1d4ed8); border-radius: 10px; box-shadow: 0 0 6px rgba(37, 99, 235, 0.5); }
+        ::-webkit-scrollbar-thumb:hover { background: linear-gradient(to bottom, #1d4ed8, #1e40af); box-shadow: 0 0 12px rgba(37, 99, 235, 0.8); }
+        /* Firefox */
+        * { scrollbar-color: #2563eb transparent; scrollbar-width: thin; }
+    </style>
 </head>
-<body class="bg-[#f8fafc] text-slate-900" x-data="{ tab: 'bureau' }">
+<body class="bg-[#f8fafc] text-slate-900 overflow-x-hidden" x-data="{ tab: 'bureau' }">
 
     <!-- NAVBAR -->
     <nav class="bg-slate-900 text-white py-4 px-4 md:px-8 flex justify-between items-center sticky top-0 z-50">
@@ -81,10 +92,10 @@
             </div>
 
             <!-- Historique des Publications -->
-            <div class="bg-white rounded-[3rem] p-10 shadow-xl border border-slate-100">
+            <div class="bg-white rounded-2xl md:rounded-[3rem] p-6 md:p-10 shadow-xl border border-slate-100">
                 <h3 class="text-xl font-black text-slate-800 uppercase mb-8">📚 Historique de vos publications</h3>
                 @if($mesPublications->count() > 0)
-                    <div class="space-y-4">
+                    <div class="space-y-4 max-h-[500px] overflow-y-auto pr-2">
                         @foreach($mesPublications as $pub)
                             <div class="p-6 bg-slate-50 rounded-3xl flex justify-between items-start group hover:bg-blue-50 transition border-l-4 border-blue-600">
                                 <div class="flex-1">
@@ -155,10 +166,10 @@
             </div>
 
             <!-- Liste des cours -->
-            <div class="bg-white rounded-[3rem] p-10 shadow-xl border border-slate-100">
+            <div class="bg-white rounded-2xl md:rounded-[3rem] p-6 md:p-10 shadow-xl border border-slate-100">
                 <h3 class="text-xl font-black text-slate-800 uppercase mb-8">📋 Mes Cours Vidéo</h3>
                 @if($meetings->count() > 0)
-                    <div class="space-y-4">
+                    <div class="space-y-4 max-h-[500px] overflow-y-auto pr-2">
                         @foreach($meetings as $meeting)
                             <div class="p-6 bg-slate-50 rounded-3xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 group hover:bg-purple-50 transition border-l-4 {{ $meeting->status === 'scheduled' ? 'border-amber-500' : ($meeting->status === 'active' ? 'border-green-500' : 'border-slate-400') }}">
                                 <div class="flex-1">
@@ -199,6 +210,13 @@
                                             </button>
                                         </form>
                                     @endif
+                                    <form action="{{ route('scheduled-meetings.destroy', $meeting) }}" method="POST" onsubmit="return confirm('Voulez-vous vraiment supprimer ce cours ?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="bg-slate-200 text-slate-600 px-4 py-3 rounded-2xl font-black text-xs shadow-lg hover:bg-red-100 hover:text-red-600 transition uppercase" title="Supprimer">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         @endforeach
@@ -216,9 +234,9 @@
         </div>
 
         <!-- 3. ONGLET FORUM -->
-        <div x-show="tab === 'forum'" x-cloak class="bg-white rounded-[3rem] p-10 shadow-xl animate-in slide-in-from-bottom-4 duration-500">
+        <div x-show="tab === 'forum'" x-cloak class="bg-white rounded-2xl md:rounded-[3rem] p-6 md:p-10 shadow-xl animate-in slide-in-from-bottom-4 duration-500">
             <h3 class="text-xl font-black text-slate-800 uppercase mb-8">Interagir avec les étudiants</h3>
-            <div class="space-y-4">
+            <div class="space-y-4 max-h-[500px] overflow-y-auto pr-2">
                 @foreach($recentSujets as $sujet)
                     <div class="p-6 bg-slate-50 rounded-3xl flex justify-between items-center group hover:bg-blue-50 transition">
                         <div>
@@ -233,7 +251,7 @@
 
         <!-- 3. ONGLET PARAMÈTRES (SÉCURITÉ & PROFIL) -->
         <div x-show="tab === 'settings'" x-cloak class="max-w-2xl mx-auto space-y-8 animate-in zoom-in duration-500">
-            <div class="bg-white rounded-[3rem] p-10 shadow-xl">
+            <div class="bg-white rounded-2xl md:rounded-[3rem] p-6 md:p-10 shadow-xl">
                 <h3 class="text-xl font-black text-slate-800 uppercase mb-8 text-center">Réglages du compte</h3>
                 <form action="{{ route('teacher.profile.update') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                     @csrf
@@ -270,7 +288,7 @@
 
     <!-- MODAL SUPPRESSION -->
     <div id="modal-del" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-6">
-        <div class="bg-white w-full max-w-md rounded-[3rem] p-10 text-center shadow-2xl">
+        <div class="bg-white w-full max-w-md rounded-2xl md:rounded-[3rem] p-6 md:p-10 text-center shadow-2xl">
             <h3 class="text-2xl font-black text-slate-900 mb-4 uppercase">Adieu ?</h3>
             <p class="text-slate-500 mb-8">Cette action est irréversible. Toutes vos publications seront supprimées.</p>
             <form action="{{ route('teacher.account.delete') }}" method="POST">

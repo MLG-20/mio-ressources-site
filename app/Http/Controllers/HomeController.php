@@ -38,6 +38,66 @@ class HomeController extends Controller
         Visit::create(['ip_address' => $request->ip(), 'page_visited' => 'Page : ' . $page->titre]);
         $settings = Setting::pluck('value', 'key');
         return view('pages.show', compact('page', 'settings'));
+        }
+
+        /**
+         * Enregistre un avis utilisateur (review) sur une ressource ou publication
+         */
+    public function storeReview(Request $request)
+    {
+        // Si c'est un avis général (section "avis de nos étudiants")
+        if ($request->has('message') && $request->has('note')) {
+            $request->validate([
+                'note' => 'required|integer|min:1|max:5',
+                'message' => 'required|string|max:1000',
+                'nom' => 'nullable|string|max:100',
+            ]);
+            $data = [
+                'stars' => $request->note,
+                'comment' => $request->message,
+            ];
+            if (auth()->check()) {
+                $data['user_id'] = auth()->id();
+            } else {
+                $data['user_id'] = null;
+                $data['comment'] = ($request->nom ? $request->nom . ' : ' : '') . $data['comment'];
+            }
+            \App\Models\ResourceRating::create($data);
+            return back()->with('success_review', 'Merci pour votre avis !');
+        }
+
+        // Sinon, avis sur une ressource ou publication
+        $request->validate([
+            'type' => 'required|in:ressource,publication',
+            'id' => 'required|integer',
+            'stars' => 'required|integer|min:1|max:5',
+            'comment' => 'nullable|string|max:1000',
+        ]);
+
+        $type = $request->input('type');
+        $id = $request->input('id');
+        $stars = $request->input('stars');
+        $comment = $request->input('comment');
+
+        $data = [
+            'user_id' => auth()->id(),
+            'stars' => $stars,
+            'comment' => $comment,
+        ];
+
+        if ($type === 'publication') {
+            $search = ['user_id' => auth()->id(), 'publication_id' => $id];
+            $data['publication_id'] = $id;
+            $data['ressource_id'] = null;
+        } else {
+            $search = ['user_id' => auth()->id(), 'ressource_id' => $id];
+            $data['ressource_id'] = $id;
+            $data['publication_id'] = null;
+        }
+
+        \App\Models\ResourceRating::updateOrCreate($search, $data);
+
+        return back()->with('success', 'Votre avis a été publié avec succès !');
     }
 
     /** 2. PARCOURS ACADÉMIQUE **/

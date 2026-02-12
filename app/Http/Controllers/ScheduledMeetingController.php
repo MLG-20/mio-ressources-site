@@ -102,4 +102,19 @@ class ScheduledMeetingController extends Controller
 
         return redirect()->route('scheduled-meetings.index')->with('success', 'Cours fermé');
     }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Meeting $scheduled_meeting)
+    {
+        // Sécurité : seul le créateur peut supprimer
+        if ($scheduled_meeting->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $scheduled_meeting->delete();
+
+        return redirect()->back()->with('success', 'Réunion supprimée avec succès.');
+    }
 }

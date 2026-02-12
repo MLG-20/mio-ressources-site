@@ -105,6 +105,12 @@
                         <div class="text-slate-600 leading-relaxed text-lg">
                             {!! nl2br(e($message->contenu)) !!}
                         </div>
+                        @if($message->user_id === Auth::id())
+                            <div class="mt-2 flex items-center gap-2">
+                                <span class="inline-block bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full">Votre message</span>
+                                <i class="fas fa-check-circle text-green-500"></i>
+                            </div>
+                        @endif
                     </div>
                 </div>
             @endforeach

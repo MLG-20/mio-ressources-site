@@ -25,7 +25,7 @@
         .prose img { border-radius: 1.5rem; margin: 2rem 0; box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
     </style>
 </head>
-<body class="bg-[#f8fafc] text-slate-900"
+<body class="bg-[#f8fafc] text-slate-900 overflow-x-hidden"
       x-data="{ scrolled: false }"
       @scroll.window="scrolled = (window.pageYOffset > 200)">
 
