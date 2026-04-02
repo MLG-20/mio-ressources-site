@@ -19,6 +19,9 @@ class StatsOverview extends BaseWidget
 
     public static function canView(): bool
     {
+        if (!auth()->user()?->isSuperAdmin()) {
+            return false;
+        }
         return request()->get('tab') === 'vue-ensemble' || request()->get('tab') === null;
     }
 

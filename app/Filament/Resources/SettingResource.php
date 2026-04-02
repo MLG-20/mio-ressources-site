@@ -20,6 +20,11 @@ class SettingResource extends Resource
 
     protected static ?string $navigationLabel = 'Paramètres';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->hasPermission('settings') ?? false;
+    }
+
     public static function form(Form $form): Form
     {
         return $form

@@ -59,22 +59,24 @@
    - Suivi revenus (wallet) et ventes.
  
  ## Stack technique
- 
+
  - **Backend**: Laravel 12, PHP >= 8.2
  - **Admin**: Filament v3
  - **Auth**: Laravel Breeze
  - **Front**: Vite + TailwindCSS + AlpineJS
  - **PDF**: barryvdh/laravel-dompdf
- - **DB**: SQLite par défaut (configurable MySQL/Postgres)
+ - **DB**: MySQL (recommandé en prod)
+ - **Cache & Queue**: Redis (via predis/predis)
  
  ## Installation (étape par étape)
  
  ### 1) Prérequis
- 
+
  - PHP **8.2+**
  - Composer
  - Node.js + npm
- - Une base de données (SQLite ok pour dev)
+ - MySQL (ou autre base de données)
+ - **Redis** (obligatoire en production pour les queues et le cache)
  
  ### 2) Installer les dépendances
  
@@ -134,9 +136,34 @@
  - Vite
  
  ### Mode classique
- 
+
  - Backend : `php artisan serve`
  - Front : `npm run dev`
+
+ ## Queue workers (production)
+
+ Les emails (notifications, factures) sont envoyés en arrière-plan via Redis.
+ En production, tu dois démarrer au minimum **1 worker** :
+
+ ```bash
+ # Démarrer un worker (à lancer en production)
+ php artisan queue:work redis --sleep=3 --tries=3 --max-time=3600
+
+ # Ou avec Supervisor (recommandé), ajouter dans /etc/supervisor/conf.d/mio-worker.conf :
+ # [program:mio-worker]
+ # command=php /chemin/vers/projet/artisan queue:work redis --sleep=3 --tries=3 --max-time=3600
+ # autostart=true
+ # autorestart=true
+ # numprocs=2
+ # stderr_logfile=/var/log/mio-worker.log
+ ```
+
+ Le scheduler (rappels de cours) doit aussi tourner en cron :
+
+ ```bash
+ # Ajouter dans le crontab du serveur (crontab -e)
+ * * * * * cd /chemin/vers/projet && php artisan schedule:run >> /dev/null 2>&1
+ ```
  
  ## Structure du projet (repères)
  
@@ -199,7 +226,7 @@
  - `PAYTECH_ENV` (ex: `test` / `prod`)
  - `APP_URL` (doit être l’URL publique en prod)
  
- Important : l’endpoint IPN est exempté CSRF (normal pour un webhook). En production, il est recommandé d’ajouter une **vérification de signature** (HMAC / token) fournie par PayTech.
+ L’endpoint IPN est exempté CSRF (normal pour un webhook). La vérification est double : secret dans l’URL + SHA256 des clés API PayTech via `hash_equals`.
  
  ## Stockage des fichiers & PDF
  
@@ -217,11 +244,13 @@
  - `APP_KEY` renseignée
  
  ### Points à vérifier
- 
- - **Webhooks PayTech** : vérifier la signature / secret (anti-fraude)
+
+ - **Webhooks PayTech** : vérification double (secret URL + SHA256 clés API) — déjà en place
+ - **Rate limiting** : throttle sur login, register, forum, paiements — déjà en place
  - **Téléchargements** : accès réservé aux acheteurs / admin / propriétaire
- - **Rate limiting** : ajouter `throttle` sur login, forum, et IPN
  - **TLS** : ne pas désactiver la vérification SSL
+ - **Redis** : démarrer les workers queue en production (voir section dédiée)
+ - **APP_DEBUG=false** en production obligatoire
  
  ## Tests & qualité
  
@@ -244,3 +273,4 @@
  - **Emails non envoyés**
    - Configure `MAIL_*` dans `.env`
    - Vérifie le driver queue si tu en utilises un
+Dashboard_Laravel

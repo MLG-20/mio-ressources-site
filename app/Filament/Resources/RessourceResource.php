@@ -28,6 +28,11 @@ class RessourceResource extends Resource
 
     protected static ?string $navigationLabel = 'Ressources Académiques';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->hasPermission('ressources') ?? false;
+    }
+
     public static function form(Form $form): Form
 {
     return $form

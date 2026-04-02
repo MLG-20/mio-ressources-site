@@ -13,7 +13,7 @@ class ServerStatsWidget extends BaseWidget
 
     public static function canView(): bool
     {
-        return request()->get('tab') === 'vue-ensemble' || request()->get('tab') === null;
+        return false;
     }
 
     protected function getStats(): array

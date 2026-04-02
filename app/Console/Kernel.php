@@ -12,11 +12,21 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // Envoyer des rappels 15 minutes avant les cours particuliers
-        // Exécuter toutes les minutes pour vérifier les cours
+        // Rappels cours particuliers (toutes les minutes)
         $schedule->command('app:send-private-lesson-reminders')
             ->everyMinute()
             ->withoutOverlapping();
+
+        // Backup complet chaque nuit à 2h (DB + fichiers uploadés)
+        $schedule->command('backup:run')
+            ->dailyAt('02:00')
+            ->onFailure(function () {
+                \Illuminate\Support\Facades\Log::critical('Backup échoué !');
+            });
+
+        // Nettoyage des vieux backups chaque nuit à 3h (garde 7 jours)
+        $schedule->command('backup:clean')
+            ->dailyAt('03:00');
     }
 
     /**

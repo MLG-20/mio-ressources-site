@@ -2,12 +2,15 @@
 
 namespace App\Notifications;
 
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use App\Models\PrivateLesson;
 
-class NewPrivateLessonNotification extends Notification
+class NewPrivateLessonNotification extends Notification implements ShouldQueue
 {
+    use Queueable;
 
     public $privateLesson;
 

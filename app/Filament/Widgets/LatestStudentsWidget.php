@@ -15,7 +15,8 @@ class LatestStudentsWidget extends BaseWidget
 
     public static function canView(): bool
     {
-        return request()->get('tab') === 'utilisateurs';
+        return auth()->user()?->hasPermission('users')
+            && request()->get('tab') === 'utilisateurs';
     }
 
     public function table(Table $table): Table

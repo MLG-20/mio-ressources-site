@@ -10,6 +10,16 @@
         </p>
     </div>
 
+    @if ($errors->has('email') && str_contains($errors->first('email'), 'suspendu'))
+    <div class="mb-6 flex items-start gap-3 bg-red-50 border-2 border-red-400 rounded-xl px-4 py-4">
+        <div class="mt-0.5 text-red-500 text-xl"><i class="fas fa-ban"></i></div>
+        <div>
+            <p class="text-red-700 font-black text-sm uppercase tracking-wide mb-0.5">Compte suspendu</p>
+            <p class="text-red-600 font-semibold text-sm">{{ $errors->first('email') }}</p>
+        </div>
+    </div>
+    @endif
+
     <form method="POST" action="{{ route('login') }}" class="space-y-6">
         @csrf
 
@@ -38,8 +48,12 @@
                     <i class="fas fa-lock text-slate-400 group-focus-within:text-blue-600 text-lg transition-colors"></i>
                 </div>
                 <input id="password" name="password" type="password" required autocomplete="current-password"
-                       class="pl-12 block w-full bg-white border-2 border-slate-300 rounded-xl text-slate-900 font-bold text-lg py-4 shadow-sm focus:ring-4 focus:ring-blue-100 focus:border-blue-600 transition-all placeholder:text-slate-400" 
+                       class="pl-12 pr-12 block w-full bg-white border-2 border-slate-300 rounded-xl text-slate-900 font-bold text-lg py-4 shadow-sm focus:ring-4 focus:ring-blue-100 focus:border-blue-600 transition-all placeholder:text-slate-400"
                        placeholder="••••••••">
+                <button type="button" onclick="togglePassword()"
+                        class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-blue-600 transition-colors">
+                    <i id="eye-icon" class="fas fa-eye text-lg"></i>
+                </button>
             </div>
             <x-input-error :messages="$errors->get('password')" class="mt-2 text-sm font-bold text-red-600" />
         </div>
@@ -55,4 +69,18 @@
             Se Connecter
         </button>
     </form>
+
+    <script>
+        function togglePassword() {
+            const input = document.getElementById('password');
+            const icon = document.getElementById('eye-icon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+    </script>
 </x-guest-layout>

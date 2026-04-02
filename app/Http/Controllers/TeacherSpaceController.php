@@ -70,7 +70,7 @@ class TeacherSpaceController extends Controller
         $request->validate([
             'titre' => 'required|string|max:255',
             'type' => 'required',
-            'file_path' => 'required|file|mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,zip,rar,7z,txt,jpg,jpeg,png|max:51200',
+            'file_path' => 'required|file|mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,zip,rar,7z,txt,jpg,jpeg,png|mimetypes:application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/zip,application/x-rar-compressed,application/x-7z-compressed,text/plain,image/jpeg,image/png|max:51200',
         ]);
 
         $file = $request->file('file_path')->store('publications', 'public');

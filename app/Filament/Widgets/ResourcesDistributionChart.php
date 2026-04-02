@@ -17,7 +17,8 @@ class ResourcesDistributionChart extends ChartWidget
 
     public static function canView(): bool
     {
-        return request()->get('tab') === 'contenus';
+        return auth()->user()?->hasPermission('ressources')
+            && request()->get('tab') === 'contenus';
     }
 
     protected function getData(): array

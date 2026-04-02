@@ -23,6 +23,11 @@ class ReviewResource extends Resource
     // Ordre dans le menu (pour le mettre vers la fin)
     protected static ?int $navigationSort = 50;
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->hasPermission('stats') ?? false;
+    }
+
     public static function form(Form $form): Form
     {
         return $form

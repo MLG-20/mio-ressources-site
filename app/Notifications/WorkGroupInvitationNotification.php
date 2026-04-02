@@ -5,10 +5,11 @@ namespace App\Notifications;
 use App\Models\WorkGroup;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class WorkGroupInvitationNotification extends Notification
+class WorkGroupInvitationNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 

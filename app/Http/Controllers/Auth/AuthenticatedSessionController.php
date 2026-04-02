@@ -29,6 +29,17 @@ class AuthenticatedSessionController extends Controller
 
     $user = auth()->user();
 
+    // Compte bloqué par l'administrateur
+    if ($user->is_blocked) {
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return back()->withErrors([
+            'email' => 'Votre compte a été suspendu par l\'administrateur. Veuillez le contacter pour plus d\'informations.',
+        ])->onlyInput('email');
+    }
+
     // SÉCURITÉ : redirection selon le rôle (évite d'envoyer un professeur sur /admin)
     if ($user->role === 'admin') {
         return redirect()->intended('/admin');

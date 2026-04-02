@@ -12,7 +12,8 @@ class AcademicOverview extends BaseWidget
 
     public static function canView(): bool
     {
-        return request()->get('tab') === 'contenus' || (request()->get('tab') === null && request()->get('activeTab') === 'contenus');
+        return auth()->user()?->hasPermission('ressources')
+            && (request()->get('tab') === 'contenus' || (request()->get('tab') === null && request()->get('activeTab') === 'contenus'));
     }
 
     protected function getStats(): array

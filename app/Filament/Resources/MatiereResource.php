@@ -19,6 +19,11 @@ class MatiereResource extends Resource
     
     protected static ?string $navigationLabel = 'Matières';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->hasPermission('semestres') ?? false;
+    }
+
     public static function form(Form $form): Form
     {
         return $form

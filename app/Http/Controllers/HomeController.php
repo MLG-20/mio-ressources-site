@@ -290,7 +290,11 @@ private function sendTriangularEmails($emailAcheteur, $item, $pdfContent)
 
         // Pour les vidéos, rediriger vers l'URL externe
         if ($ressource->type === 'Vidéo') {
-            return redirect()->away($ressource->file_path);
+            $url = $ressource->file_path;
+            if (!filter_var($url, FILTER_VALIDATE_URL) || !in_array(parse_url($url, PHP_URL_SCHEME), ['http', 'https'])) {
+                abort(400, 'URL invalide.');
+            }
+            return redirect()->away($url);
         }
 
         // Pour les fichiers locaux, télécharger avec le nom de la ressource
@@ -323,7 +327,11 @@ private function sendTriangularEmails($emailAcheteur, $item, $pdfContent)
 
         // Pour les vidéos, rediriger
         if ($ressource->type === 'Vidéo') {
-            return redirect()->away($ressource->file_path);
+            $url = $ressource->file_path;
+            if (!filter_var($url, FILTER_VALIDATE_URL) || !in_array(parse_url($url, PHP_URL_SCHEME), ['http', 'https'])) {
+                abort(400, 'URL invalide.');
+            }
+            return redirect()->away($url);
         }
 
         // Pour les fichiers locaux, afficher dans le navigateur

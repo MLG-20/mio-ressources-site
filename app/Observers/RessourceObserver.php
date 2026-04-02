@@ -19,12 +19,13 @@ class RessourceObserver
     // LOGIQUE INTELLIGENTE : 
     // On n'envoie un MAIL que pour les TD (corrigés ou non) et les Vidéos (Tutos)
     if ($ressource->type === 'TD' || $ressource->type === 'Vidéo') {
-        
-        $students = User::where('student_level', $niveau)->get();
 
-        foreach ($students as $student) {
-            $student->notify(new NewResourceNotification($ressource));
-        }
+        User::where('student_level', $niveau)
+            ->chunk(100, function ($students) use ($ressource) {
+                foreach ($students as $student) {
+                    $student->notify(new NewResourceNotification($ressource));
+                }
+            });
     }
     
     // S'il s'agit d'un "Cours", on ne fait rien ici. 

@@ -24,5 +24,10 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Intégration Sentry (optionnel — décommenter après avoir installé sentry/sentry-laravel)
+        // $exceptions->report(function (\Throwable $e) {
+        //     if (app()->bound('sentry') && $this->shouldReport($e)) {
+        //         app('sentry')->captureException($e);
+        //     }
+        // });
     })->create();

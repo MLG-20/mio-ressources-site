@@ -35,8 +35,7 @@ class Dashboard extends BaseDashboard
             ],
             'contenus' => [
                 'default' => 1,
-                'sm' => 2,
-                'md' => 3,
+                'md' => 2,
             ],
             'utilisateurs' => [
                 'default' => 1,

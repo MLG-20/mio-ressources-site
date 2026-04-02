@@ -21,7 +21,8 @@ class SemesterVisitsChart extends ChartWidget
 
     public static function canView(): bool
     {
-        return request()->get('tab') === 'visites';
+        return auth()->user()?->hasPermission('stats')
+            && request()->get('tab') === 'visites';
     }
 
     protected function getData(): array

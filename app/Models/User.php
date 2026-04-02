@@ -26,7 +26,8 @@ class User extends Authenticatable implements FilamentUser
         'user_type',     // student, teacher
         'student_level', // L1, L2, L3
         'specialty',     // Spécialité du prof
-        'wallet_balance', // SOLDE DES REVENUS (Très important !)
+        'permissions',   // JSON — sections autorisées pour les sous-admins
+        'is_blocked',    // Bloquer l'accès au panel
     ];
 
     protected $hidden = [
@@ -38,7 +39,9 @@ class User extends Authenticatable implements FilamentUser
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
+            'permissions'       => 'array',
+            'is_blocked'        => 'boolean',
         ];
     }
 
@@ -46,11 +49,35 @@ class User extends Authenticatable implements FilamentUser
      * SÉCURITÉ DASHBOARD ADMIN (Filament)
      * On restreint l'accès UNIQUEMENT à l'admin principal.
      */
+    public function isSuperAdmin(): bool
+    {
+        $adminEmail = env('ADMIN_EMAIL');
+        return $this->role === 'admin'
+            && ($adminEmail === null || $this->email === $adminEmail);
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
-        // Désormais, seul l'admin MLG entre dans le dashboard noir.
-        // Le professeur ira sur son propre espace (/espace-enseignant).
+        // Bloqué = accès refusé
+        if ($this->is_blocked) {
+            return false;
+        }
+
+        // Super admin : accès total
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
+        // Sous-admin : role=admin mais pas le super admin
         return $this->role === 'admin';
+    }
+
+    public function hasPermission(string $permission): bool
+    {
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+        return in_array($permission, $this->permissions ?? []);
     }
 
     /**

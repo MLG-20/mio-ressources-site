@@ -21,6 +21,11 @@ class SliderResource extends Resource
     // On change le nom dans le menu
     protected static ?string $navigationLabel = 'Slider Accueil';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->hasPermission('sliders') ?? false;
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -31,6 +36,7 @@ class SliderResource extends Resource
                         Forms\Components\FileUpload::make('image_path')
                             ->label('Image (Format large conseillé)')
                             ->image()
+                            ->disk('public')
                             ->directory('sliders')
                             ->imageEditor()
                             ->imageEditorAspectRatios([

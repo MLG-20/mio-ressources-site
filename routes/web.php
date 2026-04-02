@@ -1,9 +1,5 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ResourceController;
-use App\Http\Controllers\ForumAdminController;
-use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\ScheduledMeetingController;
@@ -14,7 +10,42 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\PrivateLessonController;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| HEALTH CHECK (monitoring)
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/health', function () {
+    $checks = [];
+
+    // Base de données
+    try {
+        DB::connection()->getPdo();
+        $checks['database'] = 'ok';
+    } catch (\Exception $e) {
+        $checks['database'] = 'error';
+    }
+
+    // Cache Redis
+    try {
+        Cache::put('health_check', true, 10);
+        $checks['cache'] = Cache::get('health_check') ? 'ok' : 'error';
+    } catch (\Exception $e) {
+        $checks['cache'] = 'error';
+    }
+
+    $status = in_array('error', $checks) ? 500 : 200;
+
+    return response()->json([
+        'status' => $status === 200 ? 'healthy' : 'unhealthy',
+        'checks' => $checks,
+    ], $status);
+})->middleware('throttle:30,1')->name('health');
 
 /*
 |--------------------------------------------------------------------------
@@ -27,11 +58,11 @@ Route::get('/page/{slug}', [HomeController::class, 'showPage'])->name('page.show
 Route::get('/semestre/{id}', [HomeController::class, 'showSemestre'])->name('semestre.show');
 Route::get('/matiere/{id}', [HomeController::class, 'showMatiere'])->name('matiere.show');
 Route::get('/bibliotheque', [HomeController::class, 'library'])->name('library.index');
-Route::post('/avis', [HomeController::class, 'storeReview'])->name('avis.store');
+Route::post('/avis', [HomeController::class, 'storeReview'])->middleware('throttle:10,1')->name('avis.store');
 
 
 // --- PAIEMENT ---
-Route::get('/payer/{id}/{type}', [PaymentController::class, 'initiatePayment'])->name('payment.pay');
+Route::get('/payer/{id}/{type}', [PaymentController::class, 'initiatePayment'])->middleware('throttle:10,1')->name('payment.pay');
 Route::get('/paiement/succes/{id}/{type}', [PaymentController::class, 'success'])->name('payment.success');
     // C'EST CETTE ROUTE QUI MANQUAIT POUR LE LIVRE
 Route::get('/achat-livre/{id}', [HomeController::class, 'checkoutBook'])->name('book.checkout');
@@ -91,7 +122,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/facture/{id}', [InvoiceController::class, 'download'])->name('invoice.download');
 
     // Avis sur documents
-    Route::post('/rate/{id}/{type}', [HomeController::class, 'storeResourceRating'])->name('resource.rate');
+    Route::post('/rate/{id}/{type}', [HomeController::class, 'storeResourceRating'])->middleware('throttle:10,1')->name('resource.rate');
 
 
 
@@ -153,14 +184,14 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/sujet/{id}', [ForumController::class, 'showSujet'])->name('forum.sujet');
 
         // Répondre à un sujet existant (depuis la page show.blade.php)
-        Route::post('/sujet/{id}/repondre', [ForumController::class, 'storeMessage'])->name('forum.sujet.reply');
+        Route::post('/sujet/{id}/repondre', [ForumController::class, 'storeMessage'])->middleware('throttle:20,1')->name('forum.sujet.reply');
     });
 
     // --- 2. ROUTES D'ACTION DASHBOARD (UserSpaceController) ---
     // Celles-ci font fonctionner votre formulaire sur le bureau
 
     // C'est LA route utilisée par votre formulaire "Lancer une discussion"
-    Route::post('/forum/message/store', [UserSpaceController::class, 'storeMessage'])->name('forum.message.store');
+    Route::post('/forum/message/store', [UserSpaceController::class, 'storeMessage'])->middleware('throttle:20,1')->name('forum.message.store');
 
     // Pour supprimer une discussion (Titre + Messages)
     Route::delete('/forum/sujet-perso/{id}', [UserSpaceController::class, 'destroySujet'])->name('user.sujet.destroy');
@@ -169,7 +200,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/forum/message/{id}', [UserSpaceController::class, 'destroyMessage'])->name('forum.message.destroy');
 
     // Pour modifier un message
-    Route::put('/forum/message/{id}', [UserSpaceController::class, 'updateMessage'])->name('forum.message.update');
+    Route::put('/forum/message/{id}', [UserSpaceController::class, 'updateMessage'])->middleware('throttle:20,1')->name('forum.message.update');
 
 });
 

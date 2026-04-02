@@ -205,12 +205,12 @@ class PaymentController extends Controller
         $customData = json_decode((string) $request->custom_field, true);
 
         if (!is_array($customData)) {
-            Log::warning('PayTech IPN invalid custom_field', ['payload' => $request->all()]);
+            Log::warning('PayTech IPN invalid custom_field', ['ip' => $request->ip(), 'has_token' => $request->has('token')]);
             return response()->json(['success' => 'invalid'], 400);
         }
 
         if (!isset($customData['item_id'], $customData['item_type']) || !isset($request->token)) {
-            Log::warning('PayTech IPN missing required fields', ['payload' => $request->all()]);
+            Log::warning('PayTech IPN missing required fields', ['ip' => $request->ip(), 'fields' => array_keys($request->all())]);
             return response()->json(['success' => 'invalid'], 400);
         }
 

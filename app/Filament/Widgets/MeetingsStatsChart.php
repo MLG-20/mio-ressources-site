@@ -14,11 +14,14 @@ class MeetingsStatsChart extends ChartWidget
 
     protected static ?int $sort = 4;
 
+    protected int | string | array $columnSpan = 1;
+
     protected static ?string $pollingInterval = '30s'; // Rafraîchissement automatique
 
     public static function canView(): bool
     {
-        return request()->get('tab') === 'contenus';
+        return auth()->user()?->hasPermission('meetings')
+            && request()->get('tab') === 'contenus';
     }
 
     protected function getData(): array

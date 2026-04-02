@@ -17,7 +17,8 @@ class VisitChart extends ChartWidget
 
     public static function canView(): bool
     {
-        return request()->get('tab') === 'visites';
+        return auth()->user()?->hasPermission('stats')
+            && request()->get('tab') === 'visites';
     }
     // 1. Définir le menu déroulant
     protected function getFilters(): ?array

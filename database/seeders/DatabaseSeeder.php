@@ -16,6 +16,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Super admin (lit les credentials depuis .env)
+        $this->call(AdminSeeder::class);
+
         // Appeler le seeder académique
         $this->call(AcademicSeeder::class);
 

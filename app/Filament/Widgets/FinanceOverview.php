@@ -12,7 +12,8 @@ class FinanceOverview extends BaseWidget
 
     public static function canView(): bool
     {
-        return request()->get('tab') === 'finances';
+        return auth()->user()?->hasPermission('paiements')
+            && request()->get('tab') === 'finances';
     }
 
     protected function getStats(): array
