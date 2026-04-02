@@ -50,6 +50,7 @@
             <a href="{{ route('teacher.private-lessons.index') }}" class="px-4 md:px-8 py-3 md:py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all whitespace-nowrap bg-amber-600 text-white hover:bg-amber-700">💼 Cours Particuliers</a>
             <button @click="tab = 'forum'" :class="tab === 'forum' ? 'bg-blue-600 text-white shadow-blue-200' : 'bg-white text-slate-500'" class="px-4 md:px-8 py-3 md:py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all whitespace-nowrap">💬 Forum</button>
             <button @click="tab = 'settings'" :class="tab === 'settings' ? 'bg-slate-900 text-white' : 'bg-white text-slate-500'" class="px-4 md:px-8 py-3 md:py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all whitespace-nowrap">⚙️ Params</button>
+            <button @click="tab = 'aide'" :class="tab === 'aide' ? 'bg-teal-600 text-white shadow-teal-200' : 'bg-white text-slate-500'" class="px-4 md:px-8 py-3 md:py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all whitespace-nowrap">❓ Aide</button>
         </div>
 
         <!-- 1. ONGLET BUREAU -->
@@ -284,6 +285,121 @@
                 <button onclick="document.getElementById('modal-del').classList.remove('hidden')" class="text-red-500 font-black text-xs uppercase tracking-widest hover:underline">Supprimer mon compte définitivement</button>
             </div>
         </div>
+        <!-- ONGLET AIDE -->
+        <div x-show="tab === 'aide'" x-cloak class="space-y-6 md:space-y-8">
+            <div class="bg-white rounded-xl md:rounded-[3rem] p-6 md:p-10 shadow-xl border border-slate-100">
+                <h2 class="text-xl md:text-2xl font-black text-slate-800 uppercase mb-1">Centre d'aide</h2>
+                <p class="text-slate-500 text-sm mb-8">Comment utiliser toutes les fonctionnalités de votre espace enseignant.</p>
+
+                <div class="space-y-3">
+
+                    <!-- Bureau -->
+                    <details class="group bg-slate-50 rounded-2xl overflow-hidden">
+                        <summary class="flex items-center justify-between p-5 cursor-pointer font-black text-slate-700 uppercase text-xs tracking-widest list-none select-none">
+                            <span>📊 Bureau</span>
+                            <i class="fas fa-chevron-down text-slate-400 transition-transform duration-200 group-open:rotate-180"></i>
+                        </summary>
+                        <div class="px-5 pb-5 text-slate-600 text-sm space-y-3">
+                            <p>Votre tableau de bord principal affiche vos statistiques clés :</p>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li><strong>Publications</strong> — nombre total de ressources publiées.</li>
+                                <li><strong>Mon Solde</strong> — revenus cumulés issus des téléchargements payants.</li>
+                                <li><strong>Spécialité</strong> — votre domaine d'enseignement (modifiable dans Paramètres).</li>
+                            </ul>
+                            <p class="font-bold text-slate-700">Publier un ouvrage :</p>
+                            <ol class="list-decimal pl-5 space-y-1">
+                                <li>Renseignez le titre de l'ouvrage.</li>
+                                <li>Choisissez le type (Livre, Mémoire, Résumé…).</li>
+                                <li>Sélectionnez le semestre concerné.</li>
+                                <li>Indiquez le prix (0 = gratuit pour les étudiants).</li>
+                                <li>Joignez le fichier PDF et une image de couverture.</li>
+                                <li>Cliquez sur <strong>Publier</strong> — la ressource est immédiatement disponible.</li>
+                            </ol>
+                        </div>
+                    </details>
+
+                    <!-- Cours -->
+                    <details class="group bg-slate-50 rounded-2xl overflow-hidden">
+                        <summary class="flex items-center justify-between p-5 cursor-pointer font-black text-slate-700 uppercase text-xs tracking-widest list-none select-none">
+                            <span>🎥 Cours</span>
+                            <i class="fas fa-chevron-down text-slate-400 transition-transform duration-200 group-open:rotate-180"></i>
+                        </summary>
+                        <div class="px-5 pb-5 text-slate-600 text-sm space-y-3">
+                            <p>Mettez à disposition des cours vidéo ou des liens pour vos étudiants.</p>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li>Ajoutez un lien vidéo (YouTube, Google Drive, Loom…).</li>
+                                <li>Associez-le à un semestre spécifique.</li>
+                                <li>Les étudiants inscrits peuvent y accéder depuis leur espace <strong>Cours</strong>.</li>
+                                <li>Vous pouvez modifier ou supprimer un cours à tout moment.</li>
+                            </ul>
+                        </div>
+                    </details>
+
+                    <!-- Cours Particuliers -->
+                    <details class="group bg-slate-50 rounded-2xl overflow-hidden">
+                        <summary class="flex items-center justify-between p-5 cursor-pointer font-black text-slate-700 uppercase text-xs tracking-widest list-none select-none">
+                            <span>💼 Cours Particuliers</span>
+                            <i class="fas fa-chevron-down text-slate-400 transition-transform duration-200 group-open:rotate-180"></i>
+                        </summary>
+                        <div class="px-5 pb-5 text-slate-600 text-sm space-y-3">
+                            <p>Proposez des sessions individuelles payantes aux étudiants.</p>
+                            <ol class="list-decimal pl-5 space-y-1">
+                                <li>Cliquez sur <strong>Cours Particuliers</strong> dans la navigation.</li>
+                                <li>Créez une offre : titre, description, durée, tarif.</li>
+                                <li>Les étudiants trouvent votre offre et paient via <strong>PayTech</strong> (Wave, Orange Money, carte bancaire…).</li>
+                                <li>Une fois le paiement confirmé, une réunion <strong>Jitsi</strong> est programmée automatiquement.</li>
+                                <li>Vous recevez une notification par email avec le lien de la réunion.</li>
+                            </ol>
+                        </div>
+                    </details>
+
+                    <!-- Forum -->
+                    <details class="group bg-slate-50 rounded-2xl overflow-hidden">
+                        <summary class="flex items-center justify-between p-5 cursor-pointer font-black text-slate-700 uppercase text-xs tracking-widest list-none select-none">
+                            <span>💬 Forum</span>
+                            <i class="fas fa-chevron-down text-slate-400 transition-transform duration-200 group-open:rotate-180"></i>
+                        </summary>
+                        <div class="px-5 pb-5 text-slate-600 text-sm space-y-3">
+                            <p>Interagissez directement avec les étudiants dans l'espace de discussion.</p>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li>Les sujets sont organisés par niveau et semestre.</li>
+                                <li>Répondez aux questions dans les fils de discussion.</li>
+                                <li>Vous pouvez modifier ou supprimer vos propres messages.</li>
+                                <li>Accédez au forum complet via le menu principal du site.</li>
+                            </ul>
+                        </div>
+                    </details>
+
+                    <!-- Paramètres -->
+                    <details class="group bg-slate-50 rounded-2xl overflow-hidden">
+                        <summary class="flex items-center justify-between p-5 cursor-pointer font-black text-slate-700 uppercase text-xs tracking-widest list-none select-none">
+                            <span>⚙️ Paramètres</span>
+                            <i class="fas fa-chevron-down text-slate-400 transition-transform duration-200 group-open:rotate-180"></i>
+                        </summary>
+                        <div class="px-5 pb-5 text-slate-600 text-sm space-y-3">
+                            <p>Gérez les informations de votre compte :</p>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li><strong>Photo de profil</strong> — importez une image JPG/PNG (visible par les étudiants).</li>
+                                <li><strong>Spécialité</strong> — indiquez votre domaine d'enseignement.</li>
+                                <li><strong>Mot de passe</strong> — modifiez votre mot de passe de connexion (saisissez l'ancien, puis le nouveau).</li>
+                                <li><strong>Supprimer le compte</strong> — action irréversible, toutes vos publications seront effacées définitivement.</li>
+                            </ul>
+                        </div>
+                    </details>
+
+                </div>
+
+                <!-- Contact support -->
+                <div class="mt-8 bg-teal-50 border border-teal-100 rounded-2xl p-5 flex items-start gap-4">
+                    <i class="fas fa-life-ring text-teal-500 text-xl mt-0.5 flex-shrink-0"></i>
+                    <div>
+                        <p class="font-black text-slate-800 text-sm uppercase mb-1">Besoin d'aide supplémentaire ?</p>
+                        <p class="text-slate-500 text-sm">Contactez l'administrateur de la plateforme via le forum ou l'adresse email de support.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <!-- MODAL SUPPRESSION -->

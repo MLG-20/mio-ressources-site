@@ -87,6 +87,7 @@
             <button @click="setTab('groupes')" :class="tab === 'groupes' ? 'bg-indigo-600 text-white shadow-indigo-200' : 'bg-white text-slate-500'" class="px-4 md:px-8 py-3 md:py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all whitespace-nowrap">👥 Groupes</button>
             <button @click="setTab('cours')" :class="tab === 'cours' ? 'bg-green-600 text-white shadow-green-200' : 'bg-white text-slate-500'" class="px-4 md:px-8 py-3 md:py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all whitespace-nowrap">🎓 Cours</button>
             <button @click="setTab('historique')" :class="tab === 'historique' ? 'bg-amber-600 text-white shadow-amber-200' : 'bg-white text-slate-500'" class="px-4 md:px-8 py-3 md:py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all whitespace-nowrap">📚 Historique</button>
+            <button @click="setTab('aide')" :class="tab === 'aide' ? 'bg-teal-600 text-white shadow-teal-200' : 'bg-white text-slate-500'" class="px-4 md:px-8 py-3 md:py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all whitespace-nowrap">❓ Aide</button>
         </div>
 
         <!-- MENU MOBILE - HAMBURGER VERSION -->
@@ -98,6 +99,7 @@
                 <span v-else-if="tab === 'groupes'">👥 Groupes</span>
                 <span v-else-if="tab === 'cours'">🎓 Cours</span>
                 <span v-else-if="tab === 'historique'">📚 Historique</span>
+                <span v-else-if="tab === 'aide'">❓ Aide</span>
             </div>
             <button @click="mobileMenuOpen = !mobileMenuOpen" class="p-2 hover:bg-slate-100 rounded-lg transition">
                 <i :class="mobileMenuOpen ? 'fa-times' : 'fa-bars'" class="fas text-lg text-slate-700"></i>
@@ -135,6 +137,10 @@
             <button @click="setTab('historique')" :class="tab === 'historique' ? 'bg-amber-50 border-l-4 border-amber-600 text-amber-600' : 'text-slate-700 hover:bg-slate-50'" class="w-full text-left px-4 py-3 font-bold uppercase text-xs tracking-wide flex items-center gap-3 transition border-l-4 border-transparent">
                 <i class="fas fa-book text-lg w-5 flex-shrink-0"></i>
                 <span>Historique</span>
+            </button>
+            <button @click="setTab('aide')" :class="tab === 'aide' ? 'bg-teal-50 border-l-4 border-teal-600 text-teal-600' : 'text-slate-700 hover:bg-slate-50'" class="w-full text-left px-4 py-3 font-bold uppercase text-xs tracking-wide flex items-center gap-3 transition border-l-4 border-transparent">
+                <i class="fas fa-circle-question text-lg w-5 flex-shrink-0"></i>
+                <span>Aide</span>
             </button>
         </div>
 
@@ -471,7 +477,8 @@
                             </a>
 
                             @if($group->creator_id === Auth::id())
-                            <button @click="selectedGroup = {{ $group->id }}; selectedMembers = JSON.parse('[' + '{{ collect($group->members)->map(fn($m) => json_encode(['id' => $m->id, 'name' => $m->name, 'creator_id' => $group->creator_id]))->join(',') }}' + ']'); showMembersModal = true" class="bg-green-100 text-green-600 px-4 py-2 rounded-xl font-bold text-xs hover:bg-green-200 transition" title="Gérer les membres">
+                            @php $membersJson = json_encode($group->members->map(fn($m) => ['id' => $m->id, 'name' => $m->name, 'creator_id' => $group->creator_id])->values()->all()) @endphp
+                            <button @click="selectedGroup = {{ $group->id }}; selectedMembers = {{ $membersJson }}; showMembersModal = true" class="bg-green-100 text-green-600 px-4 py-2 rounded-xl font-bold text-xs hover:bg-green-200 transition" title="Gérer les membres">
                                 <i class="fas fa-users"></i>
                             </button>
                             <button @click="selectedGroup = {{ $group->id }}; showInviteModal = true" class="bg-blue-100 text-blue-600 px-4 py-2 rounded-xl font-bold text-xs hover:bg-blue-200 transition">
@@ -851,6 +858,164 @@
                 </form>
             </div>
         </div>
+        <!-- ONGLET AIDE -->
+        <div x-show="tab === 'aide'" x-cloak class="space-y-6 md:space-y-8">
+            <div class="bg-white rounded-xl md:rounded-[3rem] p-6 md:p-10 shadow-xl border border-slate-100">
+                <h2 class="text-xl md:text-2xl font-black text-slate-800 uppercase mb-1">Centre d'aide</h2>
+                <p class="text-slate-500 text-sm mb-8">Comment utiliser toutes les fonctionnalités de votre espace étudiant.</p>
+
+                <div class="space-y-3">
+
+                    <!-- Bureau -->
+                    <details class="group bg-slate-50 rounded-2xl overflow-hidden">
+                        <summary class="flex items-center justify-between p-5 cursor-pointer font-black text-slate-700 uppercase text-xs tracking-widest list-none select-none">
+                            <span>📊 Bureau</span>
+                            <i class="fas fa-chevron-down text-slate-400 transition-transform duration-200 group-open:rotate-180"></i>
+                        </summary>
+                        <div class="px-5 pb-5 text-slate-600 text-sm space-y-3">
+                            <p>Le Bureau est votre page d'accueil. Il affiche un résumé de votre activité :</p>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li>Vos ressources téléchargées récemment.</li>
+                                <li>Les cours auxquels vous êtes inscrits.</li>
+                                <li>Vos groupes de travail actifs.</li>
+                                <li>Les dernières publications des enseignants.</li>
+                            </ul>
+                            <p>Cliquez sur n'importe quelle carte pour accéder à la section correspondante.</p>
+                        </div>
+                    </details>
+
+                    <!-- Profil -->
+                    <details class="group bg-slate-50 rounded-2xl overflow-hidden">
+                        <summary class="flex items-center justify-between p-5 cursor-pointer font-black text-slate-700 uppercase text-xs tracking-widest list-none select-none">
+                            <span>👤 Profil</span>
+                            <i class="fas fa-chevron-down text-slate-400 transition-transform duration-200 group-open:rotate-180"></i>
+                        </summary>
+                        <div class="px-5 pb-5 text-slate-600 text-sm space-y-3">
+                            <p>Personnalisez votre compte :</p>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li><strong>Photo de profil</strong> — importez une image JPG/PNG visible par la communauté.</li>
+                                <li><strong>Informations personnelles</strong> — mettez à jour votre nom et votre email.</li>
+                                <li><strong>Mot de passe</strong> — saisissez l'ancien mot de passe, puis le nouveau (2 fois pour confirmer).</li>
+                                <li><strong>Supprimer le compte</strong> — action irréversible nécessitant votre mot de passe.</li>
+                            </ul>
+                            <p>Cliquez sur votre avatar dans la barre de navigation pour accéder rapidement à cette section.</p>
+                        </div>
+                    </details>
+
+                    <!-- Messages / Forum -->
+                    <details class="group bg-slate-50 rounded-2xl overflow-hidden">
+                        <summary class="flex items-center justify-between p-5 cursor-pointer font-black text-slate-700 uppercase text-xs tracking-widest list-none select-none">
+                            <span>💬 Messages &amp; Forum</span>
+                            <i class="fas fa-chevron-down text-slate-400 transition-transform duration-200 group-open:rotate-180"></i>
+                        </summary>
+                        <div class="px-5 pb-5 text-slate-600 text-sm space-y-3">
+                            <p>Participez aux discussions de la communauté MIO :</p>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li>Retrouvez ici tous vos messages postés dans le forum.</li>
+                                <li>Modifiez ou supprimez vos messages existants.</li>
+                                <li>Pour ouvrir un nouveau sujet, accédez au <strong>Forum</strong> depuis le menu principal du site.</li>
+                                <li>Les discussions sont organisées par niveau (L1, L2, L3, M1, M2).</li>
+                            </ul>
+                        </div>
+                    </details>
+
+                    <!-- Groupes de travail -->
+                    <details class="group bg-slate-50 rounded-2xl overflow-hidden">
+                        <summary class="flex items-center justify-between p-5 cursor-pointer font-black text-slate-700 uppercase text-xs tracking-widest list-none select-none">
+                            <span>👥 Groupes de travail</span>
+                            <i class="fas fa-chevron-down text-slate-400 transition-transform duration-200 group-open:rotate-180"></i>
+                        </summary>
+                        <div class="px-5 pb-5 text-slate-600 text-sm space-y-3">
+                            <p>Collaborez avec vos camarades en groupes de travail :</p>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li>Rejoignez un groupe existant ou créez le vôtre.</li>
+                                <li>Partagez des documents et des ressources avec les membres.</li>
+                                <li>Organisez des sessions de travail via les <strong>Meetings Jitsi</strong> intégrés.</li>
+                                <li>Les membres d'un groupe reçoivent des notifications pour les nouvelles activités.</li>
+                            </ul>
+                        </div>
+                    </details>
+
+                    <!-- Cours -->
+                    <details class="group bg-slate-50 rounded-2xl overflow-hidden">
+                        <summary class="flex items-center justify-between p-5 cursor-pointer font-black text-slate-700 uppercase text-xs tracking-widest list-none select-none">
+                            <span>🎓 Cours &amp; Cours Particuliers</span>
+                            <i class="fas fa-chevron-down text-slate-400 transition-transform duration-200 group-open:rotate-180"></i>
+                        </summary>
+                        <div class="px-5 pb-5 text-slate-600 text-sm space-y-3">
+                            <p><strong>Cours vidéo :</strong></p>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li>Accédez aux cours vidéo publiés par les enseignants.</li>
+                                <li>Les cours sont filtrés par semestre pour faciliter la navigation.</li>
+                            </ul>
+                            <p class="font-bold text-slate-700">Cours particuliers :</p>
+                            <ol class="list-decimal pl-5 space-y-1">
+                                <li>Accédez à la section <strong>Cours Particuliers</strong> depuis le menu principal.</li>
+                                <li>Parcourez les offres des enseignants disponibles.</li>
+                                <li>Cliquez sur <strong>Réserver</strong> et payez via PayTech (Wave, Orange Money, carte bancaire…).</li>
+                                <li>Une réunion Jitsi est créée automatiquement après confirmation du paiement.</li>
+                                <li>Vous recevez un email avec le lien et l'heure de la session.</li>
+                            </ol>
+                        </div>
+                    </details>
+
+                    <!-- Historique -->
+                    <details class="group bg-slate-50 rounded-2xl overflow-hidden">
+                        <summary class="flex items-center justify-between p-5 cursor-pointer font-black text-slate-700 uppercase text-xs tracking-widest list-none select-none">
+                            <span>📚 Historique</span>
+                            <i class="fas fa-chevron-down text-slate-400 transition-transform duration-200 group-open:rotate-180"></i>
+                        </summary>
+                        <div class="px-5 pb-5 text-slate-600 text-sm space-y-3">
+                            <p>Retrouvez toutes les ressources que vous avez téléchargées ou consultées :</p>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li>Accès rapide à vos derniers téléchargements sans avoir à les rechercher.</li>
+                                <li>Supprimez une entrée individuelle ou effacez tout l'historique.</li>
+                                <li>Les ressources payantes déjà achetées restent accessibles indéfiniment.</li>
+                            </ul>
+                        </div>
+                    </details>
+
+                    <!-- Paiements -->
+                    <details class="group bg-slate-50 rounded-2xl overflow-hidden">
+                        <summary class="flex items-center justify-between p-5 cursor-pointer font-black text-slate-700 uppercase text-xs tracking-widest list-none select-none">
+                            <span>💳 Paiements PayTech</span>
+                            <i class="fas fa-chevron-down text-slate-400 transition-transform duration-200 group-open:rotate-180"></i>
+                        </summary>
+                        <div class="px-5 pb-5 text-slate-600 text-sm space-y-3">
+                            <p>La plateforme utilise <strong>PayTech</strong> pour les paiements sécurisés.</p>
+                            <p><strong>Moyens de paiement acceptés :</strong></p>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li>Wave</li>
+                                <li>Orange Money</li>
+                                <li>Free Money</li>
+                                <li>Carte bancaire (Visa / Mastercard)</li>
+                            </ul>
+                            <p class="font-bold text-slate-700">Comment ça marche :</p>
+                            <ol class="list-decimal pl-5 space-y-1">
+                                <li>Cliquez sur <strong>Télécharger</strong> ou <strong>Réserver</strong> sur une ressource payante.</li>
+                                <li>Vous êtes redirigé vers la page de paiement sécurisée PayTech.</li>
+                                <li>Choisissez votre moyen de paiement et validez.</li>
+                                <li>Après confirmation, l'accès à la ressource est immédiat et automatique.</li>
+                            </ol>
+                            <div class="bg-blue-50 border border-blue-100 rounded-xl p-3 text-xs text-blue-700">
+                                <i class="fas fa-shield-halved mr-1"></i> Vos données bancaires ne sont jamais stockées sur MIO Ressources. Tous les paiements sont traités directement par PayTech.
+                            </div>
+                        </div>
+                    </details>
+
+                </div>
+
+                <!-- Contact support -->
+                <div class="mt-8 bg-teal-50 border border-teal-100 rounded-2xl p-5 flex items-start gap-4">
+                    <i class="fas fa-life-ring text-teal-500 text-xl mt-0.5 flex-shrink-0"></i>
+                    <div>
+                        <p class="font-black text-slate-800 text-sm uppercase mb-1">Besoin d'aide supplémentaire ?</p>
+                        <p class="text-slate-500 text-sm">Posez votre question dans le <strong>Forum</strong> ou contactez l'administrateur de la plateforme MIO Ressources.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <!-- BOUTON SCROLL TO TOP DESIGNER ET ANIMÉ -->
