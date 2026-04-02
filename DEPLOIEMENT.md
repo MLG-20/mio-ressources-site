@@ -379,6 +379,67 @@ supervisorctl restart mio-worker:*
 
 ---
 
+## Surveillance en production
+
+### Sentry — Alertes d'erreurs en temps réel
+
+Sentry capture automatiquement toutes les exceptions PHP et envoie une alerte email immédiate.
+
+**1. Créer un compte et un projet**
+- Aller sur [sentry.io](https://sentry.io) → Sign up (gratuit)
+- Créer un projet → choisir **Laravel**
+- Copier le **DSN** fourni (ex: `https://xxx@oXXX.ingest.sentry.io/XXX`)
+
+**2. Installer le package**
+```bash
+composer require sentry/sentry-laravel
+php artisan sentry:publish --dsn=VOTRE_DSN
+```
+
+**3. Ajouter dans `.env`**
+```env
+SENTRY_LARAVEL_DSN=https://xxx@oXXX.ingest.sentry.io/XXX
+SENTRY_TRACES_SAMPLE_RATE=0.1
+```
+
+**4. Tester**
+```bash
+php artisan sentry:test
+# → Une erreur test doit apparaître dans le dashboard Sentry
+```
+
+---
+
+### UptimeRobot — Surveillance de disponibilité
+
+UptimeRobot vérifie `/health` toutes les 5 minutes et envoie un SMS/email si le site tombe.
+
+**1. Créer un compte**
+- Aller sur [uptimerobot.com](https://uptimerobot.com) → Sign up (gratuit)
+
+**2. Ajouter un moniteur**
+- Type : **HTTP(s)**
+- URL : `https://votre-domaine.com/health`
+- Intervalle : **5 minutes**
+- Alertes : email + SMS
+
+**3. Vérifier que `/health` répond bien**
+```bash
+curl https://votre-domaine.com/health
+# Doit retourner : {"status":"healthy",...}
+```
+
+---
+
+### Logs Nginx — Erreurs serveur
+
+```bash
+tail -f /var/log/nginx/error.log
+tail -f /var/log/nginx/access.log
+```
+
+---
+
 ## En cas de problème
 
 ```bash
