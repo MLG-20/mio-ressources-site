@@ -204,7 +204,8 @@ class PrivateLessonController extends Controller
                     'payment_reference' => $data['ref_command'],
                 ]);
 
-                // TODO: Envoyer email de confirmation
+                // Envoyer email de confirmation à l'étudiant
+                $enrollment->user->notify(new \App\Notifications\PrivateLessonPaymentConfirmedNotification($enrollment));
             }
         }
 

@@ -91,6 +91,11 @@ Route::get('/merci', function() { return view('payments.thankyou'); })->name('pa
 
 Route::middleware(['auth'])->group(function () {
 
+    // Route dashboard (requise par Laravel Breeze après login/register/confirm-password)
+    Route::get('/dashboard', function () {
+        return redirect('/');
+    })->name('dashboard');
+
     // Espace Personnel
     Route::get('/mon-espace', [UserSpaceController::class, 'index'])->name('user.dashboard');
     Route::post('/mon-espace/update', [UserSpaceController::class, 'updateProfile'])->name('user.profile.update');

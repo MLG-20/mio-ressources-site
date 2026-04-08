@@ -7,12 +7,15 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
+use Illuminate\Auth\Passwords\CanResetPassword;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable implements FilamentUser, MustVerifyEmail, CanResetPasswordContract
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, CanResetPassword;
 
     /**
      * CHAMPS AUTORISÉS (Mass Assignment)
@@ -85,19 +88,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function sendPasswordResetNotification($token): void
     {
-        $this->notify(new class($token) extends ResetPassword {
-            public function toMail($notifiable)
-            {
-                return (new MailMessage)
-                    ->subject('Réinitialisation de votre mot de passe - MIO')
-                    ->greeting('Bonjour ' . $notifiable->name . ' !')
-                    ->line('Vous recevez cet email car nous avons reçu une demande de réinitialisation de mot de passe pour votre compte sur MIO Ressources.')
-                    ->action('Réinitialiser mon mot de passe', url(config('app.url').route('password.reset', $this->token, false)))
-                    ->line('Ce lien de réinitialisation expirera dans 60 minutes.')
-                    ->line('Si vous n\'avez pas demandé de réinitialisation, aucune action supplémentaire n\'est requise.')
-                    ->salutation('L\'équipe MIO Ressources');
-            }
-        });
+        $this->notify(new ResetPassword($token));
     }
 
     /**
