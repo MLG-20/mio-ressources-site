@@ -14,6 +14,34 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
+
+
+Route::get('/health', function () {
+    try {
+        DB::connection()->getPdo();
+        $db = 'ok';
+    } catch (\Exception $e) {
+        $db = 'error';
+    }
+
+    try {
+        Cache::put('health', 'ok', 10);
+        $cache = Cache::get('health') === 'ok' ? 'ok' : 'error';
+    } catch (\Exception $e) {
+        $cache = 'error';
+    }
+
+    $status = ($db === 'ok' && $cache === 'ok') ? 'healthy' : 'unhealthy';
+
+    return response()->json([
+        'status' => $status,
+        'checks' => [
+            'database' => $db,
+            'cache' => $cache,
+        ]
+    ]);
+});
+
 /*
 |--------------------------------------------------------------------------
 | HEALTH CHECK (monitoring)
