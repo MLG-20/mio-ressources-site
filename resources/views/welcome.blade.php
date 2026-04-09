@@ -7,6 +7,11 @@
 
     <!-- Scripts & Polices -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        };
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
@@ -20,16 +25,55 @@
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #2563eb; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+
+        /* Animations au scroll */
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity 700ms ease, transform 700ms ease;
+            will-change: opacity, transform;
+        }
+        .reveal-on-scroll.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-delay-1 { transition-delay: 80ms; }
+        .reveal-delay-2 { transition-delay: 160ms; }
+        .reveal-delay-3 { transition-delay: 240ms; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .reveal-on-scroll,
+            .reveal-on-scroll.is-visible {
+                opacity: 1;
+                transform: none;
+                transition: none;
+            }
+        }
     </style>
 </head>
-<body class="bg-[#f8fafc] font-sans antialiased text-slate-900 overflow-x-hidden"
-      x-data="{ mobileMenuOpen: false, scrolled: false }"
+<body class="bg-[#f8fafc] font-sans antialiased text-slate-900 overflow-x-hidden transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100"
+      x-data="{
+          mobileMenuOpen: false,
+          scrolled: false,
+          theme: 'light',
+          initTheme() {
+              const storedTheme = localStorage.getItem('theme');
+              this.theme = storedTheme ? storedTheme : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+              document.documentElement.classList.toggle('dark', this.theme === 'dark');
+          },
+          toggleTheme() {
+              this.theme = this.theme === 'dark' ? 'light' : 'dark';
+              localStorage.setItem('theme', this.theme);
+              document.documentElement.classList.toggle('dark', this.theme === 'dark');
+          }
+      }"
+      x-init="initTheme()"
       @scroll.window="scrolled = (window.pageYOffset > 50)"
       :class="{ 'overflow-hidden': mobileMenuOpen }">
 
     <!-- NAVBAR PREMIUM -->
     <nav class="fixed w-full z-[100] transition-all duration-500 px-3 md:px-4 lg:px-8 py-3 md:py-4"
-         :class="scrolled ? 'bg-white/95 backdrop-blur-md shadow-lg py-2' : 'bg-transparent py-4 md:py-5'">
+         :class="scrolled ? (theme === 'dark' ? 'bg-slate-900/95 backdrop-blur-md shadow-lg py-2' : 'bg-white/95 backdrop-blur-md shadow-lg py-2') : 'bg-transparent py-4 md:py-5'">
 
         <div class="max-w-7xl mx-auto flex justify-between items-center h-12 md:h-14">
 
@@ -37,14 +81,14 @@
             <a href="/" class="flex items-center gap-2 md:gap-3 z-[110] group">
                 <x-application-logo class="w-8 md:w-10 h-8 md:h-10" />
                 <span class="text-base md:text-xl font-bold tracking-tighter transition-colors duration-300"
-                      :class="(scrolled || mobileMenuOpen) ? 'text-slate-900' : 'text-white'">
-                    MIO <span class="font-light text-xs md:text-base" :class="(scrolled || mobileMenuOpen) ? 'text-slate-500' : 'text-white/70'">RESSOURCES</span>
+                      :class="(scrolled || mobileMenuOpen) ? (theme === 'dark' ? 'text-white' : 'text-slate-900') : 'text-white'">
+                    MIO <span class="font-light text-xs md:text-base" :class="(scrolled || mobileMenuOpen) ? (theme === 'dark' ? 'text-slate-300' : 'text-slate-500') : 'text-white/70'">RESSOURCES</span>
                 </span>
             </a>
 
             <!-- MENU DESKTOP -->
             <div class="hidden lg:flex gap-4 xl:gap-8 font-semibold text-xs xl:text-sm uppercase tracking-widest transition-colors duration-300"
-                 :class="scrolled ? 'text-slate-600' : 'text-white/90'">
+                 :class="scrolled ? (theme === 'dark' ? 'text-slate-200' : 'text-slate-600') : 'text-white/90'">
                 <a href="/" class="relative group py-2 hover:text-blue-600 transition">
                     <span>Accueil</span>
                     <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
@@ -77,6 +121,17 @@
 
             <!-- AUTH & BURGER -->
             <div class="flex items-center gap-2 md:gap-4 z-[110]">
+                <button
+                    @click="toggleTheme()"
+                    type="button"
+                    class="w-10 h-10 rounded-full border transition-all duration-300 flex items-center justify-center"
+                    :class="(scrolled || mobileMenuOpen)
+                        ? (theme === 'dark' ? 'border-slate-700 bg-slate-800 text-yellow-300' : 'border-slate-200 bg-white text-slate-700')
+                        : 'border-white/40 bg-white/10 text-white'"
+                    aria-label="Changer le thème">
+                    <i class="fas" :class="theme === 'dark' ? 'fa-sun' : 'fa-moon'"></i>
+                </button>
+
                 <div class="hidden md:flex items-center">
                     @auth
                         @if(Auth::user()->role === 'admin')
@@ -100,19 +155,19 @@
                             </a>
                         @endif
                     @else
-                        <a href="{{ route('login') }}" class="text-xs font-bold uppercase tracking-widest mr-6 transition-colors" :class="scrolled ? 'text-slate-900' : 'text-white'">Connexion</a>
+                        <a href="{{ route('login') }}" class="text-xs font-bold uppercase tracking-widest mr-6 transition-colors" :class="scrolled ? (theme === 'dark' ? 'text-white' : 'text-slate-900') : 'text-white'">Connexion</a>
                         <a href="{{ route('register') }}" class="bg-blue-600 text-white px-6 py-2.5 rounded-full font-bold text-[10px] uppercase tracking-widest shadow-lg">S'inscrire</a>
                     @endauth
                 </div>
 
-                <button @click="mobileMenuOpen = !mobileMenuOpen" class="lg:hidden p-2 transition-colors" :class="(scrolled || mobileMenuOpen) ? 'text-slate-900' : 'text-white'">
+                <button @click="mobileMenuOpen = !mobileMenuOpen" class="lg:hidden p-2 transition-colors" :class="(scrolled || mobileMenuOpen) ? (theme === 'dark' ? 'text-white' : 'text-slate-900') : 'text-white'">
                     <i class="fas" :class="mobileMenuOpen ? 'fa-times' : 'fa-bars'" style="font-size: 1.5rem;"></i>
                 </button>
             </div>
         </div>
 
         <!-- MENU MOBILE OVERLAY -->
-        <div x-show="mobileMenuOpen" x-cloak class="fixed inset-0 bg-white z-[105] lg:hidden flex flex-col h-screen overflow-y-auto"
+        <div x-show="mobileMenuOpen" x-cloak class="fixed inset-0 bg-white dark:bg-slate-900 z-[105] lg:hidden flex flex-col h-screen overflow-y-auto"
              x-transition:enter="transition ease-out duration-300 transform"
              x-transition:enter-start="translate-y-[-100%]"
              x-transition:enter-end="translate-y-0"
@@ -121,30 +176,30 @@
             <!-- Contenu scrollable -->
             <div class="px-3 pt-16 pb-6 space-y-0.5">
                 <!-- Navigation Items -->
-                <a href="/" @click="mobileMenuOpen = false" class="block text-xs font-bold py-2.5 px-3 rounded-lg hover:bg-slate-100 uppercase tracking-tight text-slate-900 transition-colors">
+                <a href="/" @click="mobileMenuOpen = false" class="block text-xs font-bold py-2.5 px-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 uppercase tracking-tight text-slate-900 dark:text-slate-100 transition-colors">
                     <i class="fas fa-home mr-2 text-blue-600"></i>Accueil
                 </a>
-                <a href="#cours" @click="mobileMenuOpen = false" class="block text-xs font-bold py-2.5 px-3 rounded-lg hover:bg-slate-100 uppercase tracking-tight text-slate-900 transition-colors">
+                <a href="#cours" @click="mobileMenuOpen = false" class="block text-xs font-bold py-2.5 px-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 uppercase tracking-tight text-slate-900 dark:text-slate-100 transition-colors">
                     <i class="fas fa-graduation-cap mr-2 text-purple-600"></i>Cours
                 </a>
-                <a href="{{ route('private-lessons.browse') }}" @click="mobileMenuOpen = false" class="block text-xs font-bold py-2.5 px-3 rounded-lg hover:bg-slate-100 uppercase tracking-tight text-purple-600 transition-colors">
+                <a href="{{ route('private-lessons.browse') }}" @click="mobileMenuOpen = false" class="block text-xs font-bold py-2.5 px-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 uppercase tracking-tight text-purple-600 dark:text-purple-400 transition-colors">
                     <i class="fas fa-chalkboard-teacher mr-2"></i>Particuliers
                 </a>
-                <a href="{{ route('forum.index') }}" @click="mobileMenuOpen = false" class="block text-xs font-bold py-2.5 px-3 rounded-lg hover:bg-slate-100 uppercase tracking-tight text-slate-900 transition-colors">
+                <a href="{{ route('forum.index') }}" @click="mobileMenuOpen = false" class="block text-xs font-bold py-2.5 px-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 uppercase tracking-tight text-slate-900 dark:text-slate-100 transition-colors">
                     <i class="fas fa-comments mr-2 text-green-600"></i>Forum
                 </a>
-                <a href="{{ route('library.index') }}" @click="mobileMenuOpen = false" class="block text-xs font-bold py-2.5 px-3 rounded-lg hover:bg-slate-100 uppercase tracking-tight text-slate-900 transition-colors">
+                <a href="{{ route('library.index') }}" @click="mobileMenuOpen = false" class="block text-xs font-bold py-2.5 px-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 uppercase tracking-tight text-slate-900 dark:text-slate-100 transition-colors">
                     <i class="fas fa-book mr-2 text-orange-600"></i>Bibliothèque
                 </a>
-                <a href="{{ route('page.show', 'a-propos') }}" @click="mobileMenuOpen = false" class="block text-xs font-bold py-2.5 px-3 rounded-lg hover:bg-slate-100 uppercase tracking-tight text-slate-900 transition-colors">
+                <a href="{{ route('page.show', 'a-propos') }}" @click="mobileMenuOpen = false" class="block text-xs font-bold py-2.5 px-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 uppercase tracking-tight text-slate-900 dark:text-slate-100 transition-colors">
                     <i class="fas fa-info-circle mr-2 text-red-600"></i>À Propos
                 </a>
-                <a href="{{ route('page.show', 'club-mio') }}" @click="mobileMenuOpen = false" class="block text-xs font-bold py-2.5 px-3 rounded-lg hover:bg-slate-100 uppercase tracking-tight text-slate-900 transition-colors">
+                <a href="{{ route('page.show', 'club-mio') }}" @click="mobileMenuOpen = false" class="block text-xs font-bold py-2.5 px-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 uppercase tracking-tight text-slate-900 dark:text-slate-100 transition-colors">
                     <i class="fas fa-users mr-2 text-indigo-600"></i>Club MIO
                 </a>
 
                 <!-- Auth Section (déplacée ici) -->
-                <div class="bg-slate-50 border-t-4 border-blue-600 rounded-xl px-3 py-3 space-y-2.5 shadow-lg mt-4">
+                <div class="bg-slate-50 dark:bg-slate-800 border-t-4 border-blue-600 rounded-xl px-3 py-3 space-y-2.5 shadow-lg mt-4">
                     @auth
                         @if(Auth::user()->role === 'admin')
                             <!-- Admin uniquement -->
@@ -207,18 +262,62 @@
         @endforeach
     </section>
 
+    <!-- SECTION CHIFFRES -->
+    <section class="py-10 md:py-14 px-6 max-w-7xl mx-auto reveal-on-scroll">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 md:gap-8">
+            @foreach($heroStats as $stat)
+                <div
+                    class="text-center rounded-2xl border border-blue-100 bg-gradient-to-b from-blue-50 to-white shadow-lg shadow-blue-100/70 px-4 py-6 md:px-6 md:py-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-200/80 dark:border-slate-700 dark:from-slate-900 dark:to-slate-800 dark:shadow-slate-900/40 reveal-on-scroll"
+                    x-data="{
+                        current: 0,
+                        target: {{ (int) $stat['value'] }},
+                        started: false,
+                        init() {
+                            const observer = new IntersectionObserver((entries) => {
+                                if (!entries[0].isIntersecting || this.started) return;
+                                this.started = true;
+                                let start = null;
+                                const duration = 1200;
+                                const animate = (timestamp) => {
+                                    if (!start) start = timestamp;
+                                    const progress = Math.min((timestamp - start) / duration, 1);
+                                    this.current = Math.floor(this.target * progress);
+                                    if (progress < 1) requestAnimationFrame(animate);
+                                };
+                                requestAnimationFrame(animate);
+                                observer.disconnect();
+                            }, { threshold: 0.35 });
+                            observer.observe(this.$el);
+                        }
+                    }"
+                >
+                    <div class="h-1.5 w-12 mx-auto rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 shadow-sm shadow-blue-200"></div>
+                    <div class="w-10 h-10 md:w-12 md:h-12 mx-auto mt-4 mb-3 rounded-xl bg-white border border-blue-100 text-blue-600 flex items-center justify-center shadow-sm dark:bg-slate-800 dark:border-slate-700 dark:text-blue-400">
+                        <i class="fas {{ $stat['icon'] }} text-sm md:text-base"></i>
+                    </div>
+                    <p class="text-3xl md:text-5xl font-black text-blue-700 tracking-tight dark:text-blue-300">
+                        <span x-text="current"></span>
+                    </p>
+                    <p class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-slate-600 mt-2 dark:text-slate-300">
+                        {{ $stat['label'] }}
+                    </p>
+                </div>
+            @endforeach
+        </div>
+    </section>
+
     <!-- SECTION CURSUS -->
-    <section id="cours" class="py-16 md:py-32 px-6 max-w-7xl mx-auto">
-        <div class="text-center mb-20">
-            <h2 class="text-4xl font-bold text-slate-900 tracking-tighter uppercase italic">Votre Cursus</h2>
+    <section id="cours" class="py-16 md:py-32 px-6 max-w-7xl mx-auto transition-colors duration-300 reveal-on-scroll">
+        <div class="text-center mb-20 reveal-on-scroll">
+            <h2 class="text-4xl font-bold text-slate-900 dark:text-slate-100 tracking-tighter uppercase italic">Votre Cursus</h2>
             <div class="h-1.5 w-20 bg-blue-600 mx-auto mt-4 rounded-full shadow-lg shadow-blue-200"></div>
-            <p class="mt-6 text-slate-500 text-lg">Accédez aux ressources par niveau d'étude</p>
+            <p class="mt-6 text-slate-500 dark:text-slate-400 text-lg">Accédez aux ressources par niveau d'étude</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
             @foreach($semestres as $semestre)
                 <a href="{{ route('semestre.show', $semestre->id) }}"
-                   class="group relative h-[480px] rounded-[3rem] overflow-hidden shadow-2xl transition-all duration-500 hover:-translate-y-4 hover:shadow-blue-200/50 block">
+                   class="group relative h-[480px] rounded-[3rem] overflow-hidden shadow-2xl transition-all duration-500 hover:-translate-y-4 hover:shadow-blue-200/50 block reveal-on-scroll">
 
                     @if($semestre->image_path)
                         <img src="{{ asset('storage/' . $semestre->image_path) }}"
@@ -250,19 +349,19 @@
     </section>
 
     <!-- SECTION COURS PARTICULIERS PREMIUM -->
-    <section class="py-16 md:py-32 px-6 w-full bg-gradient-to-b from-white to-slate-50 relative overflow-hidden">
+    <section class="py-16 md:py-32 px-6 w-full bg-gradient-to-b from-white to-slate-50 dark:from-slate-950 dark:to-slate-900 relative overflow-hidden transition-colors duration-300 reveal-on-scroll">
         <!-- Fond décoratif -->
-        <div class="absolute -top-40 -left-40 w-80 h-80 bg-purple-600/5 rounded-full blur-[120px]"></div>
-        <div class="absolute -bottom-40 -right-40 w-80 h-80 bg-blue-600/5 rounded-full blur-[120px]"></div>
+        <div class="absolute -top-40 -left-40 w-80 h-80 bg-purple-600/5 dark:bg-purple-500/10 rounded-full blur-[120px]"></div>
+        <div class="absolute -bottom-40 -right-40 w-80 h-80 bg-blue-600/5 dark:bg-blue-500/10 rounded-full blur-[120px]"></div>
 
         <div class="max-w-7xl mx-auto">
-            <div class="text-center mb-20 relative z-10">
+            <div class="text-center mb-20 relative z-10 reveal-on-scroll">
                 <div class="inline-block mb-6">
                     <span class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-purple-600/40">✨ NOUVEAUTÉ</span>
                 </div>
-                <h2 class="text-4xl font-bold text-slate-900 tracking-tighter uppercase italic mb-4">Cours Particuliers Premium</h2>
+                <h2 class="text-4xl font-bold text-slate-900 dark:text-slate-100 tracking-tighter uppercase italic mb-4">Cours Particuliers Premium</h2>
                 <div class="h-1.5 w-24 bg-gradient-to-r from-purple-600 to-blue-600 mx-auto rounded-full shadow-lg shadow-blue-200"></div>
-                <p class="mt-6 text-slate-600 text-lg max-w-2xl mx-auto">Découvrez les 5 derniers cours particuliers disponibles. Des sessions de révision personnalisées avec les meilleurs enseignants</p>
+                <p class="mt-6 text-slate-600 dark:text-slate-300 text-lg max-w-2xl mx-auto">Découvrez les 5 derniers cours particuliers disponibles. Des sessions de révision personnalisées avec les meilleurs enseignants</p>
             </div>
 
             @php
@@ -276,7 +375,7 @@
             @if($privateLessons->count() > 0)
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-12 relative z-10 w-full">
                     @foreach($privateLessons as $lesson)
-                        <div class="group relative h-[350px] md:h-[420px] lg:h-[480px] rounded-2xl md:rounded-3xl lg:rounded-[3rem] overflow-hidden shadow-xl md:shadow-2xl transition-all duration-500 hover:-translate-y-2 md:hover:-translate-y-4 hover:shadow-purple-200/50 block cursor-pointer">
+                        <div class="group relative h-[350px] md:h-[420px] lg:h-[480px] rounded-2xl md:rounded-3xl lg:rounded-[3rem] overflow-hidden shadow-xl md:shadow-2xl transition-all duration-500 hover:-translate-y-2 md:hover:-translate-y-4 hover:shadow-purple-200/50 block cursor-pointer reveal-on-scroll">
 
                             <!-- FOND DÉGRADÉ -->
                             <div class="absolute inset-0 bg-gradient-to-br from-purple-600 via-blue-500 to-indigo-900"></div>
@@ -318,17 +417,17 @@
 
                                         <!-- Popup Description -->
                                         <div x-show="showDesc" x-cloak
-                                             class="fixed inset-0 z-[9999] flex items-center justify-center p-2 md:p-4 bg-black/50"
+                                             class="fixed inset-0 z-[9999] flex items-center justify-center p-2 md:p-4 bg-black/60"
                                              @click.prevent.stop="showDesc = false">
-                                            <div @click.prevent.stop class="bg-white rounded-xl md:rounded-2xl shadow-2xl max-w-2xl md:max-w-4xl w-full max-h-[90vh] md:max-h-[80vh] p-4 md:p-6 lg:p-8 flex flex-col overflow-hidden" x-transition>
-                                                <div class="flex items-center justify-between mb-4 md:mb-6 pb-4 md:pb-6 border-b border-slate-200 flex-shrink-0">
-                                                    <h3 class="text-lg md:text-2xl font-bold text-slate-900">Description</h3>
-                                                    <button @click.prevent.stop="showDesc = false" class="text-slate-400 hover:text-slate-600 text-2xl flex-shrink-0">
+                                            <div @click.prevent.stop class="bg-white dark:bg-slate-900 rounded-xl md:rounded-2xl shadow-2xl max-w-2xl md:max-w-4xl w-full max-h-[90vh] md:max-h-[80vh] p-4 md:p-6 lg:p-8 flex flex-col overflow-hidden border border-slate-200 dark:border-slate-700" x-transition>
+                                                <div class="flex items-center justify-between mb-4 md:mb-6 pb-4 md:pb-6 border-b border-slate-200 dark:border-slate-700 flex-shrink-0">
+                                                    <h3 class="text-lg md:text-2xl font-bold text-slate-900 dark:text-slate-100">Description</h3>
+                                                    <button @click.prevent.stop="showDesc = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-2xl flex-shrink-0">
                                                         <i class="fas fa-times"></i>
                                                     </button>
                                                 </div>
                                                 <div class="flex-1 overflow-y-auto">
-                                                    <div class="text-slate-700 text-sm md:text-base leading-relaxed font-medium pr-2">
+                                                    <div class="text-slate-700 dark:text-slate-300 text-sm md:text-base leading-relaxed font-medium pr-2">
                                                         {{ $lesson->description ?? 'Aucune description disponible pour ce cours.' }}
                                                     </div>
                                                 </div>
@@ -383,7 +482,7 @@
                 </div>
             @else
                 <div class="text-center py-16 relative z-10">
-                    <p class="text-slate-600 text-lg mb-6">Aucun cours particulier disponible pour le moment.</p>
+                    <p class="text-slate-600 dark:text-slate-300 text-lg mb-6">Aucun cours particulier disponible pour le moment.</p>
                     <a href="{{ route('private-lessons.browse') }}" class="inline-block bg-blue-600 text-white px-8 py-3 rounded-full font-bold hover:bg-blue-700 transition">
                         Consulter les autres cours
                     </a>
@@ -393,33 +492,35 @@
     </section>
 
     <!-- SECTION AVIS -->
-    <section class="py-16 md:py-32 bg-[#0f172a] relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-[100px] -mr-48 -mt-48"></div>
+    <section class="py-16 md:py-32 bg-slate-50 dark:bg-slate-950 relative overflow-hidden transition-colors duration-300 reveal-on-scroll">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 dark:bg-blue-600/10 rounded-full blur-[100px] -mr-48 -mt-48"></div>
 
         <div class="max-w-6xl mx-auto px-6 relative z-10">
-            <h2 class="text-3xl font-bold text-center text-white mb-16 uppercase tracking-widest">L'avis de nos étudiants</h2>
+            <h2 class="text-3xl font-bold text-center text-slate-900 dark:text-white mb-16 uppercase tracking-widest reveal-on-scroll">L'avis de nos étudiants</h2>
 
-            <div class="max-w-xl mx-auto bg-white/5 backdrop-blur-xl p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] border border-white/10 shadow-2xl mb-20">
+            <div class="max-w-xl mx-auto bg-white dark:bg-slate-900/70 backdrop-blur-xl p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] border border-slate-200 dark:border-slate-700 shadow-2xl mb-20 reveal-on-scroll">
                 @if(session('success_review'))
                     <div class="mb-6 p-4 bg-blue-600 text-white rounded-2xl font-bold text-center animate-bounce">{{ session('success_review') }}</div>
                 @endif
                 <form action="{{ route('avis.store') }}" method="POST" class="space-y-6">
                     @csrf
                     @auth
-                        <div class="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/10">
+                        <div class="flex items-center gap-4 p-4 bg-slate-50 dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10">
                             <img src="{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=0D8ABC&color=fff' }}" class="w-14 h-14 rounded-2xl object-cover">
-                            <div><p class="text-[10px] font-bold text-blue-400 uppercase">Connecté en tant que</p><p class="text-xl font-bold text-white tracking-tight">{{ Auth::user()->name }}</p></div>
+                            <div><p class="text-[10px] font-bold text-blue-500 uppercase">Connecté en tant que</p><p class="text-xl font-bold text-slate-900 dark:text-white tracking-tight">{{ Auth::user()->name }}</p></div>
                         </div>
                     @else
-                        <input type="text" name="nom" placeholder="Votre Prénom" class="w-full rounded-2xl bg-white/5 border-white/10 p-4 md:p-5 text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                        <input type="text" name="nom" placeholder="Votre Prénom" class="w-full rounded-2xl bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 p-4 md:p-5 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 outline-none" required>
                     @endauth
-                    <textarea name="message" rows="3" placeholder="Votre message pour la communauté..." class="w-full rounded-2xl bg-white/5 border-white/10 p-4 md:p-5 text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 outline-none" required></textarea>
+                    <textarea name="message" rows="3" placeholder="Votre message pour la communauté..." class="w-full rounded-2xl bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 p-4 md:p-5 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 outline-none" required></textarea>
 
                     <div class="flex flex-col sm:flex-row gap-4 items-center">
-                        <select name="note" class="w-full sm:w-auto bg-white/5 border-white/10 text-white p-4 md:p-5 rounded-2xl font-bold focus:ring-0">
-                            <option value="5" class="bg-slate-900">⭐⭐⭐⭐⭐ Excellent</option>
-                            <option value="4" class="bg-slate-900">⭐⭐⭐⭐ Très bien</option>
-                            <option value="3" class="bg-slate-900">⭐⭐⭐ Bien</option>
+                        <select name="note" class="w-full sm:w-auto bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white p-4 md:p-5 rounded-2xl font-bold focus:ring-0">
+                            <option value="5" class="bg-white text-slate-900">⭐⭐⭐⭐⭐ Excellent</option>
+                            <option value="4" class="bg-white text-slate-900">⭐⭐⭐⭐ Très bien</option>
+                            <option value="3" class="bg-white text-slate-900">⭐⭐⭐ Bien</option>
+                            <option value="2" class="bg-white text-slate-900">⭐⭐ Passable</option>
+                            <option value="1" class="bg-white text-slate-900">⭐ Insuffisant</option>
                         </select>
                         <button type="submit" class="w-full flex-1 bg-blue-600 text-white font-bold py-4 md:py-5 rounded-[2rem] hover:bg-blue-500 transition shadow-xl shadow-blue-900/40">PUBLIER MON AVIS</button>
                     </div>
@@ -428,12 +529,12 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
                 @foreach(\App\Models\Review::latest()->take(3)->get() as $review)
-                    <div class="bg-white/5 border border-white/10 p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] hover:bg-white/10 transition">
+                    <div class="bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-700 p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] hover:bg-slate-50 dark:hover:bg-slate-800/70 transition reveal-on-scroll">
                         <div class="text-blue-500 mb-4 flex justify-center md:justify-start">
                             @for($i=0; $i<$review->note; $i++) <i class="fas fa-star text-xs"></i> @endfor
                         </div>
-                        <p class="text-slate-300 italic mb-6 leading-relaxed">"{{ $review->message }}"</p>
-                        <p class="text-white font-bold text-xs uppercase tracking-widest flex items-center justify-center md:justify-start gap-3">
+                        <p class="text-slate-600 dark:text-slate-300 italic mb-6 leading-relaxed">"{{ $review->message }}"</p>
+                        <p class="text-slate-900 dark:text-white font-bold text-xs uppercase tracking-widest flex items-center justify-center md:justify-start gap-3">
                             <span class="w-6 h-px bg-blue-500"></span> {{ $review->nom }}
                         </p>
                     </div>
@@ -442,19 +543,67 @@
         </div>
     </section>
 
+    @if(($testimonials ?? collect())->isNotEmpty())
+        <!-- SECTION TEMOIGNAGES -->
+        <section class="py-16 md:py-28 bg-white dark:bg-slate-900 transition-colors duration-300 reveal-on-scroll">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="text-center mb-12 reveal-on-scroll">
+                    <h2 class="text-3xl font-bold text-slate-900 dark:text-white uppercase tracking-widest">Témoignages</h2>
+                    <p class="mt-4 text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+                        Une selection d'avis issus des evaluations de ressources.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    @foreach($testimonials as $testimonial)
+                        <article class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-[2rem] p-6 md:p-8 shadow-sm reveal-on-scroll">
+                            <div class="text-blue-500 mb-4 flex items-center gap-1">
+                                @for($i = 0; $i < ((int) $testimonial->stars); $i++)
+                                    <i class="fas fa-star text-xs"></i>
+                                @endfor
+                            </div>
+
+                            <p class="text-slate-600 dark:text-slate-300 italic leading-relaxed mb-6">
+                                "{{ \Illuminate\Support\Str::limit($testimonial->comment, 240) }}"
+                            </p>
+
+                            @php
+                                $studentLevel = match (strtoupper((string) ($testimonial->user?->student_level ?? ''))) {
+                                    'L1' => 'Licence 1',
+                                    'L2' => 'Licence 2',
+                                    'L3' => 'Licence 3',
+                                    default => 'Niveau non renseigné',
+                                };
+                            @endphp
+
+                            <div class="space-y-1">
+                                <p class="text-slate-900 dark:text-white font-bold text-xs uppercase tracking-widest">
+                                    {{ $testimonial->user?->name ?? 'Étudiant' }}
+                                </p>
+                                <p class="text-slate-500 dark:text-slate-400 text-[11px] uppercase tracking-wider">
+                                    {{ $studentLevel }}
+                                </p>
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
+
     <!-- FOOTER -->
-    <footer class="bg-slate-950 text-white py-12 md:py-20 px-6 md:px-8 border-t border-white/5">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16 border-b border-white/5 pb-16">
+    <footer class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-white py-12 md:py-20 px-6 md:px-8 border-t border-slate-200 dark:border-white/5 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16 border-b border-slate-200 dark:border-white/5 pb-16">
             <div class="space-y-6 text-center md:text-left">
                 <div class="flex items-center justify-center md:justify-start gap-2">
                     <x-application-logo class="w-10 h-10" />
-                    <span class="font-bold text-xl tracking-tighter uppercase tracking-widest">MIO <span class="font-light opacity-50">RESSOURCES</span></span>
+                    <span class="font-bold text-xl tracking-widest uppercase">MIO <span class="font-light opacity-60 dark:opacity-50">RESSOURCES</span></span>
                 </div>
-                <p class="text-slate-500 text-sm leading-relaxed max-w-sm mx-auto md:mx-0">La plateforme collaborative de référence pour les étudiants de l'Université Iba Der Thiam.</p>
+                <p class="text-slate-600 dark:text-slate-500 text-sm leading-relaxed max-w-sm mx-auto md:mx-0">La plateforme collaborative de référence pour les étudiants de l'Université Iba Der Thiam.</p>
             </div>
             <div>
                 <h4 class="font-bold text-[10px] uppercase tracking-[0.4em] text-blue-500 mb-8 text-center md:text-left">Contact Officiel</h4>
-                <div class="space-y-4 text-slate-400 text-sm text-center md:text-left">
+                <div class="space-y-4 text-slate-600 dark:text-slate-400 text-sm text-center md:text-left">
                     <p class="flex items-center justify-center md:justify-start gap-3"><i class="fas fa-envelope text-blue-500"></i> {{ $globalSettings['contact_email'] ?? 'contact@mio.sn' }}</p>
                     <p class="flex items-center justify-center md:justify-start gap-3"><i class="fas fa-phone text-blue-500"></i> {{ $globalSettings['contact_phone'] ?? '' }}</p>
                 </div>
@@ -463,18 +612,48 @@
                 <h4 class="font-bold text-[10px] uppercase tracking-[0.4em] text-blue-500 mb-8">Réseaux Sociaux</h4>
                 <div class="flex justify-center md:justify-start gap-5">
                     @if(isset($globalSettings['social_linkedin']))
-                        <a href="{{ $globalSettings['social_linkedin'] }}" target="_blank" class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-white hover:bg-blue-600 transition-all shadow-lg"><i class="fab fa-linkedin-in text-xl"></i></a>
+                        <a href="{{ $globalSettings['social_linkedin'] }}" target="_blank" class="w-12 h-12 bg-white dark:bg-white/5 border border-slate-200 dark:border-transparent rounded-2xl flex items-center justify-center text-slate-700 dark:text-white hover:bg-blue-600 hover:text-white transition-all shadow-lg"><i class="fab fa-linkedin-in text-xl"></i></a>
                     @endif
                     @if(isset($globalSettings['social_github']))
-                        <a href="{{ $globalSettings['social_github'] }}" target="_blank" class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-white hover:bg-blue-600 transition-all shadow-lg"><i class="fab fa-github text-xl"></i></a>
+                        <a href="{{ $globalSettings['social_github'] }}" target="_blank" class="w-12 h-12 bg-white dark:bg-white/5 border border-slate-200 dark:border-transparent rounded-2xl flex items-center justify-center text-slate-700 dark:text-white hover:bg-blue-600 hover:text-white transition-all shadow-lg"><i class="fab fa-github text-xl"></i></a>
                     @endif
                 </div>
             </div>
         </div>
-        <div class="text-center mt-12 text-slate-700 text-[10px] font-bold uppercase tracking-[0.5em]">
+        <div class="text-center mt-12 text-slate-500 dark:text-slate-700 text-[10px] font-bold uppercase tracking-[0.5em]">
             &copy; {{ date('Y') }} MIO Ressources &bull; Excellence & Partage
         </div>
     </footer>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const elements = document.querySelectorAll('.reveal-on-scroll');
+
+            if (!('IntersectionObserver' in window)) {
+                elements.forEach((el) => el.classList.add('is-visible'));
+                return;
+            }
+
+            elements.forEach((el, index) => {
+                const mod = index % 4;
+                if (mod === 1) el.classList.add('reveal-delay-1');
+                if (mod === 2) el.classList.add('reveal-delay-2');
+                if (mod === 3) el.classList.add('reveal-delay-3');
+            });
+
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach((entry) => {
+                    if (!entry.isIntersecting) return;
+                    entry.target.classList.add('is-visible');
+                    obs.unobserve(entry.target);
+                });
+            }, {
+                threshold: 0.12,
+                rootMargin: '0px 0px -8% 0px',
+            });
+
+            elements.forEach((el) => observer.observe(el));
+        });
+    </script>
 </body>
 </html>

@@ -21,7 +21,7 @@ class ResourceRating extends Model
     protected static ?string $navigationLabel = 'Notes & Avis';
     protected static ?int $navigationSort = 60; // Tout en bas
 
-    protected $fillable = ['user_id', 'ressource_id', 'publication_id', 'stars', 'comment'];
+    protected $fillable = ['user_id', 'ressource_id', 'publication_id', 'stars', 'comment', 'is_testimonial'];
 
     public function user() { return $this->belongsTo(User::class); }
     public function ressource() { return $this->belongsTo(Ressource::class); }

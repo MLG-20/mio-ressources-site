@@ -8,8 +8,11 @@ use App\Models\Publication;
 use App\Models\Purchase;
 use App\Models\FinancialTransaction;
 use App\Models\DownloadHistory;
+use App\Models\SubscriptionPayment;
 use App\Models\User;
 use App\Notifications\PurchaseInvoiceNotification;
+use Illuminate\Http\Client\Response as HttpResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
@@ -18,11 +21,14 @@ use Illuminate\Support\Facades\Log;
 
 class PaymentController extends Controller
 {
+    private const STUDENT_SUBSCRIPTION_PRICE = 500;
+
     // 1. DÉMARRAGE DU PAIEMENT
     public function initiatePayment(Request $request, $id, $type)
     {
         $item = ($type === 'publication') ? Publication::findOrFail($id) : Ressource::findOrFail($id);
-        $user = auth()->user();
+        /** @var User|null $user */
+        $user = Auth::user();
 
         // SAUVEGARDE DE L'EMAIL VISITEUR EN SESSION (C'est la clé !)
         if (!$user) {
@@ -53,6 +59,7 @@ class PaymentController extends Controller
         $apiSecret = trim((string) env('PAYTECH_API_SECRET'));
         $paytechEnv = trim((string) env('PAYTECH_ENV', 'test'));
 
+        /** @var HttpResponse $response */
         $response = Http::asJson()
             ->withOptions([
                 'verify' => ! app()->environment('local'),
@@ -104,6 +111,75 @@ class PaymentController extends Controller
         return back()->with('error', 'Paiement indisponible pour le moment. Veuillez réessayer.');
     }
 
+    // 1.b DÉMARRAGE DU PAIEMENT ABONNEMENT ÉTUDIANT
+    public function initiateStudentSubscription(Request $request)
+    {
+        /** @var User|null $user */
+        $user = Auth::user();
+
+        if (! ($user instanceof User) || $user->user_type !== 'student') {
+            abort(403);
+        }
+
+        $ipnSecret = (string) env('PAYTECH_IPN_SECRET', '');
+        if ($ipnSecret === '') {
+            Log::error('PAYTECH_IPN_SECRET is not configured. IPN webhook security is not enforced.');
+        }
+
+        $ipnUrl = route('payment.ipn');
+        if ($ipnSecret !== '') {
+            $separator = str_contains($ipnUrl, '?') ? '&' : '?';
+            $ipnUrl .= $separator . http_build_query(['secret' => $ipnSecret]);
+        }
+
+        $apiKey = trim((string) env('PAYTECH_API_KEY'));
+        $apiSecret = trim((string) env('PAYTECH_API_SECRET'));
+        $paytechEnv = trim((string) env('PAYTECH_ENV', 'test'));
+
+        /** @var HttpResponse $response */
+        $response = Http::asJson()
+            ->withOptions([
+                'verify' => ! app()->environment('local'),
+            ])
+            ->withHeaders([
+                'API_KEY' => $apiKey,
+                'API_SECRET' => $apiSecret,
+                'Content-Type' => 'application/json',
+            ])
+            ->post('https://paytech.sn/api/payment/request-payment', [
+                'item_name' => 'Abonnement étudiant MIO',
+                'item_price' => self::STUDENT_SUBSCRIPTION_PRICE,
+                'currency' => 'XOF',
+                'ref_command' => uniqid('MIO-SUB-'),
+                'command_name' => 'Abonnement étudiant MIO (1 mois)',
+                'env' => $paytechEnv,
+                'ipn_url' => $ipnUrl,
+                'success_url' => route('student.subscription.success'),
+                'cancel_url' => route('student.subscription.paywall'),
+                'custom_field' => json_encode([
+                    'payment_kind' => 'student_subscription',
+                    'user_id' => $user->id,
+                    'months' => 1,
+                ]),
+            ]);
+
+        $data = $response->json();
+
+        if ($response->successful() && isset($data['success']) && (int) $data['success'] === 1 && isset($data['redirect_url'])) {
+            session(['paytech_subscription_token' => $data['token'] ?? null]);
+
+            return redirect($data['redirect_url']);
+        }
+
+        Log::warning('PayTech student subscription initiate failed', [
+            'status' => $response->status(),
+            'body' => $data,
+            'user_id' => $user->id,
+        ]);
+
+        return back()->with('error', 'Paiement indisponible pour le moment. Veuillez réessayer.');
+    }
+
     // 2. RETOUR SUCCÈS
     public function success($id, $type)
     {
@@ -111,12 +187,12 @@ class PaymentController extends Controller
         if (app()->environment('local')) {
             // On récupère l'email sauvegardé en session
             $guestEmail = session('guest_email');
-            $userId = auth()->id();
+            $userId = Auth::id();
 
             $this->validateOrder($userId, $guestEmail, $id, $type, 'TEST-' . uniqid());
         }
 
-        if (auth()->check()) {
+        if (Auth::check()) {
             return redirect()->route('user.dashboard')->with('success', 'Paiement validé !');
         }
 
@@ -135,6 +211,25 @@ class PaymentController extends Controller
         }
 
         return redirect()->route('payment.thankyou');
+    }
+
+    public function studentSubscriptionSuccess()
+    {
+        /** @var User|null $user */
+        $user = Auth::user();
+
+        if (! ($user instanceof User) || $user->user_type !== 'student') {
+            return redirect()->route('home');
+        }
+
+        // En local, on active directement pour faciliter les tests.
+        if (app()->environment('local')) {
+            $this->activateStudentSubscription($user->id, 1, 'LOCAL-SUB-' . uniqid());
+        }
+
+        return redirect()
+            ->route('user.dashboard')
+            ->with('success', 'Abonnement étudiant activé avec succès.');
     }
 
     // 3. IPN (Webhook Production)
@@ -209,9 +304,26 @@ class PaymentController extends Controller
             return response()->json(['success' => 'invalid'], 400);
         }
 
-        if (!isset($customData['item_id'], $customData['item_type']) || !isset($request->token)) {
+        if (!isset($request->token)) {
+            Log::warning('PayTech IPN missing token', ['ip' => $request->ip(), 'fields' => array_keys($request->all())]);
+            return response()->json(['success' => 'invalid'], 400);
+        }
+
+        $isSubscriptionPayment = ($customData['payment_kind'] ?? null) === 'student_subscription';
+
+        if (! $isSubscriptionPayment && (!isset($customData['item_id'], $customData['item_type']))) {
             Log::warning('PayTech IPN missing required fields', ['ip' => $request->ip(), 'fields' => array_keys($request->all())]);
             return response()->json(['success' => 'invalid'], 400);
+        }
+
+        if ($isSubscriptionPayment) {
+            $this->activateStudentSubscription(
+                (int) ($customData['user_id'] ?? 0),
+                (int) ($customData['months'] ?? 1),
+                (string) $request->input('token')
+            );
+
+            return response()->json(['success' => 'ok']);
         }
 
         // SÉCURITÉ / ROBUSTESSE : refuser si l'item référencé n'existe pas.
@@ -233,6 +345,7 @@ class PaymentController extends Controller
         $refCommandFromIpn = (string) $request->input('ref_command', '');
 
         try {
+            /** @var HttpResponse $statusResponse */
             $statusResponse = Http::timeout(10)
                 ->withOptions([
                     'verify' => ! app()->environment('local'),
@@ -388,5 +501,42 @@ class PaymentController extends Controller
         } catch (\Exception $e) {
             Log::error("Erreur Mail : " . $e->getMessage());
         }
+    }
+
+    private function activateStudentSubscription(int $userId, int $months, string $paymentId): void
+    {
+        if ($userId <= 0 || $paymentId === '') {
+            return;
+        }
+
+        if (SubscriptionPayment::where('payment_id', $paymentId)->exists()) {
+            return;
+        }
+
+        $user = User::find($userId);
+        if (! $user || $user->user_type !== 'student') {
+            return;
+        }
+
+        $months = max(1, $months);
+        $baseDate = $user->subscription_paid_until && $user->subscription_paid_until->isFuture()
+            ? $user->subscription_paid_until->copy()
+            : now();
+
+        $newPaidUntil = $baseDate->addMonths($months);
+
+        $user->subscription_paid_until = $newPaidUntil;
+        $user->is_blocked = false; // Important: ne pas garder un étudiant verrouillé par erreur.
+        $user->save();
+
+        SubscriptionPayment::create([
+            'user_id' => $user->id,
+            'amount' => self::STUDENT_SUBSCRIPTION_PRICE * $months,
+            'months' => $months,
+            'payment_id' => $paymentId,
+            'provider' => 'paytech',
+            'status' => 'paid',
+            'paid_at' => now(),
+        ]);
     }
 }

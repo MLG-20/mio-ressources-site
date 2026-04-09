@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 
 class ResourceRatingResource extends Resource
 {
@@ -24,7 +25,13 @@ class ResourceRatingResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->hasPermission('stats') ?? false;
+        $user = Auth::user();
+
+        if (! $user || ! is_callable([$user, 'hasPermission'])) {
+            return false;
+        }
+
+        return (bool) call_user_func([$user, 'hasPermission'], 'stats');
     }
 
     public static function form(Form $form): Form
@@ -34,18 +41,12 @@ class ResourceRatingResource extends Resource
                 Forms\Components\Section::make('Évaluation')
                     ->description('Note et commentaire')
                     ->schema([
-                        Forms\Components\Select::make('ressource_id')
-                            ->label('Ressource')
-                            ->relationship('ressource', 'titre')
-                            ->searchable()
-                            ->preload()
-                            ->required(),
-
                         Forms\Components\Select::make('user_id')
                             ->label('Utilisateur')
                             ->relationship('user', 'name')
                             ->searchable()
                             ->preload()
+                            ->disabledOn('edit')
                             ->required(),
 
                         Forms\Components\Radio::make('stars')
@@ -57,12 +58,18 @@ class ResourceRatingResource extends Resource
                                 4 => '⭐⭐⭐⭐ 4 étoiles',
                                 5 => '⭐⭐⭐⭐⭐ 5 étoiles',
                             ])
+                            ->disabledOn('edit')
                             ->required(),
 
                         Forms\Components\Textarea::make('comment')
                             ->label('Commentaire')
+                            ->disabledOn('edit')
                             ->rows(4)
                             ->columnSpanFull(),
+
+                        Forms\Components\Toggle::make('is_testimonial')
+                            ->label('Afficher sur la page d\'accueil (Témoignage)')
+                            ->inline(false),
 
                         Forms\Components\DateTimePicker::make('created_at')
                             ->label('Évalué le')
@@ -95,6 +102,10 @@ class ResourceRatingResource extends Resource
                     ->limit(50)
                     ->searchable(),
 
+                Tables\Columns\IconColumn::make('is_testimonial')
+                    ->label('Témoignage')
+                    ->boolean(),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Date')
                     ->dateTime('d/m/Y')
@@ -110,6 +121,8 @@ class ResourceRatingResource extends Resource
                         4 => '4 étoiles',
                         5 => '5 étoiles',
                     ]),
+                Tables\Filters\TernaryFilter::make('is_testimonial')
+                    ->label('Témoignage'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

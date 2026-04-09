@@ -7,6 +7,15 @@
 
     <!-- Scripts & Polices -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' };
+        (function () {
+            const saved = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = saved || (prefersDark ? 'dark' : 'light');
+            document.documentElement.classList.toggle('dark', theme === 'dark');
+        })();
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
@@ -23,11 +32,25 @@
 
         /* Style pour les images de l'éditeur riche */
         .prose img { border-radius: 1.5rem; margin: 2rem 0; box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
+
+        /* Fallback global pour harmoniser les pages existantes */
+        html.dark body { background: #020617 !important; color: #e2e8f0 !important; }
+        html.dark .bg-white { background-color: #0f172a !important; }
+        html.dark .bg-slate-50, html.dark .bg-\[\#f8fafc\] { background-color: #020617 !important; }
+        html.dark .text-slate-900, html.dark .text-slate-800 { color: #f8fafc !important; }
+        html.dark .text-slate-700, html.dark .text-slate-600, html.dark .text-slate-500, html.dark .text-slate-400 { color: #cbd5e1 !important; }
+        html.dark .border-slate-100, html.dark .border-slate-200 { border-color: #334155 !important; }
     </style>
 </head>
-<body class="bg-[#f8fafc] text-slate-900 overflow-x-hidden"
+<body class="bg-[#f8fafc] text-slate-900 overflow-x-hidden transition-colors duration-300"
       x-data="{ scrolled: false }"
       @scroll.window="scrolled = (window.pageYOffset > 200)">
+
+    <button id="theme-toggle" type="button"
+            class="fixed bottom-6 left-4 md:left-8 z-[95] bg-white/90 text-slate-700 dark:bg-slate-800 dark:text-yellow-300 border border-slate-200 dark:border-slate-700 w-12 h-12 rounded-2xl shadow-2xl flex items-center justify-center hover:scale-105 transition-all"
+            aria-label="Changer le theme">
+        <i id="theme-toggle-icon" class="fas fa-moon"></i>
+    </button>
 
     <!-- BOUTON RETOUR EN HAUT (LE POINTEUR) -->
     <button @click="window.scrollTo({top: 0, behavior: 'smooth'})"
@@ -39,12 +62,12 @@
     </button>
 
     <!-- NAVBAR MINI -->
-    <nav class="bg-white/80 backdrop-blur-md border-b py-4 px-4 md:px-8 flex justify-between items-center sticky top-0 z-50">
+    <nav class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 py-4 px-4 md:px-8 flex justify-between items-center sticky top-0 z-50 transition-colors duration-300">
         <a href="/" class="flex items-center gap-2 group">
             <x-application-logo class="w-8 md:w-10 h-8 md:h-10" />
-            <span class="hidden sm:inline font-black text-slate-800 tracking-tight uppercase text-xs md:text-base">Bibliothèque</span>
+            <span class="hidden sm:inline font-black text-slate-800 dark:text-slate-100 tracking-tight uppercase text-xs md:text-base">Bibliothèque</span>
         </a>
-        <a href="/" class="text-slate-500 hover:text-blue-600 font-bold transition flex items-center gap-1 md:gap-2 text-xs md:text-sm uppercase tracking-widest">
+        <a href="/" class="text-slate-500 dark:text-slate-300 hover:text-blue-600 font-bold transition flex items-center gap-1 md:gap-2 text-xs md:text-sm uppercase tracking-widest">
             <i class="fas fa-home"></i> <span class="hidden md:inline">Accueil</span>
         </a>
     </nav>
@@ -193,4 +216,5 @@
     @include('layouts.footer')
 
 </body>
+@include('components.theme-toggle-script')
 </html>

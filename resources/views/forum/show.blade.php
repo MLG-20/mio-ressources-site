@@ -6,17 +6,32 @@
     <title>{{ $sujet->titre }} - Forum MIO</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' };
+        (function () {
+            const saved = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = saved || (prefersDark ? 'dark' : 'light');
+            document.documentElement.classList.toggle('dark', theme === 'dark');
+        })();
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-[#f8fafc] text-slate-900 font-sans">
+<body class="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
+
+    <button id="theme-toggle" type="button"
+            class="fixed bottom-6 left-4 md:left-8 z-[95] bg-white/90 text-slate-700 dark:bg-slate-800 dark:text-yellow-300 border border-slate-200 dark:border-slate-700 w-12 h-12 rounded-2xl shadow-2xl flex items-center justify-center hover:scale-105 transition-all"
+            aria-label="Changer le theme">
+        <i id="theme-toggle-icon" class="fas fa-moon"></i>
+    </button>
 
     <!-- NAVBAR -->
-    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200 py-4 px-8 flex justify-between items-center sticky top-0 z-50">
+    <nav class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 py-4 px-8 flex justify-between items-center sticky top-0 z-50 transition-colors duration-300">
         <a href="{{ route('forum.index') }}" class="flex items-center gap-2 group">
             <x-application-logo class="w-8 md:w-10 h-8 md:h-10" />
-            <span class="font-black text-slate-800 tracking-tight">FORUM</span>
+            <span class="font-black text-slate-800 dark:text-slate-100 tracking-tight">FORUM</span>
         </a>
-        <a href="{{ route('forum.category', $sujet->forum_category_id) }}" class="text-slate-500 font-bold hover:text-blue-600 transition flex items-center gap-2">
+        <a href="{{ route('forum.category', $sujet->forum_category_id) }}" class="text-slate-500 dark:text-slate-300 font-bold hover:text-blue-600 transition flex items-center gap-2">
             <i class="fas fa-arrow-left"></i> Retour à {{ $sujet->category->nom }}
         </a>
     </nav>
@@ -148,4 +163,21 @@
     @include('layouts.footer')
 
 </body>
+<script>
+    (function () {
+        const btn = document.getElementById('theme-toggle');
+        const icon = document.getElementById('theme-toggle-icon');
+        if (!btn || !icon) return;
+        const syncIcon = () => {
+            const isDark = document.documentElement.classList.contains('dark');
+            icon.className = 'fas ' + (isDark ? 'fa-sun' : 'fa-moon');
+        };
+        syncIcon();
+        btn.addEventListener('click', () => {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            syncIcon();
+        });
+    })();
+</script>
 </html>

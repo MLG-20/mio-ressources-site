@@ -17,8 +17,13 @@ use App\Models\Purchase;
 use App\Models\DownloadHistory;
 use App\Models\FinancialTransaction;
 use App\Models\User;
+use App\Models\PrivateLesson;
+use App\Models\Review;
+use App\Models\ResourceRating;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Schema;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -30,7 +35,58 @@ class HomeController extends Controller
         $sliders = Slider::orderBy('ordre')->get();
         $semestres = Semestre::withCount('matieres')->get();
         $settings = Setting::pluck('value', 'key');
-        return view('welcome', compact('sliders', 'semestres', 'settings'));
+        $studentsQuery = User::query();
+        $hasUserType = Schema::hasColumn('users', 'user_type');
+        $hasRole = Schema::hasColumn('users', 'role');
+
+        if ($hasUserType || $hasRole) {
+            $studentsQuery->where(function ($query) use ($hasUserType, $hasRole) {
+                if ($hasUserType) {
+                    $query->where('user_type', 'student');
+                }
+                if ($hasRole) {
+                    $method = $hasUserType ? 'orWhere' : 'where';
+                    $query->{$method}('role', 'etudiant');
+                }
+            });
+        }
+
+        $studentsCount = $studentsQuery->count();
+
+        $heroStats = [
+            [
+                'label' => 'Etudiants',
+                'value' => $studentsCount,
+                'icon' => 'fa-user-graduate',
+            ],
+            [
+                'label' => 'Ressources',
+                'value' => Ressource::count(),
+                'icon' => 'fa-book-open',
+            ],
+            [
+                'label' => 'Cours particuliers',
+                'value' => PrivateLesson::count(),
+                'icon' => 'fa-chalkboard-teacher',
+            ],
+            [
+                'label' => 'Avis',
+                'value' => Review::count() + ResourceRating::count(),
+                'icon' => 'fa-star',
+            ],
+        ];
+
+        $testimonials = collect();
+        if (Schema::hasColumn('resource_ratings', 'is_testimonial')) {
+            $testimonials = ResourceRating::with(['user', 'ressource', 'publication'])
+                ->where('is_testimonial', true)
+                ->whereNotNull('comment')
+                ->latest()
+                ->take(6)
+                ->get();
+        }
+
+        return view('welcome', compact('sliders', 'semestres', 'settings', 'heroStats', 'testimonials'));
     }
 
     public function showPage(Request $request, $slug) {
@@ -56,8 +112,8 @@ class HomeController extends Controller
                 'stars' => $request->note,
                 'comment' => $request->message,
             ];
-            if (auth()->check()) {
-                $data['user_id'] = auth()->id();
+            if (Auth::check()) {
+                $data['user_id'] = Auth::id();
             } else {
                 $data['user_id'] = null;
                 $data['comment'] = ($request->nom ? $request->nom . ' : ' : '') . $data['comment'];
@@ -80,17 +136,17 @@ class HomeController extends Controller
         $comment = $request->input('comment');
 
         $data = [
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'stars' => $stars,
             'comment' => $comment,
         ];
 
         if ($type === 'publication') {
-            $search = ['user_id' => auth()->id(), 'publication_id' => $id];
+            $search = ['user_id' => Auth::id(), 'publication_id' => $id];
             $data['publication_id'] = $id;
             $data['ressource_id'] = null;
         } else {
-            $search = ['user_id' => auth()->id(), 'ressource_id' => $id];
+            $search = ['user_id' => Auth::id(), 'ressource_id' => $id];
             $data['ressource_id'] = $id;
             $data['publication_id'] = null;
         }
@@ -152,13 +208,13 @@ class HomeController extends Controller
     $type = $request->input('item_type');
     $item = ($type === 'publication') ? Publication::with('user')->findOrFail($id) : Ressource::with('user')->findOrFail($id);
 
-    $isGuest = !auth()->check();
-    $emailDest = $isGuest ? $request->guest_email : auth()->user()->email;
-    $nomDest = $isGuest ? 'Cher utilisateur' : auth()->user()->name;
+    $isGuest = !Auth::check();
+    $emailDest = $isGuest ? $request->guest_email : Auth::user()->email;
+    $nomDest = $isGuest ? 'Cher utilisateur' : Auth::user()->name;
 
     // 3. ENREGISTREMENT
     $purchase = Purchase::create([
-        'user_id' => auth()->id(),
+        'user_id' => Auth::id(),
         'guest_email' => $isGuest ? $request->guest_email : null,
         'ressource_id' => ($type === 'ressource') ? $id : null,
         'publication_id' => ($type === 'publication') ? $id : null,
@@ -255,14 +311,14 @@ private function sendTriangularEmails($emailAcheteur, $item, $pdfContent)
             });
         }
     } catch (\Exception $e) {
-        \Log::error("Erreur Mail : " . $e->getMessage());
+        Log::error("Erreur Mail : " . $e->getMessage());
     }
 }
     /** 4. ACCÈS ET SUPPORTS **/
     public function downloadRessource($id) {
         $ressource = Ressource::findOrFail($id);
 
-        $currentUser = auth()->user();
+        $currentUser = Auth::user();
 
         $isAdmin = $currentUser && ($currentUser->role ?? null) === 'admin';
         $isOwner = $currentUser && ($ressource->user_id ?? null) && $currentUser->id === $ressource->user_id;
@@ -306,7 +362,7 @@ private function sendTriangularEmails($emailAcheteur, $item, $pdfContent)
     public function viewRessource($id) {
         $ressource = Ressource::findOrFail($id);
 
-        $currentUser = auth()->user();
+        $currentUser = Auth::user();
 
         $isAdmin = $currentUser && ($currentUser->role ?? null) === 'admin';
         $isOwner = $currentUser && ($ressource->user_id ?? null) && $currentUser->id === $ressource->user_id;
@@ -401,18 +457,18 @@ private function sendTriangularEmails($emailAcheteur, $item, $pdfContent)
 
         // On prépare les données
         $data = [
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'stars' => $request->stars,
             'comment' => $request->comment,
         ];
 
         // On détermine si c'est un livre ou un cours
         if ($type === 'publication') {
-            $search = ['user_id' => auth()->id(), 'publication_id' => $id];
+            $search = ['user_id' => Auth::id(), 'publication_id' => $id];
             $data['publication_id'] = $id;
             $data['ressource_id'] = null; // Important pour éviter les conflits
         } else {
-            $search = ['user_id' => auth()->id(), 'ressource_id' => $id];
+            $search = ['user_id' => Auth::id(), 'ressource_id' => $id];
             $data['ressource_id'] = $id;
             $data['publication_id'] = null;
         }

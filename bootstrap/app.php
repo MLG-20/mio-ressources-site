@@ -4,6 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\EnsureRole;
+use App\Http\Middleware\EnsureStudentSubscriptionActive;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -16,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Utilisation: ->middleware('role:professeur')
         $middleware->alias([
             'role' => EnsureRole::class,
+            'student.subscription' => EnsureStudentSubscriptionActive::class,
         ]);
 
         // On autorise PayTech à nous envoyer des données sans token de sécurité interne

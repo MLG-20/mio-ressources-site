@@ -6,6 +6,15 @@
     <title>Cours Particuliers - MIO</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' };
+        (function () {
+            const saved = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = saved || (prefersDark ? 'dark' : 'light');
+            document.documentElement.classList.toggle('dark', theme === 'dark');
+        })();
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script>
@@ -29,9 +38,15 @@
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&display=swap');
         body { font-family: 'Outfit', sans-serif; }
         [x-cloak] { display: none !important; }
+        /* Fallback dark mode pour harmoniser les sections non migrées */
+        html.dark body { background: #020617 !important; color: #e2e8f0 !important; }
+        html.dark .bg-white, html.dark .bg-\[\#f8fafc\], html.dark .bg-slate-50 { background-color: #0f172a !important; }
+        html.dark .text-slate-900, html.dark .text-slate-800 { color: #f8fafc !important; }
+        html.dark .text-slate-700, html.dark .text-slate-600, html.dark .text-slate-500, html.dark .text-slate-400 { color: #cbd5e1 !important; }
+        html.dark .border-slate-50, html.dark .border-slate-100, html.dark .border-slate-200 { border-color: #334155 !important; }
     </style>
 </head>
-<body class="bg-[#f8fafc] text-slate-900">
+<body class="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
 
     <!-- NAVBAR -->
     @include('layouts.navbar')

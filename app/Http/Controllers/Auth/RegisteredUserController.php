@@ -46,6 +46,7 @@ class RegisteredUserController extends Controller
         'password' => Hash::make($request->password),
         'user_type' => $request->user_type,
         'student_level' => $request->student_level,
+        'trial_ends_at' => $request->user_type === 'student' ? now()->addMonths(3) : null,
         'role' => $role, // On enregistre le rôle ici
     ]);
 

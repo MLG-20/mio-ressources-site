@@ -15,33 +15,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 
-
-Route::get('/health', function () {
-    try {
-        DB::connection()->getPdo();
-        $db = 'ok';
-    } catch (\Exception $e) {
-        $db = 'error';
-    }
-
-    try {
-        Cache::put('health', 'ok', 10);
-        $cache = Cache::get('health') === 'ok' ? 'ok' : 'error';
-    } catch (\Exception $e) {
-        $cache = 'error';
-    }
-
-    $status = ($db === 'ok' && $cache === 'ok') ? 'healthy' : 'unhealthy';
-
-    return response()->json([
-        'status' => $status,
-        'checks' => [
-            'database' => $db,
-            'cache' => $cache,
-        ]
-    ]);
-});
-
 /*
 |--------------------------------------------------------------------------
 | HEALTH CHECK (monitoring)
@@ -104,6 +77,7 @@ Route::get('/achat-livre/{id}', [HomeController::class, 'checkoutBook'])->name('
 // IPN (Webhook) - Doit être public
 //Route::post('/paiement/ipn', [PaymentController::class, 'handleIPN'])->name('payment.ipn');
 Route::post('/api/paytech/callback', [PaymentController::class, 'handleIPN'])->name('payment.ipn');
+Route::post('/api/paytech/subscription-callback', [PaymentController::class, 'handleIPN'])->name('payment.subscription.ipn');
 
 Route::get('/telechargement-invite/{token}/{type}/{id}', [HomeController::class, 'guestDownload'])
     ->name('guest.download')
@@ -124,10 +98,19 @@ Route::middleware(['auth'])->group(function () {
         return redirect('/');
     })->name('dashboard');
 
+    Route::get('/abonnement-etudiant', [UserSpaceController::class, 'subscriptionPaywall'])
+        ->name('student.subscription.paywall');
+    Route::post('/abonnement-etudiant/payer', [PaymentController::class, 'initiateStudentSubscription'])
+        ->name('student.subscription.pay');
+    Route::get('/abonnement-etudiant/succes', [PaymentController::class, 'studentSubscriptionSuccess'])
+        ->name('student.subscription.success');
+
     // Espace Personnel
-    Route::get('/mon-espace', [UserSpaceController::class, 'index'])->name('user.dashboard');
-    Route::post('/mon-espace/update', [UserSpaceController::class, 'updateProfile'])->name('user.profile.update');
-    Route::delete('/user/delete', [UserSpaceController::class, 'deleteAccount'])->name('user.account.delete');
+    Route::middleware('student.subscription')->group(function () {
+        Route::get('/mon-espace', [UserSpaceController::class, 'index'])->name('user.dashboard');
+        Route::post('/mon-espace/update', [UserSpaceController::class, 'updateProfile'])->name('user.profile.update');
+        Route::delete('/user/delete', [UserSpaceController::class, 'deleteAccount'])->name('user.account.delete');
+    });
 
     // Révision instantanée (Jitsi)
     Route::get('/revision-instantanee', [MeetingController::class, 'quick'])->name('meeting.quick');

@@ -28,6 +28,8 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Can
         'avatar',        // Photo de profil
         'user_type',     // student, teacher
         'student_level', // L1, L2, L3
+        'trial_ends_at',
+        'subscription_paid_until',
         'specialty',     // Spécialité du prof
         'permissions',   // JSON — sections autorisées pour les sous-admins
         'is_blocked',    // Bloquer l'accès au panel
@@ -45,6 +47,8 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Can
             'password'          => 'hashed',
             'permissions'       => 'array',
             'is_blocked'        => 'boolean',
+            'trial_ends_at'     => 'datetime',
+            'subscription_paid_until' => 'datetime',
         ];
     }
 

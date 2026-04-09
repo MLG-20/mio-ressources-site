@@ -5,6 +5,15 @@
     <title>Espace Enseignant - MIO</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' };
+        (function () {
+            const saved = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = saved || (prefersDark ? 'dark' : 'light');
+            document.documentElement.classList.toggle('dark', theme === 'dark');
+        })();
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
@@ -18,12 +27,52 @@
         ::-webkit-scrollbar-thumb:hover { background: linear-gradient(to bottom, #1d4ed8, #1e40af); box-shadow: 0 0 12px rgba(37, 99, 235, 0.8); }
         /* Firefox */
         * { scrollbar-color: #2563eb transparent; scrollbar-width: thin; }
+        /* Lisibilité des champs en mode clair */
+        input,
+        select,
+        textarea {
+            background-color: #f8fafc;
+            color: #0f172a;
+            border: 1px solid #cbd5e1;
+        }
+        input::placeholder,
+        textarea::placeholder {
+            color: #64748b;
+        }
+        /* Fallback dark mode pour améliorer le contraste global */
+        html.dark body { background: #020617 !important; color: #e2e8f0 !important; }
+        html.dark .bg-white, html.dark .bg-\[\#f8fafc\], html.dark .bg-slate-50 { background-color: #0f172a !important; }
+        html.dark .text-slate-900, html.dark .text-slate-800 { color: #f8fafc !important; }
+        html.dark .text-slate-700, html.dark .text-slate-600, html.dark .text-slate-500, html.dark .text-slate-400, html.dark .text-gray-500 { color: #cbd5e1 !important; }
+        html.dark .border-slate-50, html.dark .border-slate-100, html.dark .border-slate-200, html.dark .border-gray-200 { border-color: #334155 !important; }
+        /* Contraste renforcé des champs en mode sombre */
+        html.dark input,
+        html.dark select,
+        html.dark textarea {
+            background-color: #1e293b !important;
+            color: #f8fafc !important;
+            border: 1px solid #334155 !important;
+        }
+        html.dark input::placeholder,
+        html.dark textarea::placeholder {
+            color: #94a3b8 !important;
+        }
+        html.dark details.bg-slate-50,
+        html.dark div.bg-slate-50 {
+            background-color: #1e293b !important;
+        }
     </style>
 </head>
-<body class="bg-[#f8fafc] text-slate-900 overflow-x-hidden" x-data="{ tab: 'bureau' }">
+<body class="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 overflow-x-hidden transition-colors duration-300" x-data="{ tab: 'bureau' }">
 
     <!-- NAVBAR -->
-    <nav class="bg-slate-900 text-white py-4 px-4 md:px-8 flex justify-between items-center sticky top-0 z-50">
+    <button id="theme-toggle" type="button"
+            class="fixed bottom-6 left-4 md:left-8 z-[95] bg-white/90 text-slate-700 dark:bg-slate-800 dark:text-yellow-300 border border-slate-200 dark:border-slate-700 w-12 h-12 rounded-2xl shadow-2xl flex items-center justify-center hover:scale-105 transition-all"
+            aria-label="Changer le theme">
+        <i id="theme-toggle-icon" class="fas fa-moon"></i>
+    </button>
+
+    <nav class="bg-white dark:bg-slate-900 text-slate-800 dark:text-white py-4 px-4 md:px-8 flex justify-between items-center sticky top-0 z-50 border-b border-slate-200 dark:border-slate-700 transition-colors duration-300">
         <a href="/">
            <div class="flex items-center gap-2 md:gap-3">
                 <x-application-logo class="w-8 md:w-10 h-8 md:h-10" />
@@ -31,7 +80,7 @@
             </div>
         </a>
         <div class="flex items-center gap-2 md:gap-4">
-            <div class="bg-white/10 px-3 md:px-4 py-2 rounded-2xl flex items-center gap-2 md:gap-3">
+            <div class="bg-slate-100 dark:bg-white/10 px-3 md:px-4 py-2 rounded-2xl flex items-center gap-2 md:gap-3">
                 <img src="{{ $user->avatar ? asset('storage/'.$user->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($user->name) }}" class="w-6 md:w-8 h-6 md:h-8 rounded-lg object-cover">
                 <span class="text-xs md:text-sm font-bold hidden md:inline truncate">{{ $user->name }}</span>
             </div>
@@ -418,5 +467,22 @@
         </div>
     </div>
 
+<script>
+    (function () {
+        const btn = document.getElementById('theme-toggle');
+        const icon = document.getElementById('theme-toggle-icon');
+        if (!btn || !icon) return;
+        const syncIcon = () => {
+            const isDark = document.documentElement.classList.contains('dark');
+            icon.className = 'fas ' + (isDark ? 'fa-sun' : 'fa-moon');
+        };
+        syncIcon();
+        btn.addEventListener('click', () => {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            syncIcon();
+        });
+    })();
+</script>
 </body>
 </html>

@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use App\Models\User;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -27,10 +28,12 @@ class AuthenticatedSessionController extends Controller
     $request->authenticate();
     $request->session()->regenerate();
 
-    $user = auth()->user();
+    /** @var User $user */
+    $user = Auth::user();
 
-    // Compte bloqué par l'administrateur
-    if ($user->is_blocked) {
+    // Blocage admin strict uniquement pour les comptes staff/prof.
+    // Les étudiants doivent passer par le flux abonnement (middleware student.subscription).
+    if ($user->is_blocked && $user->user_type !== 'student') {
         Auth::guard('web')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

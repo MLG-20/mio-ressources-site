@@ -11,6 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Auth;
 
 class UserResource extends Resource
 {
@@ -22,7 +23,11 @@ class UserResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->hasPermission('users') ?? false;
+        $user = Auth::user();
+
+        return $user && is_callable([$user, 'hasPermission'])
+            ? (bool) call_user_func([$user, 'hasPermission'], 'users')
+            : false;
     }
 
     public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
@@ -42,7 +47,10 @@ class UserResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $isSuperAdmin = auth()->user()?->isSuperAdmin();
+        $authUser = Auth::user();
+        $isSuperAdmin = $authUser && is_callable([$authUser, 'isSuperAdmin'])
+            ? (bool) call_user_func([$authUser, 'isSuperAdmin'])
+            : false;
 
         return $form
             ->schema([
@@ -96,6 +104,16 @@ class UserResource extends Resource
                             ])
                             ->hidden(fn (Get $get): bool => $get('user_type') !== 'student')
                             ->required(fn (Get $get): bool => $get('user_type') === 'student'),
+
+                        Forms\Components\DateTimePicker::make('trial_ends_at')
+                            ->label('Fin essai gratuit')
+                            ->seconds(false)
+                            ->hidden(fn (Get $get): bool => $get('user_type') !== 'student'),
+
+                        Forms\Components\DateTimePicker::make('subscription_paid_until')
+                            ->label('Abonnement payé jusqu\'au')
+                            ->seconds(false)
+                            ->hidden(fn (Get $get): bool => $get('user_type') !== 'student'),
                     ])->columns(2),
 
                 // Section permissions — visible seulement par le super admin pour les sous-admins
@@ -161,6 +179,16 @@ class UserResource extends Resource
                     ->trueColor('danger')
                     ->falseColor('success'),
 
+                Tables\Columns\TextColumn::make('trial_ends_at')
+                    ->label('Fin essai')
+                    ->dateTime('d/m/Y')
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\TextColumn::make('subscription_paid_until')
+                    ->label('Abonné jusqu\'au')
+                    ->dateTime('d/m/Y')
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Inscrit le')
                     ->dateTime('d/m/Y')
@@ -178,7 +206,7 @@ class UserResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
-                    ->hidden(fn ($record) => $record->isSuperAdmin() && !auth()->user()?->isSuperAdmin()),
+                    ->hidden(fn ($record) => $record->isSuperAdmin() && ! (Auth::user() && is_callable([Auth::user(), 'isSuperAdmin']) && (bool) call_user_func([Auth::user(), 'isSuperAdmin']))),
 
                 Tables\Actions\Action::make('toggle_block')
                     ->label(fn ($record) => $record->is_blocked ? 'Débloquer' : 'Bloquer')
@@ -196,8 +224,8 @@ class UserResource extends Resource
                             ->success()
                             ->send();
                     })
-                    ->hidden(fn ($record) => $record->isSuperAdmin())
-                    ->visible(fn () => auth()->user()?->isSuperAdmin()),
+                    ->hidden(fn ($record) => $record->isSuperAdmin() || $record->user_type === 'student')
+                    ->visible(fn () => Auth::user() && is_callable([Auth::user(), 'isSuperAdmin']) && (bool) call_user_func([Auth::user(), 'isSuperAdmin'])),
 
                 Tables\Actions\DeleteAction::make()
                     ->hidden(fn ($record) => $record->isSuperAdmin()),

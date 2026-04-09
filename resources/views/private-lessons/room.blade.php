@@ -6,16 +6,31 @@
     <title>Cours en ligne - {{ $enrollment->privateLesson->titre }}</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' };
+        (function () {
+            const saved = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = saved || (prefersDark ? 'dark' : 'light');
+            document.documentElement.classList.toggle('dark', theme === 'dark');
+        })();
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&display=swap');
         body { font-family: 'Outfit', sans-serif; }
     </style>
 </head>
-<body class="bg-slate-900 text-white">
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white transition-colors duration-300">
 
     <!-- NAVBAR -->
-    <nav class="bg-slate-950 py-3 md:py-4 px-4 md:px-8 flex justify-between items-center sticky top-0 z-50">
+    <button id="theme-toggle" type="button"
+            class="fixed bottom-6 left-4 md:left-8 z-[95] bg-white/90 text-slate-700 dark:bg-slate-800 dark:text-yellow-300 border border-slate-200 dark:border-slate-700 w-12 h-12 rounded-2xl shadow-2xl flex items-center justify-center hover:scale-105 transition-all"
+            aria-label="Changer le theme">
+        <i id="theme-toggle-icon" class="fas fa-moon"></i>
+    </button>
+
+    <nav class="bg-white dark:bg-slate-950 py-3 md:py-4 px-4 md:px-8 flex justify-between items-center sticky top-0 z-50 border-b border-slate-200 dark:border-slate-700 transition-colors duration-300">
         <div class="flex items-center gap-2 md:gap-3 min-w-0">
             <x-application-logo class="w-6 md:w-10 h-6 md:h-10 flex-shrink-0" />
             <div class="min-w-0">
@@ -24,7 +39,7 @@
             </div>
         </div>
         <div class="flex items-center gap-2 md:gap-3 flex-shrink-0">
-            <div class="bg-white/10 px-2 md:px-4 py-2 rounded-lg md:rounded-2xl flex items-center gap-2 md:gap-3 hidden sm:flex">
+            <div class="bg-slate-100 dark:bg-white/10 px-2 md:px-4 py-2 rounded-lg md:rounded-2xl flex items-center gap-2 md:gap-3 hidden sm:flex">
                 <img src="{{ Auth::user()->avatar ? asset('storage/'.Auth::user()->avatar) : 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name) }}" class="w-6 md:w-8 h-6 md:h-8 rounded-lg object-cover">
                 <span class="text-[10px] md:text-sm font-bold hidden md:inline truncate">{{ Auth::user()->name }}</span>
             </div>
@@ -135,5 +150,22 @@
         });
     </script>
 
+<script>
+    (function () {
+        const btn = document.getElementById('theme-toggle');
+        const icon = document.getElementById('theme-toggle-icon');
+        if (!btn || !icon) return;
+        const syncIcon = () => {
+            const isDark = document.documentElement.classList.contains('dark');
+            icon.className = 'fas ' + (isDark ? 'fa-sun' : 'fa-moon');
+        };
+        syncIcon();
+        btn.addEventListener('click', () => {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            syncIcon();
+        });
+    })();
+</script>
 </body>
 </html>

@@ -6,6 +6,15 @@
     <title>Modifier - {{ $lesson->titre }}</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' };
+        (function () {
+            const saved = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = saved || (prefersDark ? 'dark' : 'light');
+            document.documentElement.classList.toggle('dark', theme === 'dark');
+        })();
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
@@ -14,7 +23,7 @@
         [x-cloak] { display: none !important; }
     </style>
 </head>
-<body class="bg-[#f8fafc] text-slate-900" x-data="{
+<body class="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300" x-data="{
     type: '{{ old('type', $lesson->type ?? 'payant') }}',
     disponibilites: @json($lesson->disponibilites ?? []),
     ajouterCreneau() {
@@ -25,8 +34,14 @@
     }
 }">
 
+    <button id="theme-toggle" type="button"
+            class="fixed bottom-6 left-4 md:left-8 z-[95] bg-white/90 text-slate-700 dark:bg-slate-800 dark:text-yellow-300 border border-slate-200 dark:border-slate-700 w-12 h-12 rounded-2xl shadow-2xl flex items-center justify-center hover:scale-105 transition-all"
+            aria-label="Changer le theme">
+        <i id="theme-toggle-icon" class="fas fa-moon"></i>
+    </button>
+
     <!-- NAVBAR -->
-    <nav class="bg-slate-900 text-white py-4 px-4 md:px-8 flex justify-between items-center sticky top-0 z-50">
+    <nav class="bg-white dark:bg-slate-900 text-slate-800 dark:text-white py-4 px-4 md:px-8 flex justify-between items-center sticky top-0 z-50 border-b border-slate-200 dark:border-slate-700 transition-colors duration-300">
         <a href="{{ route('teacher.private-lessons.index') }}">
             <div class="flex items-center gap-2 md:gap-3">
                 <x-application-logo class="w-8 md:w-10 h-8 md:h-10" />
@@ -34,7 +49,7 @@
             </div>
         </a>
         <div class="flex items-center gap-2 md:gap-4">
-            <a href="{{ route('teacher.private-lessons.index') }}" class="bg-white/10 px-4 py-2 rounded-xl text-xs font-bold uppercase hover:bg-white/20 transition">
+            <a href="{{ route('teacher.private-lessons.index') }}" class="bg-slate-100 dark:bg-white/10 px-4 py-2 rounded-xl text-xs font-bold uppercase hover:bg-slate-200 dark:hover:bg-white/20 transition">
                 ← Retour
             </a>
         </div>
@@ -220,5 +235,22 @@
 
     @include('layouts.footer')
 
+<script>
+    (function () {
+        const btn = document.getElementById('theme-toggle');
+        const icon = document.getElementById('theme-toggle-icon');
+        if (!btn || !icon) return;
+        const syncIcon = () => {
+            const isDark = document.documentElement.classList.contains('dark');
+            icon.className = 'fas ' + (isDark ? 'fa-sun' : 'fa-moon');
+        };
+        syncIcon();
+        btn.addEventListener('click', () => {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            syncIcon();
+        });
+    })();
+</script>
 </body>
 </html>

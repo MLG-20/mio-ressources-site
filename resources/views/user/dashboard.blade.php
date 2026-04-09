@@ -5,6 +5,15 @@
     <title>Espace Étudiant - MIO</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' };
+        (function () {
+            const saved = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = saved || (prefersDark ? 'dark' : 'light');
+            document.documentElement.classList.toggle('dark', theme === 'dark');
+        })();
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
@@ -28,9 +37,15 @@
         .btn-retour { position: relative; overflow: hidden; }
         .btn-retour::before { content: ''; position: absolute; top: 50%; left: -100%; width: 100%; height: 100%; background: rgba(255,255,255,0.2); transform: translateY(-50%); transition: left 0.3s ease; }
         .btn-retour:hover::before { left: 100%; }
+        /* Fallback dark mode pour améliorer le contraste global */
+        html.dark body { background: #020617 !important; color: #e2e8f0 !important; }
+        html.dark .bg-white, html.dark .bg-\[\#f8fafc\], html.dark .bg-slate-50 { background-color: #0f172a !important; }
+        html.dark .text-slate-900, html.dark .text-slate-800 { color: #f8fafc !important; }
+        html.dark .text-slate-700, html.dark .text-slate-600, html.dark .text-slate-500, html.dark .text-slate-400, html.dark .text-gray-500 { color: #cbd5e1 !important; }
+        html.dark .border-slate-50, html.dark .border-slate-100, html.dark .border-slate-200, html.dark .border-gray-200 { border-color: #334155 !important; }
     </style>
 </head>
-<body class="bg-[#f8fafc] text-slate-900 overflow-x-hidden" x-data="{
+<body class="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 overflow-x-hidden transition-colors duration-300" x-data="{
         tab: window.location.hash ? window.location.hash.substring(1) : (localStorage.getItem('activeTab') || 'bureau'),
         search: '',
         showScrollTop: false,
@@ -58,8 +73,14 @@
         }, 100);
     " :class="{ 'overflow-hidden': mobileMenuOpen }">
 
+    <button id="theme-toggle" type="button"
+            class="fixed bottom-6 left-4 md:left-8 z-[95] bg-white/90 text-slate-700 dark:bg-slate-800 dark:text-yellow-300 border border-slate-200 dark:border-slate-700 w-12 h-12 rounded-2xl shadow-2xl flex items-center justify-center hover:scale-105 transition-all"
+            aria-label="Changer le theme">
+        <i id="theme-toggle-icon" class="fas fa-moon"></i>
+    </button>
+
     <!-- NAVBAR -->
-    <nav class="bg-slate-900 text-white py-4 px-4 md:px-8 flex justify-between items-center sticky top-0 z-50">
+    <nav class="bg-white dark:bg-slate-900 text-slate-800 dark:text-white py-4 px-4 md:px-8 flex justify-between items-center sticky top-0 z-50 border-b border-slate-200 dark:border-slate-700 transition-colors duration-300">
         <a href="/">
            <div class="flex items-center gap-2 md:gap-3">
                 <x-application-logo class="w-8 md:w-10 h-8 md:h-10" />
@@ -67,7 +88,7 @@
             </div>
         </a>
         <div class="flex items-center gap-2 md:gap-4">
-            <button @click="setTab('profil')" class="bg-white/10 hover:bg-white/20 px-3 md:px-4 py-2 rounded-2xl flex items-center gap-2 md:gap-3 transition-all transform hover:scale-105">
+            <button @click="setTab('profil')" class="bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 px-3 md:px-4 py-2 rounded-2xl flex items-center gap-2 md:gap-3 transition-all transform hover:scale-105">
                 <img src="{{ $user->avatar ? asset('storage/'.$user->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&background=0D8ABC&color=fff' }}" class="w-6 md:w-8 h-6 md:h-8 rounded-lg object-cover cursor-pointer">
                 <span class="text-xs md:text-sm font-bold hidden md:inline truncate cursor-pointer">{{ $user->name }}</span>
             </button>
@@ -164,9 +185,9 @@
         <div x-show="tab === 'bureau'" x-cloak class="space-y-6 md:space-y-8 animate-in fade-in duration-500">
 
             <!-- Révision instantanée (Jitsi) -->
-            <div class="bg-gradient-to-r from-sky-600 to-indigo-700 rounded-2xl md:rounded-3xl p-4 md:p-6 text-white shadow-xl flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div class="bg-gradient-to-r from-sky-600 to-indigo-700 rounded-2xl md:rounded-3xl p-4 md:p-6 text-white shadow-xl dark:shadow-none flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div class="flex items-start gap-3 md:gap-4">
-                    <div class="w-10 md:w-12 h-10 md:h-12 rounded-2xl bg-white/15 flex items-center justify-center shadow-lg shadow-blue-900/30 flex-shrink-0">
+                    <div class="w-10 md:w-12 h-10 md:h-12 rounded-2xl bg-white/15 flex items-center justify-center shadow-lg shadow-blue-900/30 dark:shadow-none flex-shrink-0">
                         <i class="fas fa-video text-lg md:text-2xl"></i>
                     </div>
                     <div class="min-w-0">
@@ -176,7 +197,7 @@
                     </div>
                 </div>
                 <div class="flex flex-wrap gap-2 md:gap-3">
-                    <a href="{{ route('meeting.quick') }}" class="inline-flex items-center gap-2 bg-white text-slate-900 font-black px-4 md:px-5 py-2 md:py-3 rounded-xl shadow-lg shadow-blue-900/30 hover:-translate-y-0.5 hover:shadow-2xl transition text-xs md:text-sm">
+                    <a href="{{ route('meeting.quick') }}" class="inline-flex items-center gap-2 bg-white text-slate-900 font-black px-4 md:px-5 py-2 md:py-3 rounded-xl shadow-lg shadow-blue-900/30 dark:shadow-none hover:-translate-y-0.5 hover:shadow-2xl dark:hover:shadow-none transition text-xs md:text-sm">
                         <i class="fas fa-bolt text-amber-500"></i> Démarrer
                     </a>
                     <a href="https://meet.jit.si" target="_blank" class="inline-flex items-center gap-2 bg-white/10 text-white border border-white/20 px-3 md:px-4 py-2 md:py-3 rounded-xl font-bold hover:bg-white/15 transition text-xs md:text-sm">
@@ -186,9 +207,9 @@
             </div>
 
             <!-- Cours Vidéo avec Professeurs -->
-            <div class="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl md:rounded-3xl p-4 md:p-6 text-white shadow-xl flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div class="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl md:rounded-3xl p-4 md:p-6 text-white shadow-xl dark:shadow-none flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div class="flex items-start gap-3 md:gap-4">
-                    <div class="w-10 md:w-12 h-10 md:h-12 rounded-2xl bg-white/15 flex items-center justify-center shadow-lg shadow-purple-900/30 flex-shrink-0">
+                    <div class="w-10 md:w-12 h-10 md:h-12 rounded-2xl bg-white/15 flex items-center justify-center shadow-lg shadow-purple-900/30 dark:shadow-none flex-shrink-0">
                         <i class="fas fa-chalkboard-teacher text-lg md:text-2xl"></i>
                     </div>
                     <div class="min-w-0">
@@ -199,7 +220,7 @@
                 </div>
                 @if(Auth::user()->role !== 'admin')
                 <div class="flex flex-wrap gap-2 md:gap-3">
-                    <a href="{{ route('student.courses') }}" class="inline-flex items-center gap-2 bg-white text-purple-900 font-black px-4 md:px-5 py-2 md:py-3 rounded-xl shadow-lg shadow-purple-900/30 hover:-translate-y-0.5 hover:shadow-2xl transition text-xs md:text-sm whitespace-nowrap">
+                    <a href="{{ route('student.courses') }}" class="inline-flex items-center gap-2 bg-white text-purple-900 font-black px-4 md:px-5 py-2 md:py-3 rounded-xl shadow-lg shadow-purple-900/30 dark:shadow-none hover:-translate-y-0.5 hover:shadow-2xl dark:hover:shadow-none transition text-xs md:text-sm whitespace-nowrap">
                         <i class="fas fa-graduation-cap text-pink-500"></i> <span class="hidden md:inline">Voir mes cours</span><span class="md:hidden">Cours</span>
                     </a>
                 </div>
@@ -208,7 +229,7 @@
 
             <!-- NOUVEAUTÉS -->
             @if(isset($nouveautes) && count($nouveautes) > 0)
-            <div class="bg-gradient-to-br from-blue-600 to-indigo-900 rounded-2xl md:rounded-[3rem] p-4 md:p-8 shadow-xl text-white relative overflow-hidden group">
+            <div class="bg-gradient-to-br from-blue-600 to-indigo-900 rounded-2xl md:rounded-[3rem] p-4 md:p-8 shadow-xl dark:shadow-none text-white relative overflow-hidden group">
                 <div class="absolute top-0 right-0 w-24 md:w-32 h-24 md:h-32 bg-white/10 rounded-full blur-3xl -mr-12 md:-mr-16 -mt-12 md:-mt-16"></div>
                 <h3 class="text-xs font-black uppercase tracking-[0.3em] mb-4 md:mb-6 flex items-center gap-2">
                     <span class="w-2 h-2 bg-yellow-400 rounded-full animate-ping"></span>
@@ -1039,5 +1060,22 @@
         </div>
     </div>
 
+<script>
+    (function () {
+        const btn = document.getElementById('theme-toggle');
+        const icon = document.getElementById('theme-toggle-icon');
+        if (!btn || !icon) return;
+        const syncIcon = () => {
+            const isDark = document.documentElement.classList.contains('dark');
+            icon.className = 'fas ' + (isDark ? 'fa-sun' : 'fa-moon');
+        };
+        syncIcon();
+        btn.addEventListener('click', () => {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            syncIcon();
+        });
+    })();
+</script>
 </body>
 </html>

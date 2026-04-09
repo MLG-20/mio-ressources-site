@@ -8,6 +8,7 @@ use App\Models\ForumCategory;
 use App\Models\DownloadHistory;
 use App\Models\Publication;
 use App\Models\PrivateLessonEnrollment;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -16,6 +17,18 @@ use Illuminate\Validation\Rule;
 
 class UserSpaceController extends Controller
 {
+    public function subscriptionPaywall()
+    {
+        /** @var User $user */
+        $user = Auth::user();
+        $trialEndsAt = $user->trial_ends_at ?? $user->created_at?->copy()->addMonths(3);
+
+        return view('student.subscription-paywall', [
+            'trialEndsAt' => $trialEndsAt,
+            'subscriptionPaidUntil' => $user->subscription_paid_until,
+        ]);
+    }
+
     // --- FONCTION PRIVÉE POUR NETTOYER LE NIVEAU (ANTI-DOUBLON) ---
     private function getCleanLevel($level) {
         if (!$level) return 'Général';
@@ -38,6 +51,7 @@ class UserSpaceController extends Controller
     }
 
     public function index() {
+        /** @var User $user */
         $user = Auth::user();
 
         // --- 1. LOGIQUE FORUM AUTOMATIQUE (PAR CLASSE) ---
@@ -135,6 +149,7 @@ class UserSpaceController extends Controller
     }
 
     public function updateProfile(Request $request) {
+        /** @var User $user */
         $user = Auth::user();
         $request->validate([
             'name' => 'required|string|max:255',
@@ -171,6 +186,7 @@ class UserSpaceController extends Controller
     }
 
     public function deleteAccount(Request $request) {
+        /** @var User $user */
         $user = Auth::user();
         if (!Hash::check($request->password, $user->password)) {
             return back()->withErrors(['password' => 'Mot de passe incorrect.']);
