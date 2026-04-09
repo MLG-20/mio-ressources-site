@@ -121,6 +121,12 @@ class PaymentController extends Controller
             abort(403);
         }
 
+        // ✅ BYPASS LOCAL — évite le problème HTTPS avec PayTech en dev
+        if (app()->environment('local')) {
+            $this->activateStudentSubscription($user->id, 1, 'LOCAL-SUB-' . uniqid());
+            return redirect()->route('student.subscription.success');
+        }
+
         $ipnSecret = (string) env('PAYTECH_IPN_SECRET', '');
         if ($ipnSecret === '') {
             Log::error('PAYTECH_IPN_SECRET is not configured. IPN webhook security is not enforced.');
