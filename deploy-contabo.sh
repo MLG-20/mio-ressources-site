@@ -3,7 +3,7 @@
 ###############################################################################
 # Script de déploiement automatisé pour MIO Ressources sur Contabo
 # OS: Ubuntu 24.04 LTS
-# 
+#
 # Usage:
 #   chmod +x deploy-contabo.sh
 #   sudo ./deploy-contabo.sh
@@ -302,7 +302,7 @@ sleep 5
 
 if certbot certonly --nginx -d "$DOMAIN" -d "www.$DOMAIN" --non-interactive --agree-tos --email admin@$DOMAIN 2>/dev/null; then
     print_success "Certificat SSL obtenu"
-    
+
     # Mettre à jour la config Nginx pour HTTPS
     cat > /etc/nginx/sites-available/mio_ressources <<EOF
 server {
