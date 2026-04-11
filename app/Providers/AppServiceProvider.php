@@ -30,9 +30,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // 1. Partager les réglages avec le site public
-        if (Schema::hasTable('settings')) {
-            View::share('globalSettings', Setting::pluck('value', 'key'));
+        // 1. Partager les réglages avec le site public (avec try-catch pour production)
+        try {
+            if (Schema::hasTable('settings')) {
+                View::share('globalSettings', Setting::pluck('value', 'key'));
+            } else {
+                View::share('globalSettings', []);
+            }
+        } catch (\Exception $e) {
+            View::share('globalSettings', []);
         }
 
         // 2. Écouter le changement de mot de passe (Sécurité)
