@@ -112,12 +112,10 @@ class HomeController extends Controller
                 'stars' => $request->note,
                 'comment' => $request->message,
             ];
-            if (Auth::check()) {
-                $data['user_id'] = Auth::id();
-            } else {
-                $data['user_id'] = null;
-                $data['comment'] = ($request->nom ? $request->nom . ' : ' : '') . $data['comment'];
+            if (!Auth::check()) {
+                return redirect()->route('login')->with('error', 'Veuillez vous connecter pour laisser un avis.');
             }
+            $data['user_id'] = Auth::id();
             \App\Models\ResourceRating::create($data);
             return back()->with('success_review', 'Merci pour votre avis !');
         }
