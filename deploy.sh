@@ -5,7 +5,7 @@ cd /var/www/mio-ressources-site
 
 git pull origin main
 
-composer install --no-dev --optimize-autoloader
+COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader 2>/dev/null
 
 npm run build
 
