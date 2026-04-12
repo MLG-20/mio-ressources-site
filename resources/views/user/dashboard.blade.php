@@ -287,7 +287,7 @@
                                     <i class="fas fa-user text-slate-400"></i>
                                 </div>
                                 <input type="text" name="name" value="{{ $user->name }}"
-                                       class="pl-10 w-full bg-slate-50 border-0 text-slate-700 font-bold rounded-2xl p-3 md:p-4 text-sm md:text-base focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all outline-none"
+                                       class="pl-10 w-full bg-slate-50 dark:bg-slate-800 border-0 text-slate-700 dark:text-white font-bold rounded-2xl p-3 md:p-4 text-sm md:text-base focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-slate-700 transition-all outline-none"
                                        placeholder="Votre nom complet">
                             </div>
                         </div>
@@ -299,24 +299,24 @@
                                     <i class="fas fa-envelope text-slate-400"></i>
                                 </div>
                                 <input type="email" name="email" value="{{ $user->email }}"
-                                       class="pl-10 w-full bg-slate-50 border-0 text-slate-700 font-medium rounded-2xl p-3 md:p-4 text-sm md:text-base focus:ring-2 focus:ring-blue-500 outline-none"
+                                       class="pl-10 w-full bg-slate-50 dark:bg-slate-800 border-0 text-slate-700 dark:text-white font-medium rounded-2xl p-3 md:p-4 text-sm md:text-base focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-slate-700 outline-none"
                                        placeholder="Votre email">
                             </div>
                         </div>
 
                         <div>
                             <label class="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Mot de passe actuel</label>
-                            <input type="password" name="current_password" placeholder="••••••••" class="w-full bg-slate-50 border-0 text-slate-700 rounded-2xl p-3 md:p-4 text-sm md:text-base focus:ring-2 focus:ring-blue-500 outline-none">
+                            <input type="password" name="current_password" placeholder="••••••••" class="w-full bg-slate-50 dark:bg-slate-800 border-0 text-slate-700 dark:text-white rounded-2xl p-3 md:p-4 text-sm md:text-base focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-slate-700 outline-none">
                         </div>
 
                         <div>
                             <label class="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Nouveau mot de passe</label>
-                            <input type="password" name="new_password" placeholder="••••••••" class="w-full bg-slate-50 border-0 text-slate-700 rounded-2xl p-3 md:p-4 text-sm md:text-base focus:ring-2 focus:ring-blue-500 outline-none">
+                            <input type="password" name="new_password" placeholder="••••••••" class="w-full bg-slate-50 dark:bg-slate-800 border-0 text-slate-700 dark:text-white rounded-2xl p-3 md:p-4 text-sm md:text-base focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-slate-700 outline-none">
                         </div>
 
                         <div class="md:col-span-2">
                             <label class="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Confirmer nouveau mot de passe</label>
-                            <input type="password" name="new_password_confirmation" placeholder="••••••••" class="w-full bg-slate-50 border-0 text-slate-700 rounded-2xl p-3 md:p-4 text-sm md:text-base focus:ring-2 focus:ring-blue-500 outline-none">
+                            <input type="password" name="new_password_confirmation" placeholder="••••••••" class="w-full bg-slate-50 dark:bg-slate-800 border-0 text-slate-700 dark:text-white rounded-2xl p-3 md:p-4 text-sm md:text-base focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-slate-700 outline-none">
                         </div>
                     </div>
 
@@ -341,7 +341,7 @@
                     <i class="fas fa-search text-slate-400 group-focus-within:text-pink-500 transition-colors"></i>
                 </div>
                 <input type="text" x-model="search" placeholder="Rechercher dans les messages..."
-                       class="w-full bg-white border border-slate-200 rounded-2xl py-4 pl-12 pr-4 shadow-sm text-slate-700 font-bold focus:ring-4 focus:ring-pink-100 focus:border-pink-500 outline-none transition-all text-sm md:text-base">
+                       class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl py-4 pl-12 pr-4 shadow-sm text-slate-700 dark:text-white font-bold focus:ring-4 focus:ring-pink-100 dark:focus:ring-pink-900 focus:border-pink-500 dark:focus:border-pink-400 outline-none transition-all text-sm md:text-base">
             </div>
 
             <!-- FORMULAIRE ÉCRIRE UN MESSAGE -->
@@ -538,9 +538,9 @@
 
             <!-- MODAL: Créer un groupe -->
             <div x-show="showCreateModal" x-cloak class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4" @click.self="showCreateModal = false">
-                <div class="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-300">
+                <div class="bg-white dark:bg-slate-900 rounded-3xl p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-300">
                     <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-2xl font-black text-slate-800">Créer un groupe</h3>
+                        <h3 class="text-2xl font-black text-slate-800 dark:text-white">Créer un groupe</h3>
                         <button @click="showCreateModal = false" class="text-slate-400 hover:text-slate-600 transition">
                             <i class="fas fa-times text-xl"></i>
                         </button>
@@ -549,21 +549,21 @@
                     <form action="{{ route('groups.store') }}" method="POST" class="space-y-4">
                         @csrf
                         <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-2">Nom du groupe *</label>
+                            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Nom du groupe *</label>
                             <input type="text" name="name" required maxlength="255"
-                                   class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 outline-none transition"
+                                   class="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-700 dark:text-white focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 dark:focus:ring-indigo-900 outline-none transition"
                                    placeholder="Ex: Projet Java L3">
                         </div>
 
                         <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-2">Description (optionnelle)</label>
+                            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Description (optionnelle)</label>
                             <textarea name="description" rows="3" maxlength="1000"
-                                      class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 outline-none transition resize-none"
+                                      class="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-700 dark:text-white focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 dark:focus:ring-indigo-900 outline-none transition resize-none"
                                       placeholder="Objectif du groupe..."></textarea>
                         </div>
 
                         <div class="flex gap-3 pt-4">
-                            <button type="button" @click="showCreateModal = false" class="flex-1 bg-slate-100 text-slate-600 px-6 py-3 rounded-xl font-bold hover:bg-slate-200 transition">
+                            <button type="button" @click="showCreateModal = false" class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-6 py-3 rounded-xl font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition">
                                 Annuler
                             </button>
                             <button type="submit" class="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition">
@@ -603,7 +603,7 @@
                         </div>
 
                         <div class="flex gap-3 pt-4">
-                            <button type="button" @click="showInviteModal = false" class="flex-1 bg-slate-100 text-slate-600 px-6 py-3 rounded-xl font-bold hover:bg-slate-200 transition">
+                            <button type="button" @click="showInviteModal = false" class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-6 py-3 rounded-xl font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition">
                                 Annuler
                             </button>
                             <button type="submit" class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center justify-center gap-2">
@@ -1051,9 +1051,9 @@
             <p class="text-slate-500 mb-8 text-sm">Cette action est définitive. Confirmez avec votre mot de passe.</p>
             <form action="{{ route('user.account.delete') }}" method="POST">
                 @csrf @method('DELETE')
-                <input type="password" name="password" placeholder="Mot de passe" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 mb-6 text-center font-bold" required>
+                <input type="password" name="password" placeholder="Mot de passe" class="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 rounded-2xl p-4 mb-6 text-center font-bold text-slate-700 dark:text-white" required>
                 <div class="flex gap-4">
-                    <button type="button" onclick="document.getElementById('delete-modal').classList.add('hidden')" class="flex-1 bg-slate-100 py-4 rounded-2xl font-bold">ANNULER</button>
+                    <button type="button" onclick="document.getElementById('delete-modal').classList.add('hidden')" class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 py-4 rounded-2xl font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition">ANNULER</button>
                     <button type="submit" class="flex-1 bg-red-600 text-white py-4 rounded-2xl font-bold">SUPPRIMER</button>
                 </div>
             </form>
