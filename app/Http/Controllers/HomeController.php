@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Storage;
@@ -32,12 +33,28 @@ class HomeController extends Controller
     /** 1. ACCUEIL ET PAGES STATIQUES **/
     public function index(Request $request) {
         Visit::create(['ip_address' => $request->ip(), 'page_visited' => 'Accueil']);
-        $sliders = Slider::orderBy('ordre')->get();
-        $semestres = Semestre::withCount('matieres')->get();
-        $settings = Setting::pluck('value', 'key');
+
+        $sliders = Cache::remember('sliders', 3600, function() {
+            return Slider::orderBy('ordre')->get();
+        });
+
+        $semestres = Cache::remember('semestres_with_count', 3600, function() {
+            return Semestre::withCount('matieres')->get();
+        });
+
+        $settings = Cache::remember('global_settings', 3600, function() {
+            return Setting::pluck('value', 'key');
+        });
+
+        $hasUserType = Cache::remember('has_col_user_type', 86400, function() {
+            return Schema::hasColumn('users', 'user_type');
+        });
+
+        $hasRole = Cache::remember('has_col_role', 86400, function() {
+            return Schema::hasColumn('users', 'role');
+        });
+
         $studentsQuery = User::query();
-        $hasUserType = Schema::hasColumn('users', 'user_type');
-        $hasRole = Schema::hasColumn('users', 'role');
 
         if ($hasUserType || $hasRole) {
             $studentsQuery->where(function ($query) use ($hasUserType, $hasRole) {
