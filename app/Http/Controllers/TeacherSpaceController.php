@@ -15,11 +15,11 @@ class TeacherSpaceController extends Controller
 {
     public function index() {
         $user = Auth::user();
-        $mesPublications = Publication::where('user_id', $user->id)->latest()->get();
+        $mesPublications = Publication::where('user_id', $user->id)->with('user')->latest()->get();
         $recentSujets = ForumSujet::with(['user', 'category'])->latest()->paginate(10);
         $totalVues = 0; // À lier avec tes analytics
         $totalRevenus = $user->wallet_balance;
-        $meetings = Meeting::where('user_id', $user->id)->orderBy('scheduled_at', 'desc')->get();
+        $meetings = Meeting::where('user_id', $user->id)->with('enrolledStudents')->orderBy('scheduled_at', 'desc')->get();
 
         return view('teacher.dashboard', compact('user', 'mesPublications', 'recentSujets', 'totalRevenus', 'totalVues', 'meetings'));
     }

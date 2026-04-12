@@ -54,6 +54,9 @@ class ScheduledMeetingController extends Controller
      */
     public function show(Meeting $scheduled_meeting)
     {
+        // Eager load les étudiants inscrits pour éviter N+1
+        $scheduled_meeting->load('enrolledStudents');
+        
         // Vérifier que l'utilisateur est le prof OU est inscrit au cours
         if ($scheduled_meeting->user_id !== auth()->id() && !auth()->user()->enrolledMeetings->contains($scheduled_meeting->id)) {
             abort(403);
@@ -69,7 +72,7 @@ class ScheduledMeetingController extends Controller
             ]);
 
             // 🚀 ALERTE LES ÉTUDIANTS QUE LE PROF A REJOINT LE COURS
-            $enrolledStudents = $scheduled_meeting->enrolledUsers;
+            $enrolledStudents = $scheduled_meeting->enrolledStudents;
             if ($enrolledStudents->count() > 0) {
                 Notification::send($enrolledStudents, new TeacherJoinedMeetingAlert($scheduled_meeting, auth()->user()));
             }
