@@ -103,7 +103,7 @@ class PrivateLessonController extends Controller
         $lesson = PrivateLesson::with(['teacher', 'matiere', 'enrollments'])->findOrFail($id);
 
         // Calculer les places restantes
-        $placesReservees = $lesson->enrollments()->where('payment_status', 'paid')->count();
+        $placesReservees = $lesson->enrollments->where('payment_status', 'paid')->count();
         $placesRestantes = $lesson->places_max - $placesReservees;
 
         return view('private-lessons.show', compact('lesson', 'placesRestantes'));
@@ -370,7 +370,7 @@ class PrivateLessonController extends Controller
         $lesson = PrivateLesson::with(['enrollments.student', 'teacher'])->where('teacher_id', Auth::id())->findOrFail($id);
 
         // Récupérer tous les étudiants inscrits (payés ou non)
-        $enrolledStudents = $lesson->enrollments()->where('payment_status', 'paid')->get();
+        $enrolledStudents = $lesson->enrollments->where('payment_status', 'paid');
 
         // Notifier tous les étudiants inscrits de l'annulation
         foreach ($enrolledStudents as $enrollment) {

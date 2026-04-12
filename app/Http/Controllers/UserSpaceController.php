@@ -90,7 +90,8 @@ class UserSpaceController extends Controller
             ->orderBy('scheduled_at', 'asc')
             ->get();
 
-        $nouveautes = \App\Models\Ressource::whereHas('matiere.semestre', function($query) use ($user) {
+        $nouveautes = \App\Models\Ressource::with('matiere.semestre')
+            ->whereHas('matiere.semestre', function($query) use ($user) {
                 $query->where('niveau', $user->student_level);
             })->latest()->take(5)->get();
 
@@ -98,7 +99,7 @@ class UserSpaceController extends Controller
             'user', 'mesSujets', 'mesMessages', 'downloads', 'nouveautes',
             'mesMemoires', 'userMessages', 'mesCoursParticuliers', 'sujetsDeMaClasse'
         ));
-    
+
     }
 
     /**
