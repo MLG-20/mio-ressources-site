@@ -1027,11 +1027,11 @@
                 </div>
 
                 <!-- Contact support -->
-                <div class="mt-8 bg-teal-50 border border-teal-100 rounded-2xl p-5 flex items-start gap-4">
-                    <i class="fas fa-life-ring text-teal-500 text-xl mt-0.5 flex-shrink-0"></i>
+                <div class="mt-8 bg-teal-50 dark:bg-teal-900/30 border border-teal-100 dark:border-teal-700 rounded-2xl p-5 flex items-start gap-4">
+                    <i class="fas fa-life-ring text-teal-500 dark:text-teal-400 text-xl mt-0.5 flex-shrink-0"></i>
                     <div>
-                        <p class="font-black text-slate-800 text-sm uppercase mb-1">Besoin d'aide supplémentaire ?</p>
-                        <p class="text-slate-500 text-sm">Posez votre question dans le <strong>Forum</strong> ou contactez l'administrateur de la plateforme MIO Ressources.</p>
+                        <p class="font-black text-slate-800 dark:text-teal-300 text-sm uppercase mb-1">Besoin d'aide supplémentaire ?</p>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm">Posez votre question dans le <strong>Forum</strong> ou contactez l'administrateur de la plateforme MIO Ressources.</p>
                     </div>
                 </div>
             </div>
