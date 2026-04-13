@@ -13,6 +13,7 @@ use App\Http\Controllers\PrivateLessonController;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Response;
 
 
 /*
@@ -47,6 +48,24 @@ Route::get('/health', function () {
         'checks' => $checks,
     ], $status);
 })->middleware('throttle:30,1')->name('health');
+
+/*
+|--------------------------------------------------------------------------
+| SITEMAP
+|--------------------------------------------------------------------------
+*/
+Route::get('/sitemap.xml', function () {
+    $path = storage_path('app/sitemaps/sitemap.xml');
+
+    if (!file_exists($path)) {
+        abort(404);
+    }
+
+    return response()->file($path, [
+        'Content-Type' => 'application/xml'
+    ]);
+});
+
 
 /*
 |--------------------------------------------------------------------------
