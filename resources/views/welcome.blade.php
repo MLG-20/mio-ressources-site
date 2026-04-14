@@ -689,5 +689,8 @@
                 .catch(err => console.warn('⚠️ Service Worker error:', err));
         }
     </script>
+
+    <!-- PWA Update Manager -->
+    <script src="{{ asset('js/pwa-update.js') }}"></script>
 </body>
 </html>
