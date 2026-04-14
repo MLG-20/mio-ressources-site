@@ -16,6 +16,10 @@
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
 
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <link rel="apple-touch-icon" href="{{ asset('icons/icon-192.svg') }}">
+
     @include('components.analytics')
 
     <style>
@@ -666,5 +670,14 @@
 
     <!-- BANNER CONSENTEMENT COOKIES -->
     <x-cookie-consent-banner />
+
+    <!-- Service Worker Registration (PWA) -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('{{ asset("js/service-worker.js") }}')
+                .then(reg => console.log('✅ Service Worker registered:', reg))
+                .catch(err => console.warn('⚠️ Service Worker error:', err));
+        }
+    </script>
 </body>
 </html>

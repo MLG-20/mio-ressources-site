@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <!-- Fond bleu MIO -->
+  <circle cx="96" cy="96" r="96" fill="#2563eb"/>
+  
+  <!-- Cercle blanc intérieur -->
+  <circle cx="96" cy="96" r="85" fill="white"/>
+  
+  <!-- Lettre M stylisée -->
+  <g transform="translate(96, 96)">
+    <text x="0" y="30" font-size="80" font-weight="900" text-anchor="middle" fill="#2563eb" font-family="Arial, sans-serif">
+      MIO
+    </text>
+  </g>
+  
+  <!-- Badge petit -->
+  <circle cx="150" cy="150" r="25" fill="#f59e0b"/>
+  <text x="150" y="158" font-size="30" font-weight="bold" text-anchor="middle" fill="white" font-family="Arial">✓</text>
+</svg>
