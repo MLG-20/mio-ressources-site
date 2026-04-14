@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Support\HtmlSanitizer;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Page extends Model
 {
@@ -21,5 +22,13 @@ class Page extends Model
         static::saving(function (self $page): void {
             $page->contenu = HtmlSanitizer::sanitizeRichText($page->contenu);
         });
+    }
+
+    /**
+     * Relation : Historique des versions de cette page
+     */
+    public function versions(): HasMany
+    {
+        return $this->hasMany(PageVersion::class);
     }
 }

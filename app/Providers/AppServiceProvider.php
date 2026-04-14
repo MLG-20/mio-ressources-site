@@ -9,6 +9,8 @@ use App\Models\Ressource; // AJOUTÉ
 use App\Observers\RessourceObserver; // AJOUTÉ
 use App\Models\PrivateLesson; // AJOUTÉ
 use App\Observers\PrivateLessonObserver; // AJOUTÉ
+use App\Models\Page; // AJOUTÉ
+use App\Observers\PageObserver; // AJOUTÉ
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Auth\Events\PasswordReset;
@@ -59,5 +61,8 @@ class AppServiceProvider extends ServiceProvider
 
         // 5. SURVEILLER LES NOUVEAUX COURS PARTICULIERS (Notification aux étudiants du même niveau)
         PrivateLesson::observe(PrivateLessonObserver::class);
+
+        // 6. VERSIONING DES PAGES LÉGALES
+        Page::observe(PageObserver::class);
     }
 }

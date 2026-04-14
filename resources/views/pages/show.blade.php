@@ -96,8 +96,8 @@
     @endif
 
     <!-- CONTENU DYNAMIQUE -->
-    <main class="max-w-4xl mx-auto py-10 md:py-20 px-6">
-        <div class="prose prose-slate lg:prose-lg max-w-none text-slate-700 leading-relaxed">
+    <main class="max-w-4xl mx-auto py-10 md:py-20 px-6 bg-white dark:bg-slate-950">
+        <div class="prose prose-slate lg:prose-lg max-w-none text-slate-700 dark:text-slate-100 leading-relaxed">
             {!! $page->contenu !!}
         </div>
 

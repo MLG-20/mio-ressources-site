@@ -593,7 +593,7 @@
 
     <!-- FOOTER -->
     <footer class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-white py-12 md:py-20 px-6 md:px-8 border-t border-slate-200 dark:border-white/5 transition-colors duration-300">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16 border-b border-slate-200 dark:border-white/5 pb-16">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-16 border-b border-slate-200 dark:border-white/5 pb-16">
             <div class="space-y-6 text-center md:text-left">
                 <div class="flex items-center justify-center md:justify-start gap-2">
                     <x-application-logo class="w-10 h-10" />
@@ -618,6 +618,14 @@
                         <a href="{{ $globalSettings['social_github'] }}" target="_blank" class="w-12 h-12 bg-white dark:bg-white/5 border border-slate-200 dark:border-transparent rounded-2xl flex items-center justify-center text-slate-700 dark:text-white hover:bg-blue-600 hover:text-white transition-all shadow-lg"><i class="fab fa-github text-xl"></i></a>
                     @endif
                 </div>
+            </div>
+            <div>
+                <h4 class="font-bold text-[10px] uppercase tracking-[0.4em] text-blue-500 mb-8 text-center md:text-left">Légal & Confidentialité</h4>
+                <ul class="space-y-3 text-slate-600 dark:text-slate-400 text-sm text-center md:text-left">
+                    <li><a href="{{ route('page.show', 'cgu') }}" class="hover:text-blue-500 transition-colors">Conditions Générales</a></li>
+                    <li><a href="{{ route('page.show', 'mentions-legales') }}" class="hover:text-blue-500 transition-colors">Mentions Légales</a></li>
+                    <li><a href="{{ route('page.show', 'politique-confidentialite') }}" class="hover:text-blue-500 transition-colors">Politique de Confidentialité</a></li>
+                </ul>
             </div>
         </div>
         <div class="text-center mt-12 text-slate-500 dark:text-slate-700 text-[10px] font-bold uppercase tracking-[0.5em]">
@@ -655,5 +663,8 @@
             elements.forEach((el) => observer.observe(el));
         });
     </script>
+
+    <!-- BANNER CONSENTEMENT COOKIES -->
+    <x-cookie-consent-banner />
 </body>
 </html>
