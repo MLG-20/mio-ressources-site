@@ -18,7 +18,7 @@
 <body>
     <div class="header">
         <div class="logo">MIO RESSOURCES</div>
-        <p style="margin-top: 5px;">Plateforme d'Excellence Académique</p>
+        <p style="margin-top: 5px;">Plateforme - L'humilité mon choix, l'excellence ma voie !</p>
         <p style="font-weight: bold; color: #64748b;">REÇU DE PAIEMENT OFFICIEL</p>
     </div>
 

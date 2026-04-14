@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MIO Ressources - Excellence Académique</title>
+    <title>MIO Ressources - L'humilité mon choix, l'excellence ma voie !</title>
 
     <!-- Scripts & Polices -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -18,7 +18,10 @@
 
     <!-- PWA Configuration -->
     <link rel="manifest" href="{{ asset('manifest.json') }}">
-    <link rel="apple-touch-icon" href="{{ asset('icons/icon-192.svg') }}">
+    <link rel="apple-touch-icon" href="{{ asset('icons/apple-touch-icon.png') }}"">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="MIO Ressources">
 
     @include('components.analytics')
 

@@ -1,10 +1,10 @@
-<div id="cookie-consent-banner" class="fixed bottom-0 left-0 right-0 z-[999] bg-white dark:bg-gray-100 text-slate-900 dark:text-slate-900 p-4 md:p-6 shadow-2xl border-t-4 border-blue-600 transform transition-all duration-500" style="display: none;">
+<div id="cookie-consent-banner" class="fixed bottom-0 left-0 right-0 z-[999] bg-slate-800 text-white p-4 md:p-6 shadow-2xl border-t-4 border-blue-600 transform transition-all duration-500" style="display: none;">
     <div class="max-w-7xl mx-auto">
         <!-- CONTENU PRINCIPAL -->
         <div class="flex flex-col md:flex-row gap-6 md:gap-8 items-start md:items-center">
             <div class="flex-1">
-                <h3 class="text-lg md:text-xl font-bold mb-2 tracking-tight text-white dark:text-white">🍪 Préférences de Confidentialité</h3>
-                <p class="text-white dark:text-white text-sm md:text-base leading-relaxed mb-4 md:mb-0">
+                <h3 class="text-lg md:text-xl font-bold mb-2 tracking-tight text-white">🍪 Préférences de Confidentialité</h3>
+                <p class="text-white text-sm md:text-base leading-relaxed mb-4 md:mb-0">
                     Nous utilisons des cookies essentiels pour la sécurité, et des services analytiques pour améliorer votre expérience.
                     <a href="{{ route('page.show', 'politique-confidentialite') }}" target="_blank" class="text-blue-600 dark:text-blue-600 hover:text-blue-700 dark:hover:text-blue-700 font-semibold underline">En savoir plus</a>
                 </p>
@@ -12,13 +12,13 @@
 
             <!-- BOUTONS -->
             <div class="flex flex-col sm:flex-row gap-2 md:gap-3 w-full md:w-auto">
-                <button id="cookie-refuse" class="px-4 md:px-6 py-2.5 md:py-3 bg-slate-200 dark:bg-slate-200 hover:bg-slate-300 dark:hover:bg-slate-300 text-slate-900 dark:text-slate-900 font-semibold rounded-lg transition-all text-sm md:text-base whitespace-nowrap">
+                <button id="cookie-refuse" class="px-4 md:px-6 py-2.5 md:py-3 bg-slate-600 hover:bg-slate-700 text-white font-semibold rounded-lg transition-all text-sm md:text-base whitespace-nowrap">
                     Refuser
                 </button>
-                <button id="cookie-customize" class="px-4 md:px-6 py-2.5 md:py-3 bg-slate-300 dark:bg-slate-300 hover:bg-slate-400 dark:hover:bg-slate-400 text-slate-900 dark:text-slate-900 font-semibold rounded-lg transition-all text-sm md:text-base whitespace-nowrap">
+                <button id="cookie-customize" class="px-4 md:px-6 py-2.5 md:py-3 bg-slate-600 hover:bg-slate-700 text-white font-semibold rounded-lg transition-all text-sm md:text-base whitespace-nowrap">
                     Personnaliser
                 </button>
-                <button id="cookie-accept" class="px-4 md:px-6 py-2.5 md:py-3 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-bold rounded-lg transition-all shadow-lg text-sm md:text-base whitespace-nowrap">
+                <button id="cookie-accept" class="px-4 md:px-6 py-2.5 md:py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-all shadow-lg text-sm md:text-base whitespace-nowrap">
                     Accepter tout
                 </button>
             </div>
@@ -27,65 +27,65 @@
 </div>
 
 <!-- MODAL PERSONNALISATION -->
-<div id="cookie-modal" class="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 hidden transition-all duration-300">
-    <div class="bg-white dark:bg-gray-100 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-200">
+<div id="cookie-modal" class="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 md:p-4 hidden transition-all duration-300">
+    <div class="bg-slate-800 rounded-xl md:rounded-2xl shadow-2xl w-full max-w-xs sm:max-w-lg md:max-w-2xl max-h-[85vh] md:max-h-[90vh] overflow-y-auto border border-slate-700">
         <!-- HEADER -->
-        <div class="sticky top-0 bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 md:p-8 flex items-center justify-between">
-            <h2 class="text-2xl md:text-3xl font-bold">Paramètres des Cookies</h2>
-            <button id="cookie-modal-close" class="text-2xl hover:opacity-70 transition-opacity">
+        <div class="sticky top-0 bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 md:p-6 lg:p-8 flex items-center justify-between gap-2">
+            <h2 class="text-lg md:text-2xl lg:text-3xl font-bold">Paramètres des Cookies</h2>
+            <button id="cookie-modal-close" class="text-xl md:text-2xl hover:opacity-70 transition-opacity flex-shrink-0">
                 <i class="fas fa-times"></i>
             </button>
         </div>
 
         <!-- CONTENU -->
-        <div class="p-6 md:p-8 space-y-6">
+        <div class="p-4 md:p-6 lg:p-8 space-y-4 md:space-y-6">
             <!-- ESSENTIELS -->
-            <div class="border-b border-slate-200 dark:border-slate-200 pb-6">
-                <div class="flex items-start justify-between mb-3">
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-900 dark:text-slate-900 mb-1">🔒 Cookies Essentiels</h3>
-                        <p class="text-slate-700 dark:text-slate-700 text-sm">Nécessaires au fonctionnement du site (authentification, sécurité)</p>
+            <div class="border-b border-slate-600 pb-4 md:pb-6">
+                <div class="flex items-start justify-between gap-2 mb-2 md:mb-3">
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-base md:text-lg font-bold text-white mb-0.5 md:mb-1">🔒 Cookies Essentiels</h3>
+                        <p class="text-slate-300 text-xs md:text-sm">Nécessaires au fonctionnement du site (authentification, sécurité)</p>
                     </div>
-                    <div class="relative inline-block w-12 h-6 bg-green-600 rounded-full cursor-not-allowed opacity-60">
+                    <div class="relative inline-block w-12 h-6 bg-green-600 rounded-full cursor-not-allowed opacity-60 flex-shrink-0">
                         <span class="absolute inset-0 flex items-center justify-center text-white text-xs font-bold">✓</span>
                     </div>
                 </div>
-                <ul class="text-sm text-slate-700 dark:text-slate-700 space-y-1 ml-0">
+                <ul class="text-xs md:text-sm text-slate-300 space-y-0.5 md:space-y-1 ml-0">
                     <li>• <strong>Session Laravel</strong> - Maintient votre session utilisateur</li>
                     <li>• <strong>XSRF-TOKEN</strong> - Protection contre les attaques CSRF</li>
                 </ul>
             </div>
 
             <!-- ANALYTIQUES -->
-            <div class="border-b border-slate-200 dark:border-slate-200 pb-6">
-                <div class="flex items-start justify-between mb-3">
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-900 dark:text-slate-900 mb-1">📊 Analytics</h3>
-                        <p class="text-slate-700 dark:text-slate-700 text-sm">Pour comprendre comment vous utilisez le site et l'améliorer</p>
+            <div class="border-b border-slate-600 pb-4 md:pb-6">
+                <div class="flex items-start justify-between gap-2 mb-2 md:mb-3">
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-base md:text-lg font-bold text-white mb-0.5 md:mb-1">📊 Analytics</h3>
+                        <p class="text-slate-300 text-xs md:text-sm">Pour comprendre comment vous utilisez le site et l'améliorer</p>
                     </div>
-                    <label class="relative inline-block w-12 h-6 bg-slate-300 dark:bg-slate-300 rounded-full cursor-pointer">
+                    <label class="relative inline-block w-12 h-6 bg-slate-600 rounded-full cursor-pointer flex-shrink-0">
                         <input type="checkbox" id="cookie-analytics" class="sr-only peer" checked>
-                        <span class="absolute inset-y-0 left-0 bg-white dark:bg-white rounded-full shadow transition peer-checked:translate-x-6 peer-checked:bg-blue-600 w-5 h-5 m-0.5"></span>
+                        <span class="absolute inset-y-0 left-0 bg-white rounded-full shadow transition peer-checked:translate-x-6 peer-checked:bg-blue-600 w-5 h-5 m-0.5"></span>
                     </label>
                 </div>
-                <ul class="text-sm text-slate-700 dark:text-slate-700 space-y-1 ml-0">
+                <ul class="text-xs md:text-sm text-slate-300 space-y-0.5 md:space-y-1 ml-0">
                     <li>• <strong>Google Analytics (_ga)</strong> - Statistiques d'utilisation du site</li>
                 </ul>
             </div>
 
             <!-- MONITORING -->
-            <div class="pb-6">
-                <div class="flex items-start justify-between mb-3">
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-900 dark:text-slate-900 mb-1">⚙️ Monitoring Client</h3>
-                        <p class="text-slate-700 dark:text-slate-700 text-sm">Pour tracker les erreurs JavaScript/frontend. <span class="text-blue-700 dark:text-blue-700 font-semibold">Le monitoring serveur reste toujours actif pour la sécurité.</span></p>
+            <div class="pb-4 md:pb-6">
+                <div class="flex items-start justify-between gap-2 mb-2 md:mb-3">
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-base md:text-lg font-bold text-white mb-0.5 md:mb-1">⚙️ Monitoring Client</h3>
+                        <p class="text-slate-300 text-xs md:text-sm">Pour tracker les erreurs JavaScript/frontend. <span class="text-blue-400 font-semibold">Le monitoring serveur reste toujours actif pour la sécurité.</span></p>
                     </div>
-                    <label class="relative inline-block w-12 h-6 bg-slate-300 dark:bg-slate-300 rounded-full cursor-pointer">
+                    <label class="relative inline-block w-12 h-6 bg-slate-600 rounded-full cursor-pointer flex-shrink-0">
                         <input type="checkbox" id="cookie-monitoring" class="sr-only peer" checked>
-                        <span class="absolute inset-y-0 left-0 bg-white dark:bg-white rounded-full shadow transition peer-checked:translate-x-6 peer-checked:bg-blue-600 w-5 h-5 m-0.5"></span>
+                        <span class="absolute inset-y-0 left-0 bg-white rounded-full shadow transition peer-checked:translate-x-6 peer-checked:bg-blue-600 w-5 h-5 m-0.5"></span>
                     </label>
                 </div>
-                <ul class="text-sm text-slate-700 dark:text-slate-700 space-y-1 ml-0">
+                <ul class="text-xs md:text-sm text-slate-300 space-y-0.5 md:space-y-1 ml-0">
                     <li>• <strong>Sentry CLIENT</strong> - Erreurs JavaScript (refusable)</li>
                     <li>• <strong>Sentry SERVER</strong> ✅ - Erreurs PHP/Laravel (toujours actif)</li>
                     <li>• <strong>UptimeRobot</strong> ✅ - Monitoring disponibilité (toujours actif)</li>
@@ -94,11 +94,11 @@
         </div>
 
         <!-- FOOTER MODAL -->
-        <div class="sticky bottom-0 bg-slate-50 dark:bg-slate-50 border-t border-slate-200 dark:border-slate-200 p-6 md:p-8 flex gap-3 md:gap-4 justify-end">
-            <button id="cookie-modal-refuse" class="px-6 py-3 bg-slate-200 dark:bg-slate-200 hover:bg-slate-300 dark:hover:bg-slate-300 text-slate-900 dark:text-slate-900 font-semibold rounded-lg transition-all">
+        <div class="sticky bottom-0 bg-slate-700 border-t border-slate-600 p-3 md:p-4 lg:p-8 flex flex-col sm:flex-row gap-2 md:gap-3 justify-end">
+            <button id="cookie-modal-refuse" class="order-2 sm:order-1 px-4 md:px-6 py-2.5 md:py-3 bg-slate-600 hover:bg-slate-700 text-white font-semibold rounded-lg transition-all text-sm md:text-base">
                 Refuser
             </button>
-            <button id="cookie-modal-accept" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-all shadow-lg">
+            <button id="cookie-modal-accept" class="order-1 sm:order-2 px-4 md:px-6 py-2.5 md:py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-all shadow-lg text-sm md:text-base">
                 Sauvegarder
             </button>
         </div>
