@@ -86,17 +86,17 @@
       :class="{ 'overflow-hidden': mobileMenuOpen }">
 
     <!-- NAVBAR PREMIUM -->
-    <nav class="fixed w-full z-[100] transition-all duration-500 px-3 md:px-4 lg:px-8 py-3 md:py-4"
-         :class="scrolled ? (theme === 'dark' ? 'bg-slate-900/95 backdrop-blur-md shadow-lg py-2' : 'bg-white/95 backdrop-blur-md shadow-lg py-2') : 'bg-transparent py-4 md:py-5'">
+    <nav class="fixed w-full z-[100] transition-all duration-500 px-2 md:px-4 lg:px-8 py-2 md:py-3"
+         :class="scrolled ? (theme === 'dark' ? 'bg-slate-900/95 backdrop-blur-md shadow-lg py-1' : 'bg-white/95 backdrop-blur-md shadow-lg py-1') : 'bg-transparent py-2 md:py-3 lg:py-4'">
 
-        <div class="max-w-7xl mx-auto flex justify-between items-center h-12 md:h-14">
+        <div class="max-w-7xl mx-auto flex justify-between items-center h-10 md:h-12 lg:h-14">
 
             <!-- LOGO -->
-            <a href="/" class="flex items-center gap-2 md:gap-3 z-[110] group">
-                <x-application-logo class="w-8 md:w-10 h-8 md:h-10" />
-                <span class="text-base md:text-xl font-bold tracking-tighter transition-colors duration-300"
+            <a href="/" class="flex items-center gap-1 md:gap-2 lg:gap-3 z-[110] group">
+                <x-application-logo class="w-7 md:w-10 h-7 md:h-10" />
+                <span class="text-xs md:text-xl font-bold tracking-tighter transition-colors duration-300"
                       :class="(scrolled || mobileMenuOpen) ? (theme === 'dark' ? 'text-white' : 'text-slate-900') : 'text-white'">
-                    MIO <span class="font-light text-xs md:text-base" :class="(scrolled || mobileMenuOpen) ? (theme === 'dark' ? 'text-slate-300' : 'text-slate-500') : 'text-white/70'">RESSOURCES</span>
+                    MIO <span class="font-light text-[10px] md:text-base" :class="(scrolled || mobileMenuOpen) ? (theme === 'dark' ? 'text-slate-300' : 'text-slate-500') : 'text-white/70'">RESSOURCES</span>
                 </span>
             </a>
 
@@ -181,14 +181,14 @@
         </div>
 
         <!-- MENU MOBILE OVERLAY -->
-        <div x-show="mobileMenuOpen" x-cloak class="fixed inset-0 bg-white dark:bg-slate-900 z-[105] lg:hidden flex flex-col h-screen overflow-y-auto"
+        <div x-show="mobileMenuOpen" x-cloak class="fixed inset-0 bg-white dark:bg-slate-900 z-[105] lg:hidden flex flex-col h-screen overflow-y-auto pt-16 md:pt-20"
              x-transition:enter="transition ease-out duration-300 transform"
              x-transition:enter-start="translate-y-[-100%]"
              x-transition:enter-end="translate-y-0"
              @click.away="mobileMenuOpen = false">
 
             <!-- Contenu scrollable -->
-            <div class="px-3 pt-16 pb-6 space-y-0.5">
+            <div class="px-3 pt-4 md:pt-6 pb-6 space-y-0.5">
                 <!-- Navigation Items -->
                 <a href="/" @click="mobileMenuOpen = false" class="block text-xs font-bold py-2.5 px-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 uppercase tracking-tight text-slate-900 dark:text-slate-100 transition-colors">
                     <i class="fas fa-home mr-2 text-blue-600"></i>Accueil
