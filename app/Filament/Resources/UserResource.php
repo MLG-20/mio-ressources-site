@@ -12,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
 
 class UserResource extends Resource
 {
@@ -171,6 +172,21 @@ class UserResource extends Resource
                     })
                     ->formatStateUsing(fn ($state, $record) => $record->isSuperAdmin() ? 'Super Admin' : ucfirst($state)),
 
+                Tables\Columns\TextColumn::make('student_level')
+                    ->label('Niveau')
+                    ->badge()
+                    ->color(fn ($state): string => match ($state) {
+                        'L1' => 'blue',
+                        'L2' => 'orange',
+                        'L3' => 'purple',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn ($state, $record) => $record->user_type === 'student' ? ($state ?? 'N/A') : '—'),
+
+                Tables\Columns\TextColumn::make('subscription_paid_until')
+                    ->label('Valide jusqu\'au')
+                    ->dateTime('d/m/Y'),
+
                 Tables\Columns\IconColumn::make('is_blocked')
                     ->label('Bloqué')
                     ->boolean()
@@ -203,6 +219,44 @@ class UserResource extends Resource
                         'professeur' => 'Professeur',
                         'etudiant'  => 'Étudiant',
                     ]),
+
+                Tables\Filters\SelectFilter::make('student_level')
+                    ->label('Niveau d\'étude')
+                    ->options([
+                        'L1' => 'Licence 1',
+                        'L2' => 'Licence 2',
+                        'L3' => 'Licence 3',
+                    ]),
+
+                Tables\Filters\Filter::make('subscription_status')
+                    ->label('Statut Abonnement')
+                    ->form([
+                        Forms\Components\Select::make('status')
+                            ->label('Montrer les étudiants...')
+                            ->options([
+                                'actif' => '✓ Actif',
+                                'essai' => '⏳ En essai',
+                                'expire' => '✗ Expiré',
+                            ])
+                            ->required(),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query->when(
+                            $data['status'] === 'actif',
+                            fn (Builder $q) => $q->where('subscription_paid_until', '>', now())
+                        )->when(
+                            $data['status'] === 'essai',
+                            fn (Builder $q) => $q->where('trial_ends_at', '>', now())
+                                ->where(fn (Builder $q2) => $q2->whereNull('subscription_paid_until')
+                                    ->orWhere('subscription_paid_until', '<=', now()))
+                        )->when(
+                            $data['status'] === 'expire',
+                            fn (Builder $q) => $q->where(fn (Builder $q2) => $q2->whereNull('subscription_paid_until')
+                                ->orWhere('subscription_paid_until', '<=', now()))
+                                ->where(fn (Builder $q3) => $q3->whereNull('trial_ends_at')
+                                    ->orWhere('trial_ends_at', '<=', now()))
+                        );
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
@@ -249,5 +303,37 @@ class UserResource extends Resource
             'create' => Pages\CreateUser::route('/create'),
             'edit'   => Pages\EditUser::route('/{record}/edit'),
         ];
+    }
+
+    /**
+     * Détermine le statut d'abonnement d'un étudiant
+     */
+    private static function getSubscriptionStatus(User $user): string
+    {
+        $now = now();
+
+        if ($user->subscription_paid_until && $user->subscription_paid_until > $now) {
+            return 'Actif';
+        } elseif ($user->trial_ends_at && $user->trial_ends_at > $now) {
+            return 'En essai';
+        } else {
+            return 'Expiré';
+        }
+    }
+
+    /**
+     * Retourne la couleur du badge selon le statut d'abonnement
+     */
+    private static function getSubscriptionColor(User $user): string
+    {
+        $now = now();
+
+        if ($user->subscription_paid_until && $user->subscription_paid_until > $now) {
+            return 'success'; // Vert
+        } elseif ($user->trial_ends_at && $user->trial_ends_at > $now) {
+            return 'warning'; // Orange
+        } else {
+            return 'danger'; // Rouge
+        }
     }
 }
