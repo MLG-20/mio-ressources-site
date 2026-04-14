@@ -2,7 +2,7 @@
 <html lang="fr" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>MIO Ressources - L'humilité mon choix, l'excellence ma voie !</title>
 
     <!-- Scripts & Polices -->
@@ -54,6 +54,13 @@
                 opacity: 1;
                 transform: none;
                 transition: none;
+            }
+        }
+
+        /* iOS Safe Area Support */
+        @supports (padding: max(0px)) {
+            nav {
+                padding-top: max(0.75rem, env(safe-area-inset-top)) !important;
             }
         }
     </style>
