@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Setting extends Model
 {
     //
-    protected $fillable = ['key', 'value', 'label'];
+    protected $fillable = ['key', 'value', 'label', 'is_enabled'];
 
     /**
      * SÉCURITÉ (XSS) :

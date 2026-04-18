@@ -53,8 +53,16 @@ class SettingResource extends Resource
                             ->hidden(fn (Get $get) => in_array($get('key'), ['auth_bg_image', 'univ_map']))
                             ->password(fn (Get $get) => $get('key') === 'mail_password')
                             ->revealable(fn (Get $get) => $get('key') === 'mail_password')
+                            ->url(fn (Get $get) => $get('key') === 'cv_button_url')
                             ->columnSpanFull()
                             ->required(),
+
+                        // 3.5 TOGGLE POUR ACTIVER/DÉSACTIVER LE BOUTON CV
+                        Forms\Components\Toggle::make('is_enabled')
+                            ->label('Bouton actif')
+                            ->helperText('Activez pour afficher le bouton CV sur le site')
+                            ->visible(fn (Get $get) => $get('key') === 'cv_button_url')
+                            ->columnSpanFull(),
 
                         // 4. LA VALEUR - CAS UPLOAD D'IMAGE
                         // Ce champ n'apparaît QUE si la clé est 'auth_bg_image'

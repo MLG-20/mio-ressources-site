@@ -270,11 +270,22 @@
                 <div class="absolute inset-0 flex flex-col justify-center items-center text-center text-white px-6">
                     <h1 class="text-4xl md:text-7xl font-black mb-4 uppercase tracking-tighter">{{ $slide->titre }}</h1>
                     <p class="text-sm md:text-xl max-w-2xl font-light opacity-80 leading-relaxed">{{ $slide->description }}</p>
-                    <a href="#cours" class="mt-10 bg-blue-600 text-white px-10 py-4 rounded-full font-bold text-sm md:text-lg hover:bg-blue-500 shadow-2xl transition-all active:scale-95 uppercase tracking-widest">Découvrir les cours</a>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center mt-10">
+                        <a href="#cours" class="bg-blue-600 text-white px-10 py-4 rounded-full font-bold text-sm md:text-lg hover:bg-blue-500 shadow-2xl transition-all active:scale-95 uppercase tracking-widest">Découvrir les cours</a>
+                        @php
+                            $cvButtonUrl = \App\Models\Setting::where('key', 'cv_button_url')->first();
+                        @endphp
+                        @if($cvButtonUrl && $cvButtonUrl->value && $cvButtonUrl->is_enabled)
+                            <a href="{{ $cvButtonUrl->value }}" target="_blank" rel="noopener noreferrer" class="bg-blue-600 text-white px-10 py-4 rounded-full font-bold text-sm md:text-lg hover:bg-blue-500 shadow-2xl transition-all active:scale-95 uppercase tracking-widest">Consulter les CV</a>
+                        @endif
+                    </div>
                 </div>
             </div>
         @endforeach
     </section>
+
+    <!-- ANNONCES TEXTE -->
+    <x-announcements-banner />
 
     <!-- SECTION CHIFFRES -->
     <section class="py-10 md:py-14 px-6 max-w-7xl mx-auto reveal-on-scroll">
