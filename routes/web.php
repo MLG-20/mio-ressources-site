@@ -78,6 +78,10 @@ Route::get('/page/{slug}', [HomeController::class, 'showPage'])->name('page.show
 Route::get('/semestre/{id}', [HomeController::class, 'showSemestre'])->name('semestre.show');
 Route::get('/matiere/{id}', [HomeController::class, 'showMatiere'])->name('matiere.show');
 Route::get('/bibliotheque', [HomeController::class, 'library'])->name('library.index');
+
+// Formulaire de contact (public)
+Route::post('/contact/send', [\App\Http\Controllers\ContactController::class, 'send'])->name('contact.send');
+
 Route::post('/avis', [HomeController::class, 'storeReview'])->middleware('throttle:10,1')->name('avis.store');
 
 

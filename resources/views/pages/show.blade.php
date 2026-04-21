@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>{{ $page->titre }} - MIO</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -101,22 +101,92 @@
             {!! $page->contenu !!}
         </div>
 
-        <!-- SECTION CARTE (Affichée seulement sur la page À Propos) -->
-        @if($page->slug === 'a-propos' && isset($settings['univ_map']))
-            <div class="mt-24">
-                <h2 class="text-3xl font-black text-slate-900 mb-8 uppercase tracking-tight">Nous trouver</h2>
-                <div class="rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white ring-1 ring-slate-200 h-[450px] w-full">
-                    {!! $settings['univ_map'] !!}
+
+    {{-- SECTION CONTACT & CARTE côte à côte (uniquement sur la page À propos) --}}
+    @if($page->slug === 'a-propos')
+        <section class="mt-6 mb-6 md:mt-24 md:mb-16">
+            <div class="flex flex-col md:flex-row gap-4 md:gap-16 items-stretch w-full max-w-full md:max-w-4xl mx-0 md:mx-auto px-0 md:px-6">
+                {{-- Bloc Contact --}}
+                <div class="flex-1 bg-white dark:bg-slate-900 rounded-none md:rounded-[2rem] shadow-2xl border-0 md:border-4 border-blue-100 dark:border-slate-700 p-2 md:p-12 flex flex-col justify-center mb-4 md:mb-0">
+                    <h2 class="text-3xl font-black text-blue-700 dark:text-blue-300 mb-8 uppercase tracking-tight text-center">Contactez-nous</h2>
+                    @if(session('contact_success'))
+                        <div class="mb-6 p-4 bg-blue-600 text-white rounded-2xl font-bold text-center animate-bounce">{{ session('contact_success') }}</div>
+                    @endif
+                    <form action="{{ route('contact.send') }}" method="POST" class="space-y-6">
+                        @csrf
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="nom" class="block text-xs font-bold uppercase text-slate-600 dark:text-slate-300 mb-2">Nom</label>
+                                <input type="text" id="nom" name="nom" required class="w-full rounded-xl bg-white dark:bg-slate-800 border border-blue-200 dark:border-slate-700 p-4 text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 outline-none">
+                            </div>
+                            <div>
+                                <label for="email" class="block text-xs font-bold uppercase text-slate-600 dark:text-slate-300 mb-2">Email</label>
+                                <input type="email" id="email" name="email" required class="w-full rounded-xl bg-white dark:bg-slate-800 border border-blue-200 dark:border-slate-700 p-4 text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 outline-none">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="message" class="block text-xs font-bold uppercase text-slate-600 dark:text-slate-300 mb-2">Message</label>
+                            <textarea id="message" name="message" rows="5" required class="w-full rounded-xl bg-white dark:bg-slate-800 border border-blue-200 dark:border-slate-700 p-4 text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                        </div>
+                        <div class="text-center mt-8">
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-10 rounded-full shadow-xl uppercase tracking-widest transition-all">Envoyer</button>
+                        </div>
+                    </form>
                 </div>
+                {{-- Bloc Carte --}}
+                @if(isset($settings['univ_map']))
+                <div class="flex-1 bg-white dark:bg-slate-900 rounded-none md:rounded-[2rem] shadow-2xl border-0 md:border-4 border-blue-100 dark:border-slate-700 p-2 md:p-12 flex flex-col justify-center">
+                    <h2 class="text-3xl font-black text-blue-700 dark:text-blue-300 mb-8 uppercase tracking-tight text-center">Nous trouver</h2>
+                    <div class="relative w-full" style="padding-bottom: 56.25%; min-height:220px;">
+                        <div class="absolute inset-0 rounded-none md:rounded-[2rem] overflow-hidden shadow-xl border-0 md:border-4 border-white ring-0 md:ring-1 ring-slate-200">
+                            {!! $settings['univ_map'] !!}
+                        </div>
+                    </div>
+                </div>
+                @endif
             </div>
-        @endif
+        </section>
+    @endif
     </main>
 
     @include('layouts.footer')
 
     <!-- Style pour forcer l'iframe Google Maps à être responsive -->
     <style>
-        iframe { width: 100% !important; height: 100% !important; border: 0; }
+        /* Responsive Google Maps et suppression des marges sur mobile */
+        .prose iframe,
+        section iframe {
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 220px;
+            border: 0;
+            display: block;
+        }
+        @media (max-width: 768px) {
+            .flex.md\:flex-row {
+                flex-direction: column !important;
+            }
+            .flex-1 {
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+            section > div.flex {
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+            .rounded-none {
+                border-radius: 0 !important;
+            }
+            .border-0 {
+                border-width: 0 !important;
+            }
+            .p-2 {
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+            }
+        }
     </style>
 
 </body>
