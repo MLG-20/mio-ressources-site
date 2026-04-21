@@ -1,6 +1,6 @@
 /**
  * Service Worker pour MIO Ressources
- * 
+ *
  * Gère :
  * - Cache des assets (CSS, JS, images)
  * - Fonctionnement offline
@@ -28,7 +28,7 @@ const ASSETS_TO_CACHE = [
  */
 self.addEventListener('install', (event) => {
     console.log('🔧 Service Worker installing...');
-    
+
     event.waitUntil(
         caches.open(CACHE_ASSETS).then((cache) => {
             console.log('📦 Pré-cache des assets...');
@@ -39,7 +39,7 @@ self.addEventListener('install', (event) => {
             });
         })
     );
-    
+
     // Force l'activation immédiate
     self.skipWaiting();
 });
@@ -49,7 +49,7 @@ self.addEventListener('install', (event) => {
  */
 self.addEventListener('activate', (event) => {
     console.log('✅ Service Worker activated');
-    
+
     event.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
@@ -63,7 +63,7 @@ self.addEventListener('activate', (event) => {
             );
         })
     );
-    
+
     // Claim les clients
     return self.clients.claim();
 });

@@ -1,5 +1,15 @@
 @php
-    $activeAnnouncements = \App\Models\Announcement::where('is_active', true)->get();
+    use Illuminate\Support\Carbon;
+
+    $now = Carbon::now();
+    $activeAnnouncements = \App\Models\Announcement::where('is_active', true)
+        ->where(function ($query) use ($now) {
+            $query->whereNull('start_date')->orWhere('start_date', '<=', $now);
+        })
+        ->where(function ($query) use ($now) {
+            $query->whereNull('end_date')->orWhere('end_date', '>=', $now);
+        })
+        ->get();
 @endphp
 
 @if($activeAnnouncements->isNotEmpty())

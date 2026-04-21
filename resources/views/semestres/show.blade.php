@@ -17,6 +17,17 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* À ajouter dans ton bloc <style> existant */
+    nav {
+    padding-top: env(safe-area-inset-top, 0px) !important;
+    }
+
+    /* Optionnel : Ajuster aussi la hauteur de la navbar pour qu'elle ne paraisse pas trop fine */
+    @media (display-mode: standalone) {
+    nav {
+        min-height: calc(64px + env(safe-area-inset-top));
+    }
+    }
         html.dark body { background: #020617 !important; color: #e2e8f0 !important; }
         html.dark .bg-white, html.dark .bg-gray-50 { background-color: #0f172a !important; }
         html.dark .text-gray-900, html.dark .text-gray-800 { color: #f8fafc !important; }
