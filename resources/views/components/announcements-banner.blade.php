@@ -50,7 +50,7 @@
              x-transition:enter-end="opacity-100"
              x-cloak>
             <span class="scroll-text text-sm sm:text-base md:text-base font-semibold text-gray-800">
-                📢 {{ $announcement->title }} — {{ strip_tags($announcement->content) }}
+                📢 {{ $announcement->title }} — {!! html_entity_decode(strip_tags($announcement->content)) !!}
             </span>
         </div>
     @endforeach
