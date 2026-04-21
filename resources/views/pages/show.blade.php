@@ -18,6 +18,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+    /* À ajouter dans ton bloc <style> existant */
+    nav {
+    padding-top: env(safe-area-inset-top, 0px) !important;
+    }
     /* Masquer les légendes automatiques de l'éditeur (nom du fichier et poids) */
     .prose figcaption {
         display: none !important;
@@ -42,6 +46,12 @@
         }
     }
 
+    /* Optionnel : Ajuster aussi la hauteur de la navbar pour qu'elle ne paraisse pas trop fine */
+    @media (display-mode: standalone) {
+    nav {
+        min-height: calc(64px + env(safe-area-inset-top));
+    }
+    }
     /* S'assurer que les figures avec images ne cassent pas */
     .prose figure {
         margin: 3rem auto !important;
