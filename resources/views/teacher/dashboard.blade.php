@@ -72,7 +72,7 @@
         <i id="theme-toggle-icon" class="fas fa-moon"></i>
     </button>
 
-    <nav class="bg-white dark:bg-slate-900 text-slate-800 dark:text-white py-4 px-4 md:px-8 flex justify-between items-center sticky top-0 z-50 border-b border-slate-200 dark:border-slate-700 transition-colors duration-300">
+    <nav class="bg-white dark:bg-slate-900 text-slate-800 dark:text-white py-4 px-4 md:px-8 flex justify-between items-center sticky top-0 z-50 border-b border-slate-200 dark:border-slate-700 transition-colors duration-300" style="padding-top: env(safe-area-inset-top);">
         <a href="/">
            <div class="flex items-center gap-2 md:gap-3">
                 <x-application-logo class="w-8 md:w-10 h-8 md:h-10" />
