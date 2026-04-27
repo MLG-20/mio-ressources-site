@@ -24,7 +24,7 @@
         <i id="theme-toggle-icon" class="fas fa-moon"></i>
     </button>
 
-    <nav class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 py-4 px-8 flex justify-between items-center sticky top-0 z-50 transition-colors duration-300">
+    <nav class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 py-4 px-8 flex justify-between items-center sticky top-0 z-50 transition-colors duration-300" style="padding-top: env(safe-area-inset-top);">
         <a href="{{ route('forum.index') }}" class="flex items-center gap-2">
             <x-application-logo class="w-8 md:w-10 h-8 md:h-10" />
             <span class="font-black text-slate-800 dark:text-slate-100 uppercase">Forum</span>
