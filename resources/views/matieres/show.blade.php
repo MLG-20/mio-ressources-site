@@ -152,16 +152,18 @@
                                         Voir
                                     </a>
                                     <!-- Bouton Télécharger -->
-                                    <a href="{{ auth()->check() ? route('ressource.download', $ressource->id) : (asset('storage/' . $ressource->file_path)) }}"
-                                       class="flex items-center justify-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-2xl font-bold hover:bg-slate-700 transition-all shadow-lg flex-1">
+                                                <a href="{{ auth()->check() ? route('ressource.download', $ressource->id) : (asset('storage/' . $ressource->file_path)) }}"
+                                                    download
+                                                    class="flex items-center justify-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-2xl font-bold hover:bg-slate-700 transition-all shadow-lg flex-1">
                                         <i class="fas fa-download"></i>
                                         Télécharger
                                     </a>
                                 @else
                                     <!-- Bouton Ouvrir/Regarder (pour autres fichiers/vidéos) -->
-                                    <a href="{{ auth()->check() ? route('ressource.download', $ressource->id) : (asset('storage/' . $ressource->file_path)) }}"
-                                       target="_blank"
-                                       class="flex items-center justify-center gap-2 bg-slate-900 text-white px-8 py-3 rounded-2xl font-bold hover:bg-blue-600 transition-all shadow-lg shadow-slate-200 w-full">
+                                                <a href="{{ auth()->check() ? route('ressource.download', $ressource->id) : (asset('storage/' . $ressource->file_path)) }}"
+                                                    download
+                                                    target="_blank"
+                                                    class="flex items-center justify-center gap-2 bg-slate-900 text-white px-8 py-3 rounded-2xl font-bold hover:bg-blue-600 transition-all shadow-lg shadow-slate-200 w-full">
                                         <i class="fas {{ $ressource->type == 'Vidéo' ? 'fa-play-circle' : 'fa-cloud-download-alt' }}"></i>
                                         {{ $ressource->type == 'Vidéo' ? 'Regarder' : 'Ouvrir' }}
                                     </a>

@@ -368,9 +368,12 @@ private function sendTriangularEmails($emailAcheteur, $item, $pdfContent)
             return redirect()->away($url);
         }
 
-        // Pour les fichiers locaux, télécharger avec le nom de la ressource
+        // Pour les fichiers locaux, télécharger avec un nom propre (slugifié)
         $filePath = storage_path('app/public/' . $ressource->file_path);
-        $fileName = $ressource->titre . '.' . pathinfo($ressource->file_path, PATHINFO_EXTENSION);
+        $extension = pathinfo($ressource->file_path, PATHINFO_EXTENSION);
+        $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $ressource->titre)));
+        $slug = trim($slug, '-');
+        $fileName = $slug . '.' . $extension;
         return response()->download($filePath, $fileName);
     }
 
