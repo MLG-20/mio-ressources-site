@@ -47,7 +47,7 @@
     </button>
 
     <!-- Wrapper Principal : items-stretch est la clé -->
-    <div class="min-h-screen flex flex-col lg:flex-row w-full items-stretch">
+    <div class="min-h-screen flex flex-col lg:flex-row w-full items-stretch" style="padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right);">
 
         <!-- CÔTÉ GAUCHE : FORMULAIRE -->
         <div class="w-full lg:w-[45%] flex flex-col bg-white dark:bg-slate-900 relative z-10 shadow-2xl transition-colors duration-300">
