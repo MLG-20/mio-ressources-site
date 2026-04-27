@@ -45,7 +45,7 @@
     </style>
 
     <!-- NAVBAR -->
-    <nav class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 py-4 px-4 md:px-8 flex justify-between items-center sticky top-0 z-50 shadow-sm dark:shadow-none transition-colors duration-300">
+    <nav class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 py-4 px-4 md:px-8 flex justify-between items-center sticky top-0 z-50 shadow-sm dark:shadow-none transition-colors duration-300" style="padding-top: env(safe-area-inset-top);">
         <a href="/" class="flex items-center gap-2 group">
             <x-application-logo class="w-8 md:w-10 h-8 md:h-10" />
             <span class="hidden sm:inline font-black text-slate-900 dark:text-slate-100 tracking-tight text-xs md:text-lg">MES COURS VIDÉO</span>

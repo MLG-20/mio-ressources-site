@@ -49,7 +49,15 @@
 <body class="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
 
     <!-- NAVBAR -->
-    @include('layouts.navbar')
+    <nav class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 py-4 px-4 md:px-8 flex justify-between items-center sticky top-0 z-50 transition-colors duration-300" style="padding-top: env(safe-area-inset-top);">
+        <a href="/" class="flex items-center gap-2 group">
+            <x-application-logo class="w-8 md:w-10 h-8 md:h-10" />
+            <span class="hidden sm:inline font-black text-slate-800 dark:text-slate-100 tracking-tight uppercase text-xs md:text-base">Cours Particuliers</span>
+        </a>
+        <a href="/" class="text-slate-500 dark:text-slate-300 hover:text-blue-600 font-bold transition flex items-center gap-1 md:gap-2 text-xs md:text-sm uppercase tracking-widest">
+            <i class="fas fa-home"></i> <span class="hidden md:inline">Accueil</span>
+        </a>
+    </nav>
 
     <!-- HERO SECTION -->
     <section class="bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 text-white py-12 md:py-20">
