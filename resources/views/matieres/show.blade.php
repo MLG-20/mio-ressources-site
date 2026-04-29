@@ -22,6 +22,16 @@
         html.dark .text-slate-900, html.dark .text-slate-800 { color: #f8fafc !important; }
         html.dark .text-slate-700, html.dark .text-slate-600, html.dark .text-slate-500, html.dark .text-slate-400 { color: #cbd5e1 !important; }
         html.dark .border-slate-100, html.dark .border-slate-200 { border-color: #334155 !important; }
+
+        /* Ajout safe-area pour le haut (encoche/barre d'heure) */
+        body {
+            padding-top: env(safe-area-inset-top, 0px);
+        }
+        @media (max-width: 600px) {
+            header {
+                padding-top: max(env(safe-area-inset-top, 0px), 1.5rem) !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-[#f8fafc] text-slate-900 font-sans overflow-x-hidden transition-colors duration-300">
