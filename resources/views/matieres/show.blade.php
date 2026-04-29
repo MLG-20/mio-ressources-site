@@ -28,7 +28,7 @@
             padding-top: env(safe-area-inset-top, 0px);
         }
         @media (max-width: 600px) {
-            nav {
+            nav.sticky {
                 padding-top: max(env(safe-area-inset-top, 0px), 1rem) !important;
             }
             header {
