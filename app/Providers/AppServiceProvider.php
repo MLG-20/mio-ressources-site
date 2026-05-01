@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use App\Models\Setting;
 use App\Models\Ressource; // AJOUTÉ
@@ -32,6 +33,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Force HTTPS quand l'app est derrière un proxy (ngrok en dev, reverse proxy en prod)
+        if (str_starts_with(config('app.url'), 'https://')) {
+            URL::forceScheme('https');
+        }
+
         // 1. Partager les réglages avec le site public (avec try-catch pour production)
         try {
             if (Schema::hasTable('settings')) {

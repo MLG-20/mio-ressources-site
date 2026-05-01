@@ -13,6 +13,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Faire confiance à tous les proxies (ngrok en dev, reverse proxy en prod)
+        $middleware->trustProxies(at: '*');
+
         // SÉCURITÉ : middleware d'autorisation basé sur le rôle (admin/professeur/etudiant)
         // Utilisation: ->middleware('role:professeur')
         $middleware->alias([

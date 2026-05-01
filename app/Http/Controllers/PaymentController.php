@@ -23,6 +23,12 @@ class PaymentController extends Controller
 {
     private const STUDENT_SUBSCRIPTION_PRICE = 500;
 
+    private const SUBSCRIPTION_PLANS = [
+        'monthly'   => ['months' => 1,  'price' => 500,  'label' => 'Mensuel (1 mois)'],
+        'quarterly' => ['months' => 3,  'price' => 1200, 'label' => 'Trimestriel (3 mois)'],
+        'annual'    => ['months' => 12, 'price' => 4000, 'label' => 'Annuel (12 mois)'],
+    ];
+
     // 1. DÉMARRAGE DU PAIEMENT
     public function initiatePayment(Request $request, $id, $type)
     {
@@ -121,11 +127,8 @@ class PaymentController extends Controller
             abort(403);
         }
 
-        // ✅ BYPASS LOCAL — évite le problème HTTPS avec PayTech en dev
-        if (app()->environment('local')) {
-            $this->activateStudentSubscription($user->id, 1, 'LOCAL-SUB-' . uniqid());
-            return redirect()->route('student.subscription.success');
-        }
+        $planKey = $request->input('plan', 'monthly');
+        $plan = self::SUBSCRIPTION_PLANS[$planKey] ?? self::SUBSCRIPTION_PLANS['monthly'];
 
         $ipnSecret = (string) env('PAYTECH_IPN_SECRET', '');
         if ($ipnSecret === '') {
@@ -154,10 +157,10 @@ class PaymentController extends Controller
             ])
             ->post('https://paytech.sn/api/payment/request-payment', [
                 'item_name' => 'Abonnement étudiant MIO',
-                'item_price' => self::STUDENT_SUBSCRIPTION_PRICE,
+                'item_price' => $plan['price'],
                 'currency' => 'XOF',
                 'ref_command' => uniqid('MIO-SUB-'),
-                'command_name' => 'Abonnement étudiant MIO (1 mois)',
+                'command_name' => 'Abonnement étudiant MIO — ' . $plan['label'],
                 'env' => $paytechEnv,
                 'ipn_url' => $ipnUrl,
                 'success_url' => route('student.subscription.success'),
@@ -165,7 +168,7 @@ class PaymentController extends Controller
                 'custom_field' => json_encode([
                     'payment_kind' => 'student_subscription',
                     'user_id' => $user->id,
-                    'months' => 1,
+                    'months' => $plan['months'],
                 ]),
             ]);
 
@@ -199,7 +202,7 @@ class PaymentController extends Controller
         }
 
         if (Auth::check()) {
-            return redirect()->route('user.dashboard')->with('success', 'Paiement validé !');
+            return redirect()->route('user.dashboard')->with('success', 'Paiement validé ! Votre document et votre facture ont été envoyés à votre adresse email. Pensez à vérifier vos spams.');
         }
 
         $token = (string) session('paytech_last_token', '');
@@ -228,14 +231,9 @@ class PaymentController extends Controller
             return redirect()->route('home');
         }
 
-        // En local, on active directement pour faciliter les tests.
-        if (app()->environment('local')) {
-            $this->activateStudentSubscription($user->id, 1, 'LOCAL-SUB-' . uniqid());
-        }
-
         return redirect()
             ->route('user.dashboard')
-            ->with('success', 'Abonnement étudiant activé avec succès.');
+            ->with('success', 'Abonnement étudiant activé avec succès. Un email de confirmation vous a été envoyé.');
     }
 
     // 3. IPN (Webhook Production)
@@ -467,10 +465,6 @@ class PaymentController extends Controller
             // Charger les relations pour le PDF
             $purchase->load(['user', 'ressource.user', 'publication.user']);
 
-            if (app()->environment('local')) {
-                return;
-            }
-
             $pdf = Pdf::loadView('invoices.template', compact('purchase'));
             $pdfContent = $pdf->output();
 
@@ -544,5 +538,43 @@ class PaymentController extends Controller
             'status' => 'paid',
             'paid_at' => now(),
         ]);
+
+        try {
+            $prenom = explode(' ', $user->name)[0];
+            $dateExpiration = $newPaidUntil->translatedFormat('d F Y');
+
+            Mail::send([], [], function ($message) use ($user, $prenom, $dateExpiration) {
+                $message->to($user->email)
+                    ->subject('Merci pour votre abonnement MIO Ressources !')
+                    ->html("
+                        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 30px; border-radius: 8px; background: #f9fafb;'>
+                            <div style='text-align: center; margin-bottom: 24px;'>
+                                <h1 style='color: #1e40af; font-size: 24px;'>MIO Ressources</h1>
+                            </div>
+                            <h2 style='color: #1e293b;'>Merci {$prenom} ! 🎉</h2>
+                            <p style='color: #475569; font-size: 16px; line-height: 1.6;'>
+                                Nous sommes vraiment touchés par la confiance que vous nous accordez.
+                                Votre abonnement étudiant est désormais <strong>actif</strong>.
+                            </p>
+                            <div style='background: #dbeafe; border-left: 4px solid #1e40af; padding: 16px; border-radius: 4px; margin: 24px 0;'>
+                                <p style='margin: 0; color: #1e40af; font-weight: bold;'>
+                                    ✅ Abonnement valide jusqu'au : {$dateExpiration}
+                                </p>
+                            </div>
+                            <p style='color: #475569; font-size: 16px; line-height: 1.6;'>
+                                Vous avez maintenant accès à l'ensemble de votre espace étudiant : cours, groupes, messagerie, cours particuliers et bien plus encore.
+                            </p>
+                            <p style='color: #475569; font-size: 16px; line-height: 1.6;'>
+                                Nous mettons tout en œuvre pour vous offrir les meilleurs outils pour réussir votre parcours académique. Merci de faire partie de la communauté MIO.
+                            </p>
+                            <p style='color: #64748b; font-size: 14px; margin-top: 32px;'>
+                                L'équipe MIO Ressources 💙
+                            </p>
+                        </div>
+                    ");
+            });
+        } catch (\Exception $e) {
+            Log::error('Erreur envoi mail abonnement étudiant : ' . $e->getMessage());
+        }
     }
 }

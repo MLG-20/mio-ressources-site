@@ -23,6 +23,13 @@ class UserSpaceController extends Controller
         $user = Auth::user();
         $trialEndsAt = $user->trial_ends_at ?? $user->created_at?->copy()->addMonths(3);
 
+        $isInTrial = $trialEndsAt && now()->lessThanOrEqualTo($trialEndsAt);
+        $hasActiveSubscription = $user->subscription_paid_until && now()->lessThanOrEqualTo($user->subscription_paid_until);
+
+        if ($isInTrial || $hasActiveSubscription) {
+            return redirect()->route('user.dashboard');
+        }
+
         return view('student.subscription-paywall', [
             'trialEndsAt' => $trialEndsAt,
             'subscriptionPaidUntil' => $user->subscription_paid_until,
