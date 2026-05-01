@@ -2,6 +2,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Purchase;
+use App\Models\SubscriptionPayment;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -18,41 +19,46 @@ class FinanceOverview extends BaseWidget
 
     protected function getStats(): array
     {
-        // 1. CALCUL DES VENTES DIRECTES (Tes documents à toi - ID 1)
-        // On prend tout ce qui appartient à l'ID 1 ou ce qui n'a pas d'auteur (Administration par défaut)
         $mesGainsDirects = Purchase::where(function ($query) {
             $query->whereHas('ressource', fn ($q) => $q->where('user_id', 1)->orWhereNull('user_id'))
                   ->orWhereHas('publication', fn ($q) => $q->where('user_id', 1)->orWhereNull('user_id'));
         })->sum('amount');
 
-        // 2. CALCUL DES VENTES DES PROFESSEURS (Tout ce qui n'est PAS à l'ID 1)
         $totalVentesProfs = Purchase::where(function ($query) {
             $query->whereHas('ressource', fn ($q) => $q->where('user_id', '!=', 1))
                   ->orWhereHas('publication', fn ($q) => $q->where('user_id', '!=', 1));
         })->sum('amount');
 
-        // Ta commission de 30% sur les ventes des profs
         $maCommission = $totalVentesProfs * 0.30;
+        $duAuxProfs   = $totalVentesProfs * 0.70;
 
-        // Ce que tu dois aux profs (70%)
-        $duAuxProfs = $totalVentesProfs * 0.70;
+        $revenusAbonnements = SubscriptionPayment::where('status', 'paid')->sum('amount');
+
+        $totalPlateforme = $mesGainsDirects + $maCommission + $revenusAbonnements;
 
         return [
-            // CARTE 1 : Tes propres revenus (100% de l'argent encaissé)
-            Stat::make('Mes Ventes Directes', number_format($mesGainsDirects, 0, ',', ' ') . ' F')
-                ->description('Revenus sur vos propres documents (100%)')
+            Stat::make('Ventes directes (docs)', number_format($mesGainsDirects, 0, ',', ' ') . ' F')
+                ->description('100% sur vos propres documents')
                 ->descriptionIcon('heroicon-m-user')
                 ->color('success'),
 
-            // CARTE 2 : Tes commissions sur les autres
             Stat::make('Commissions Marketplace', number_format($maCommission, 0, ',', ' ') . ' F')
-                ->description('Votre part de 30% sur les ventes des profs')
+                ->description('30% sur les ventes des profs')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color('info'),
 
-            // CARTE 3 : L'argent que tu dois sortir de ton compte pour les profs
+            Stat::make('Revenus Abonnements', number_format($revenusAbonnements, 0, ',', ' ') . ' F')
+                ->description('Total encaissé sur les abonnements étudiants')
+                ->descriptionIcon('heroicon-m-credit-card')
+                ->color('primary'),
+
+            Stat::make('Total Plateforme', number_format($totalPlateforme, 0, ',', ' ') . ' F')
+                ->description('Ventes directes + commissions + abonnements')
+                ->descriptionIcon('heroicon-m-building-library')
+                ->color('warning'),
+
             Stat::make('Dû aux Professeurs', number_format($duAuxProfs, 0, ',', ' ') . ' F')
-                ->description('Total à reverser aux enseignants (70%)')
+                ->description('70% des ventes profs à reverser')
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color('danger'),
         ];

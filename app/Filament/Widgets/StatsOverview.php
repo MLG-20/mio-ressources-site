@@ -3,10 +3,9 @@
 namespace App\Filament\Widgets;
 
 use App\Models\DownloadHistory;
-use App\Models\FinancialTransaction;
+use App\Models\Purchase;
+use App\Models\SubscriptionPayment;
 use App\Models\User;
-use App\Models\Meeting;
-use App\Models\PrivateLesson;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Carbon;
@@ -38,8 +37,8 @@ class StatsOverview extends BaseWidget
             ->descriptionIcon('heroicon-m-users')
             ->color('primary'),
 
-        Stat::make('Transactions Complétées', FinancialTransaction::where('type', 'CREDIT_VENTE')->where('created_at', '>=', Carbon::now()->startOfMonth())->count())
-           ->description('Ce mois-ci')
+        Stat::make('Achats ce mois', Purchase::where('created_at', '>=', Carbon::now()->startOfMonth())->count())
+           ->description('Documents & abonnements vendus')
            ->descriptionIcon('heroicon-m-banknotes')
            ->color('warning'),
 
@@ -47,6 +46,16 @@ class StatsOverview extends BaseWidget
             ->description('Derniers 30 jours')
             ->descriptionIcon('heroicon-m-arrow-down-tray')
             ->color('info'),
+
+        Stat::make('Abonnés actifs', User::where('subscription_paid_until', '>', Carbon::now())->count())
+            ->description('Étudiants avec abonnement en cours')
+            ->descriptionIcon('heroicon-m-academic-cap')
+            ->color('success'),
+
+        Stat::make('Revenus abonnements', number_format(SubscriptionPayment::where('status', 'paid')->whereMonth('paid_at', Carbon::now()->month)->sum('amount'), 0, ',', ' ') . ' F')
+            ->description('Ce mois-ci')
+            ->descriptionIcon('heroicon-m-credit-card')
+            ->color('primary'),
     ];
 }
 }

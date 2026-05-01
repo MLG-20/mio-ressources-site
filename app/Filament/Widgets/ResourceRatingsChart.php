@@ -20,7 +20,8 @@ class ResourceRatingsChart extends ChartWidget
     public static function canView(): bool
     {
         return auth()->user()?->hasPermission('ressources')
-            && request()->get('tab') === 'contenus';
+            && request()->get('tab') === 'contenus'
+            && \App\Models\ResourceRating::exists();
     }
 
     protected function getData(): array

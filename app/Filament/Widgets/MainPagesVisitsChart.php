@@ -26,40 +26,28 @@ class MainPagesVisitsChart extends ChartWidget
 
     protected function getData(): array
     {
-        // Définir les pages principales à surveiller (basées sur les vraies routes)
-        $mainPages = [
-            '/' => 'Accueil',
-            '/bibliotheque' => 'Bibliothèque',
-            '/cours-particuliers' => 'Cours Particuliers',
-            '/revision-instantanee' => 'Révision Instantanée',
-            '/forum' => 'Forum',
-            '/mon-espace' => 'Mon Espace',
-            '/groupes' => 'Groupes de Travail',
-            '/page/' => 'Pages Info', // Contact, À propos, etc.
+        $categories = [
+            'Accueil'   => ['label' => 'Accueil',     'color' => '#3b82f6', 'prefix' => false],
+            'Semestre'  => ['label' => 'Semestres',   'color' => '#8b5cf6', 'prefix' => true],
+            'Matière'   => ['label' => 'Matières',    'color' => '#10b981', 'prefix' => true],
+            'Page'      => ['label' => 'Pages info',  'color' => '#f59e0b', 'prefix' => true],
+            'Document'  => ['label' => 'Documents',   'color' => '#ec4899', 'prefix' => true],
+            'Forum'     => ['label' => 'Forum',       'color' => '#06b6d4', 'prefix' => true],
         ];
 
         $labels = [];
         $data = [];
-        $colors = [
-            '#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b',
-            '#10b981', '#06b6d4', '#f43f5e', '#f97316'
-        ];
-
-        $colorIndex = 0;
         $backgroundColors = [];
 
-        foreach ($mainPages as $url => $label) {
-            // Compter les visites exactes pour cette page
-            $count = Visit::where('page_visited', $url)
-                ->orWhere('page_visited', 'LIKE', $url . '?%')
-                ->orWhere('page_visited', 'LIKE', $url . '%') // Pour /page/ qui capture contact, about, etc.
-                ->count();
+        foreach ($categories as $key => $cat) {
+            $count = $cat['prefix']
+                ? Visit::where('page_visited', 'LIKE', $key . ' : %')->count()
+                : Visit::where('page_visited', $key)->count();
 
             if ($count > 0) {
-                $labels[] = $label;
+                $labels[] = $cat['label'];
                 $data[] = $count;
-                $backgroundColors[] = $colors[$colorIndex % count($colors)];
-                $colorIndex++;
+                $backgroundColors[] = $cat['color'];
             }
         }
 

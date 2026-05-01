@@ -18,7 +18,8 @@ class TransactionTypesChart extends ChartWidget
     public static function canView(): bool
     {
         return auth()->user()?->hasPermission('paiements')
-            && request()->get('tab') === 'finances';
+            && request()->get('tab') === 'finances'
+            && \App\Models\FinancialTransaction::exists();
     }
 
     protected function getData(): array

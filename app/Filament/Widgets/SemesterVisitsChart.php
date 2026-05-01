@@ -34,14 +34,12 @@ class SemesterVisitsChart extends ChartWidget
         $data = [];
 
         foreach ($semestres as $semestre) {
-            // Compter les visites pour chaque semestre
-            // On cherche les URLs qui contiennent le slug ou l'ID du semestre
-            $count = Visit::where('page_visited', 'LIKE', '%/semestre/' . $semestre->id . '%')
-                ->orWhere('page_visited', 'LIKE', '%browse%semestre=' . $semestre->id . '%')
-                ->count();
+            $count = Visit::where('page_visited', 'Semestre : ' . $semestre->nom)->count();
 
-            $labels[] = $semestre->nom . ' (' . $semestre->niveau . ')';
-            $data[] = $count;
+            if ($count > 0) {
+                $labels[] = $semestre->nom . ' (' . $semestre->niveau . ')';
+                $data[] = $count;
+            }
         }
 
         return [
