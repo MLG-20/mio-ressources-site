@@ -15,7 +15,7 @@ class ListPrivateLessons extends ListRecords
     {
         return [
             Actions\Action::make('dashboard')
-                ->label('← Tableau de bord')
+                ->label('Tableau de bord')
                 ->url(fn () => route('filament.admin.pages.dashboard'))
                 ->color('gray')
                 ->icon('heroicon-o-arrow-left'),
