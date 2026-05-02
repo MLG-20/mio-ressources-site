@@ -106,6 +106,11 @@ class User extends Authenticatable implements FilamentUser, CanResetPasswordCont
     /**
      * Relations
      */
+    public function ressources()
+    {
+        return $this->hasMany(\App\Models\Ressource::class);
+    }
+
     public function meetings()
     {
         return $this->hasMany(Meeting::class);

@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\RessourceResource\Pages;
 use App\Models\Ressource;
+use App\Models\Semestre;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,19 +14,14 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\BadgeColumn;
 use Filament\Forms\Get;
-use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Section;
-
 
 class RessourceResource extends Resource
 {
     protected static ?string $model = Ressource::class;
 
-    // Icône du menu (on met un dossier pour les ressources)
     protected static ?string $navigationIcon = 'heroicon-o-folder-open';
-
     protected static ?string $navigationLabel = 'Ressources Académiques';
 
     public static function canViewAny(): bool
@@ -34,125 +30,167 @@ class RessourceResource extends Resource
     }
 
     public static function form(Form $form): Form
-{
-    return $form
-        ->schema([
-            Forms\Components\Section::make('Informations de la ressource')
-                ->schema([
-                    TextInput::make('titre')
-                        ->label('Titre du document')
-                        ->required()
-                        ->maxLength(255),
+    {
+        return $form
+            ->schema([
+                Section::make('Informations de la ressource')
+                    ->schema([
+                        TextInput::make('titre')
+                            ->label('Titre du document')
+                            ->required()
+                            ->maxLength(255),
 
-                    Select::make('matiere_id')
-                        ->label('Matière')
-                        ->relationship('matiere', 'nom')
-                        ->searchable()
-                        ->preload()
-                        ->required(),
+                        Select::make('matiere_id')
+                            ->label('Matière')
+                            ->relationship('matiere', 'nom')
+                            ->searchable()
+                            ->preload()
+                            ->required(),
 
-                    Select::make('type') // C'EST CE CHAMP QUE LARAVEL CHERCHAIT
-                        ->label('Type de contenu')
-                        ->options([
-                            'Cours' => '📚 Cours PDF',
-                            'TD' => '📝 Travaux Dirigés',
-                            'Vidéo' => '🎥 Lien Vidéo',
-                            'Autre' => '📁 Autre document',
-                        ])
-                        ->required()
-                        ->live(), // Pour rafraîchir le formulaire dès qu'on change
+                        Select::make('type')
+                            ->label('Type de contenu')
+                            ->options([
+                                'Cours' => '📚 Cours PDF',
+                                'TD'    => '📝 Travaux Dirigés',
+                                'Vidéo' => '🎥 Lien Vidéo',
+                                'Autre' => '📁 Autre document',
+                            ])
+                            ->required()
+                            ->live(),
 
-                    // CHAMP DYNAMIQUE : Soit un fichier, soit un lien
-                    FileUpload::make('file_path')
-                        ->label('Téléverser le fichier (PDF, DOC, ZIP, etc.)')
-                        ->directory('ressources')
-                        ->maxSize(51200)
-                        ->required()
-                        ->visible(fn (Get $get): bool => $get('type') !== 'Vidéo'), // Caché si c'est une vidéo
+                        FileUpload::make('file_path')
+                            ->label('Téléverser le fichier (PDF, DOC, ZIP, etc.)')
+                            ->directory('ressources')
+                            ->maxSize(51200)
+                            ->required()
+                            ->visible(fn (Get $get): bool => $get('type') !== 'Vidéo'),
 
-                    TextInput::make('file_path') // On utilise le même nom de colonne !
-                        ->label('Lien de la vidéo (YouTube / Drive)')
-                        ->url()
-                        ->placeholder('https://www.youtube.com/watch?v=...')
-                        ->required()
-                        ->visible(fn (Get $get): bool => $get('type') === 'Vidéo'), // Visible SEULEMENT si c'est une vidéo
-                ])->columns(2),
+                        TextInput::make('file_path')
+                            ->label('Lien de la vidéo (YouTube / Drive)')
+                            ->url()
+                            ->placeholder('https://www.youtube.com/watch?v=...')
+                            ->required()
+                            ->visible(fn (Get $get): bool => $get('type') === 'Vidéo'),
+                    ])->columns(2),
 
-            Forms\Components\Section::make('Options Premium')
-                ->schema([
-                    Forms\Components\Toggle::make('is_premium')
-                        ->label('Contenu Payant')
-                        ->onColor('warning')
-                        ->live(),
+                Section::make('Options Premium')
+                    ->schema([
+                        Forms\Components\Toggle::make('is_premium')
+                            ->label('Contenu Payant')
+                            ->onColor('warning')
+                            ->live(),
 
-                    TextInput::make('price')
-                        ->label('Prix (CFA)')
-                        ->numeric()
-                        ->prefix('CFA')
-                        ->visible(fn (Get $get): bool => $get('is_premium'))
-                        ->required(fn (Get $get): bool => $get('is_premium')),
-                ])
-        ]);
-}
+                        TextInput::make('price')
+                            ->label('Prix (CFA)')
+                            ->numeric()
+                            ->prefix('CFA')
+                            ->visible(fn (Get $get): bool => $get('is_premium'))
+                            ->required(fn (Get $get): bool => $get('is_premium')),
+                    ]),
+            ]);
+    }
 
     public static function table(Table $table): Table
-{
-    return $table
-        ->columns([
-            Tables\Columns\TextColumn::make('titre')
-                ->label('Titre')
-                ->searchable()
-                ->sortable()
-                ->weight('bold'),
+    {
+        $isSuperAdmin = auth()->user()?->isSuperAdmin() ?? false;
 
-            Tables\Columns\TextColumn::make('type')
-                ->badge() // Transforme le texte en pastille
-                ->color(fn (string $state): string => match ($state) {
-                    'Cours' => 'info',
-                    'TD' => 'gray',
-                    'Vidéo' => 'danger',
-                    default => 'slate',
-                }),
+        return $table
+            ->columns([
+                TextColumn::make('titre')
+                    ->label('Titre')
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold'),
 
-            // NOUVELLE COLONNE : STATUT FINANCIER
-            Tables\Columns\TextColumn::make('price')
-                ->label('Accès')
-                ->alignCenter()
-                ->sortable()
-                ->formatStateUsing(function ($record) {
-                    // Si c'est premium, on affiche le prix, sinon "Gratuit"
-                    return $record->is_premium
-                        ? $record->price . ' CFA'
-                        : 'Gratuit';
-                })
-                ->badge() // Style pastille
-                ->color(fn ($record): string => $record->is_premium ? 'warning' : 'success') // Jaune si payant, Vert si gratuit
-                ->icon(fn ($record): string => $record->is_premium ? 'heroicon-m-star' : 'heroicon-m-check-badge'),
+                TextColumn::make('type')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Cours' => 'info',
+                        'TD'    => 'gray',
+                        'Vidéo' => 'danger',
+                        default => 'slate',
+                    }),
 
-            Tables\Columns\TextColumn::make('matiere.nom')
-                ->label('Matière')
-                ->searchable()
-                ->limit(20),
+                TextColumn::make('matiere.semestre.niveau')
+                    ->label('Niveau')
+                    ->badge()
+                    ->color(fn (?string $state): string => match ($state) {
+                        'L1' => 'info',
+                        'L2' => 'warning',
+                        'L3' => 'success',
+                        default => 'gray',
+                    })
+                    ->sortable(),
 
-            Tables\Columns\TextColumn::make('created_at')
-                ->label('Ajouté le')
-                ->dateTime('d/m/Y H:i')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true),
-        ])
-        ->filters([
-            // AJOUT D'UN FILTRE POUR VOIR SEULEMENT LE PREMIUM
-            Tables\Filters\TernaryFilter::make('is_premium')
-                ->label('Filtrer par type d\'accès')
-                ->placeholder('Tous les documents')
-                ->trueLabel('Documents Premium')
-                ->falseLabel('Documents Gratuits'),
-        ])
-        ->actions([
-            Tables\Actions\EditAction::make(),
-            Tables\Actions\DeleteAction::make(),
-        ]);
-}
+                TextColumn::make('matiere.semestre.nom')
+                    ->label('Semestre')
+                    ->sortable()
+                    ->limit(20),
+
+                TextColumn::make('matiere.nom')
+                    ->label('Matière')
+                    ->searchable()
+                    ->limit(20),
+
+                TextColumn::make('price')
+                    ->label('Accès')
+                    ->alignCenter()
+                    ->sortable()
+                    ->formatStateUsing(fn ($record) => $record->is_premium ? $record->price . ' CFA' : 'Gratuit')
+                    ->badge()
+                    ->color(fn ($record): string => $record->is_premium ? 'warning' : 'success')
+                    ->icon(fn ($record): string => $record->is_premium ? 'heroicon-m-star' : 'heroicon-m-check-badge'),
+
+                TextColumn::make('user.name')
+                    ->label('Ajouté par')
+                    ->sortable()
+                    ->badge()
+                    ->color('primary')
+                    ->visible($isSuperAdmin),
+
+                TextColumn::make('created_at')
+                    ->label('Ajouté le')
+                    ->dateTime('d/m/Y H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                Tables\Filters\SelectFilter::make('type')
+                    ->label('Type')
+                    ->options([
+                        'Cours' => '📚 Cours',
+                        'TD'    => '📝 TD',
+                        'Vidéo' => '🎥 Vidéo',
+                        'Autre' => '📁 Autre',
+                    ]),
+
+                Tables\Filters\SelectFilter::make('niveau')
+                    ->label('Niveau')
+                    ->options(['L1' => 'Licence 1', 'L2' => 'Licence 2', 'L3' => 'Licence 3'])
+                    ->query(fn ($query, array $data) => $query->when(
+                        $data['value'],
+                        fn ($q, $v) => $q->whereHas('matiere.semestre', fn ($s) => $s->where('niveau', $v))
+                    )),
+
+                Tables\Filters\SelectFilter::make('semestre')
+                    ->label('Semestre')
+                    ->options(fn () => Semestre::orderBy('niveau')->orderBy('nom')->pluck('nom', 'id'))
+                    ->query(fn ($query, array $data) => $query->when(
+                        $data['value'],
+                        fn ($q, $v) => $q->whereHas('matiere', fn ($m) => $m->where('semestre_id', $v))
+                    )),
+
+                Tables\Filters\TernaryFilter::make('is_premium')
+                    ->label('Accès')
+                    ->placeholder('Tous les documents')
+                    ->trueLabel('Documents Premium')
+                    ->falseLabel('Documents Gratuits'),
+            ])
+            ->actions([
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+            ]);
+    }
 
     public static function getRelations(): array
     {
@@ -162,9 +200,9 @@ class RessourceResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListRessources::route('/'),
+            'index'  => Pages\ListRessources::route('/'),
             'create' => Pages\CreateRessource::route('/create'),
-            'edit' => Pages\EditRessource::route('/{record}/edit'),
+            'edit'   => Pages\EditRessource::route('/{record}/edit'),
         ];
     }
 }
