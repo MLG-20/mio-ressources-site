@@ -11,6 +11,8 @@ class Ressource extends Model
 
     protected $fillable = ['titre', 'type', 'file_path', 'matiere_id', 'is_premium',  'price'];
 
+    protected $hidden = ['file_path'];
+
     // Une ressource appartient à une matière
     public function matiere()
     {
