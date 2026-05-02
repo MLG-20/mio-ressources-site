@@ -6,6 +6,7 @@ use App\Models\DownloadHistory;
 use App\Models\Purchase;
 use App\Models\SubscriptionPayment;
 use App\Models\User;
+use App\Models\Visit;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Carbon;
@@ -24,38 +25,83 @@ class StatsOverview extends BaseWidget
         return request()->get('tab') === 'vue-ensemble' || request()->get('tab') === null;
     }
 
+    private function trend(int|float $current, int|float $previous): array
+    {
+        if ($previous === 0) {
+            return ['label' => $current > 0 ? 'Nouveau' : 'Aucune donnée', 'color' => 'gray', 'icon' => 'heroicon-m-minus'];
+        }
+        $pct = round((($current - $previous) / $previous) * 100);
+        if ($pct > 0) {
+            return ['label' => '+' . $pct . '% vs mois dernier', 'color' => 'success', 'icon' => 'heroicon-m-arrow-trending-up'];
+        }
+        if ($pct < 0) {
+            return ['label' => $pct . '% vs mois dernier', 'color' => 'danger', 'icon' => 'heroicon-m-arrow-trending-down'];
+        }
+        return ['label' => 'Stable vs mois dernier', 'color' => 'gray', 'icon' => 'heroicon-m-minus'];
+    }
+
     protected function getStats(): array
-{
-    return [
-        Stat::make('Visites totales', \App\Models\Visit::count())
-            ->description('Nombre de pages vues')
-            ->descriptionIcon('heroicon-m-eye')
-            ->color('success'),
+    {
+        $now        = Carbon::now();
+        $startMonth = $now->copy()->startOfMonth();
+        $startPrev  = $now->copy()->subMonth()->startOfMonth();
+        $endPrev    = $now->copy()->subMonth()->endOfMonth();
 
-        Stat::make('Utilisateurs', User::count())
-            ->description('Inscrits sur la plateforme')
-            ->descriptionIcon('heroicon-m-users')
-            ->color('primary'),
+        // Visites
+        $visitesThisMonth = Visit::where('visit_date', '>=', $startMonth)->count();
+        $visitesPrevMonth = Visit::whereBetween('visit_date', [$startPrev, $endPrev])->count();
+        $visitesTrend     = $this->trend($visitesThisMonth, $visitesPrevMonth);
 
-        Stat::make('Achats ce mois', Purchase::where('created_at', '>=', Carbon::now()->startOfMonth())->count())
-           ->description('Documents & abonnements vendus')
-           ->descriptionIcon('heroicon-m-banknotes')
-           ->color('warning'),
+        // Nouveaux utilisateurs
+        $usersThis  = User::where('created_at', '>=', $startMonth)->count();
+        $usersPrev  = User::whereBetween('created_at', [$startPrev, $endPrev])->count();
+        $usersTrend = $this->trend($usersThis, $usersPrev);
 
-        Stat::make('Téléchargements', DownloadHistory::where('downloaded_at', '>=', Carbon::now()->subDays(30))->count())
-            ->description('Derniers 30 jours')
-            ->descriptionIcon('heroicon-m-arrow-down-tray')
-            ->color('info'),
+        // Achats
+        $achatsThis  = Purchase::where('created_at', '>=', $startMonth)->count();
+        $achatsPrev  = Purchase::whereBetween('created_at', [$startPrev, $endPrev])->count();
+        $achatsTrend = $this->trend($achatsThis, $achatsPrev);
 
-        Stat::make('Abonnés actifs', User::where('subscription_paid_until', '>', Carbon::now())->count())
-            ->description('Étudiants avec abonnement en cours')
-            ->descriptionIcon('heroicon-m-academic-cap')
-            ->color('success'),
+        // Téléchargements
+        $dlThis  = DownloadHistory::where('downloaded_at', '>=', $now->copy()->subDays(30))->count();
+        $dlPrev  = DownloadHistory::whereBetween('downloaded_at', [$now->copy()->subDays(60), $now->copy()->subDays(30)])->count();
+        $dlTrend = $this->trend($dlThis, $dlPrev);
 
-        Stat::make('Revenus abonnements', number_format(SubscriptionPayment::where('status', 'paid')->whereMonth('paid_at', Carbon::now()->month)->sum('amount'), 0, ',', ' ') . ' F')
-            ->description('Ce mois-ci')
-            ->descriptionIcon('heroicon-m-credit-card')
-            ->color('primary'),
-    ];
-}
+        // Revenus abonnements
+        $subThis  = SubscriptionPayment::where('status', 'paid')->where('paid_at', '>=', $startMonth)->sum('amount');
+        $subPrev  = SubscriptionPayment::where('status', 'paid')->whereBetween('paid_at', [$startPrev, $endPrev])->sum('amount');
+        $subTrend = $this->trend($subThis, $subPrev);
+
+        return [
+            Stat::make('Visites ce mois', $visitesThisMonth)
+                ->description($visitesTrend['label'])
+                ->descriptionIcon($visitesTrend['icon'])
+                ->color($visitesTrend['color']),
+
+            Stat::make('Nouveaux utilisateurs', $usersThis)
+                ->description($usersTrend['label'])
+                ->descriptionIcon($usersTrend['icon'])
+                ->color($usersTrend['color']),
+
+            Stat::make('Achats ce mois', $achatsThis)
+                ->description($achatsTrend['label'])
+                ->descriptionIcon($achatsTrend['icon'])
+                ->color($achatsTrend['color']),
+
+            Stat::make('Téléchargements (30j)', $dlThis)
+                ->description($dlTrend['label'])
+                ->descriptionIcon($dlTrend['icon'])
+                ->color($dlTrend['color']),
+
+            Stat::make('Abonnés actifs', User::where('subscription_paid_until', '>', $now)->count())
+                ->description('Étudiants avec abonnement en cours')
+                ->descriptionIcon('heroicon-m-academic-cap')
+                ->color('success'),
+
+            Stat::make('Revenus abonnements', number_format($subThis, 0, ',', ' ') . ' F')
+                ->description($subTrend['label'])
+                ->descriptionIcon($subTrend['icon'])
+                ->color($subTrend['color']),
+        ];
+    }
 }

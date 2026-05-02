@@ -19,31 +19,26 @@ class FinanceOverview extends BaseWidget
 
     protected function getStats(): array
     {
-        $mesGainsDirects = Purchase::where(function ($query) {
-            $query->whereHas('ressource', fn ($q) => $q->where('user_id', 1)->orWhereNull('user_id'))
-                  ->orWhereHas('publication', fn ($q) => $q->where('user_id', 1)->orWhereNull('user_id'));
-        })->sum('amount');
+        // Ressources n'ont pas d'auteur (pas de user_id) → 100% plateforme
+        $ventesRessources = Purchase::where('item_type', 'ressource')->sum('amount');
 
-        $totalVentesProfs = Purchase::where(function ($query) {
-            $query->whereHas('ressource', fn ($q) => $q->where('user_id', '!=', 1))
-                  ->orWhereHas('publication', fn ($q) => $q->where('user_id', '!=', 1));
-        })->sum('amount');
-
-        $maCommission = $totalVentesProfs * 0.30;
-        $duAuxProfs   = $totalVentesProfs * 0.70;
+        // Publications ont un auteur (user_id) → split 30% plateforme / 70% prof
+        $ventesPublications = Purchase::where('item_type', 'publication')->sum('amount');
+        $maCommission       = $ventesPublications * 0.30;
+        $duAuxProfs         = $ventesPublications * 0.70;
 
         $revenusAbonnements = SubscriptionPayment::where('status', 'paid')->sum('amount');
 
-        $totalPlateforme = $mesGainsDirects + $maCommission + $revenusAbonnements;
+        $totalPlateforme = $ventesRessources + $maCommission + $revenusAbonnements;
 
         return [
-            Stat::make('Ventes directes (docs)', number_format($mesGainsDirects, 0, ',', ' ') . ' F')
-                ->description('100% sur vos propres documents')
-                ->descriptionIcon('heroicon-m-user')
+            Stat::make('Ventes ressources', number_format($ventesRessources, 0, ',', ' ') . ' F')
+                ->description('Documents plateforme (100% à vous)')
+                ->descriptionIcon('heroicon-m-document-text')
                 ->color('success'),
 
             Stat::make('Commissions Marketplace', number_format($maCommission, 0, ',', ' ') . ' F')
-                ->description('30% sur les ventes des profs')
+                ->description('30% sur les ventes de publications profs')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color('info'),
 
@@ -53,12 +48,12 @@ class FinanceOverview extends BaseWidget
                 ->color('primary'),
 
             Stat::make('Total Plateforme', number_format($totalPlateforme, 0, ',', ' ') . ' F')
-                ->description('Ventes directes + commissions + abonnements')
+                ->description('Ressources + commissions + abonnements')
                 ->descriptionIcon('heroicon-m-building-library')
                 ->color('warning'),
 
             Stat::make('Dû aux Professeurs', number_format($duAuxProfs, 0, ',', ' ') . ' F')
-                ->description('70% des ventes profs à reverser')
+                ->description('70% des ventes de publications à reverser')
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color('danger'),
         ];
