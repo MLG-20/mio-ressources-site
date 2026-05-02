@@ -33,13 +33,19 @@ class UserResource extends Resource
 
     public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
     {
-        $adminEmail = env('ADMIN_EMAIL');
+        $authUser   = Auth::user();
+        $adminEmail = config('app.admin_email');
 
+        // Le super admin voit tout le monde
+        if ($authUser && $authUser->isSuperAdmin()) {
+            return parent::getEloquentQuery();
+        }
+
+        // Les sous-admins ne voient pas le super admin
         return parent::getEloquentQuery()
             ->where(function ($query) use ($adminEmail) {
                 $query->where('role', '!=', 'admin')
                       ->orWhere(function ($q) use ($adminEmail) {
-                          // Garder les sous-admins (role=admin mais pas le super admin)
                           $q->where('role', 'admin')
                             ->where('email', '!=', $adminEmail);
                       });
