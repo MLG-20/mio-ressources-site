@@ -45,6 +45,7 @@ class DatabaseSeeder extends Seeder
             'description' => 'Cours de révision complet sur l\'algèbre linéaire. Matrices, vecteurs, espaces vectoriels et applications linéaires. Exercices pratiques inclus.',
             'prix' => 5000,
             'duree_minutes' => 60,
+            'start_date' => now(),
             'teacher_id' => $testTeacher->id,
             'matiere_id' => 13, // MIO 1131 - Mathématiques Générales
             'disponibilites' => json_encode([
@@ -61,6 +62,7 @@ class DatabaseSeeder extends Seeder
             'description' => 'Apprenez les bases de Python : variables, boucles, fonctions, et POO. Parfait pour débuter en programmation.',
             'prix' => 4000,
             'duree_minutes' => 90,
+            'start_date' => now(),
             'teacher_id' => $testTeacher->id,
             'matiere_id' => 14, // MIO 1132 - Algorithmique
             'disponibilites' => json_encode([
@@ -77,6 +79,7 @@ class DatabaseSeeder extends Seeder
             'description' => 'Préparation intensive aux examens de statistiques. Variables aléatoires, lois de probabilité, tests d\'hypothèses.',
             'prix' => 6000,
             'duree_minutes' => 120,
+            'start_date' => now(),
             'teacher_id' => $testTeacher->id,
             'matiere_id' => 16, // MIO 1232 - Calcul de Probabilités
             'disponibilites' => json_encode([
@@ -93,6 +96,7 @@ class DatabaseSeeder extends Seeder
             'description' => 'Maîtrisez les fondamentaux : bilan, compte de résultats, écritures comptables et journal.',
             'prix' => 5500,
             'duree_minutes' => 60,
+            'start_date' => now(),
             'teacher_id' => $testTeacher->id,
             'matiere_id' => null,
             'disponibilites' => json_encode([
@@ -108,6 +112,7 @@ class DatabaseSeeder extends Seeder
             'description' => 'Découvrez les bases du droit commercial : contrats, obligations, responsabilité civile.',
             'prix' => 3500,
             'duree_minutes' => 30,
+            'start_date' => now(),
             'teacher_id' => $testTeacher->id,
             'matiere_id' => null,
             'disponibilites' => json_encode([
