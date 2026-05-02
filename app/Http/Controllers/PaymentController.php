@@ -192,15 +192,6 @@ class PaymentController extends Controller
     // 2. RETOUR SUCCÈS
     public function success($id, $type)
     {
-        // En local, on force la validation
-        if (app()->environment('local')) {
-            // On récupère l'email sauvegardé en session
-            $guestEmail = session('guest_email');
-            $userId = Auth::id();
-
-            $this->validateOrder($userId, $guestEmail, $id, $type, 'TEST-' . uniqid());
-        }
-
         if (Auth::check()) {
             return redirect()->route('user.dashboard')->with('success', 'Paiement validé ! Votre document et votre facture ont été envoyés à votre adresse email. Pensez à vérifier vos spams.');
         }
