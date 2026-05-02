@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 echo "🚀 Déploiement MIO Ressources..."
 
 cd /var/www/mio-ressources-site
