@@ -57,9 +57,10 @@ class User extends Authenticatable implements FilamentUser, CanResetPasswordCont
      */
     public function isSuperAdmin(): bool
     {
-        $adminEmail = env('ADMIN_EMAIL');
+        $adminEmail = config('app.admin_email');
         return $this->role === 'admin'
-            && ($adminEmail === null || $this->email === $adminEmail);
+            && $adminEmail !== null
+            && $this->email === $adminEmail;
     }
 
     public function canAccessPanel(Panel $panel): bool
