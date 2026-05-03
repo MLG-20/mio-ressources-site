@@ -49,7 +49,7 @@ class PaymentController extends Controller
         // Le webhook PayTech (/paiement/ipn) est public et exempté de CSRF (normal).
         // On ajoute donc un secret applicatif (PAYTECH_IPN_SECRET) dans l'URL IPN,
         // puis on le vérifie dans handleIPN().
-        $ipnSecret = (string) env('PAYTECH_IPN_SECRET', '');
+        $ipnSecret = (string) config('services.paytech.ipn_secret', '');
         if ($ipnSecret === '') {
             Log::error('PAYTECH_IPN_SECRET is not configured. IPN webhook security is not enforced.');
         }
@@ -61,9 +61,9 @@ class PaymentController extends Controller
         }
 
         // Appel API PayTech
-        $apiKey = trim((string) env('PAYTECH_API_KEY'));
-        $apiSecret = trim((string) env('PAYTECH_API_SECRET'));
-        $paytechEnv = trim((string) env('PAYTECH_ENV', 'test'));
+        $apiKey = trim((string) config('services.paytech.api_key'));
+        $apiSecret = trim((string) config('services.paytech.api_secret'));
+        $paytechEnv = trim((string) config('services.paytech.env', 'test'));
 
         /** @var HttpResponse $response */
         $response = Http::asJson()
@@ -130,7 +130,7 @@ class PaymentController extends Controller
         $planKey = $request->input('plan', 'monthly');
         $plan = self::SUBSCRIPTION_PLANS[$planKey] ?? self::SUBSCRIPTION_PLANS['monthly'];
 
-        $ipnSecret = (string) env('PAYTECH_IPN_SECRET', '');
+        $ipnSecret = (string) config('services.paytech.ipn_secret', '');
         if ($ipnSecret === '') {
             Log::error('PAYTECH_IPN_SECRET is not configured. IPN webhook security is not enforced.');
         }
@@ -141,9 +141,9 @@ class PaymentController extends Controller
             $ipnUrl .= $separator . http_build_query(['secret' => $ipnSecret]);
         }
 
-        $apiKey = trim((string) env('PAYTECH_API_KEY'));
-        $apiSecret = trim((string) env('PAYTECH_API_SECRET'));
-        $paytechEnv = trim((string) env('PAYTECH_ENV', 'test'));
+        $apiKey = trim((string) config('services.paytech.api_key'));
+        $apiSecret = trim((string) config('services.paytech.api_secret'));
+        $paytechEnv = trim((string) config('services.paytech.env', 'test'));
 
         /** @var HttpResponse $response */
         $response = Http::asJson()
@@ -237,7 +237,7 @@ class PaymentController extends Controller
         // SÉCURITÉ (IPN) : vérification d'un secret applicatif.
         // Cela évite qu'un tiers appelle /paiement/ipn et valide une commande arbitrairement.
         // Note: on trim pour éviter les problèmes de CRLF/espaces dans le .env.
-        $expectedSecret = trim((string) env('PAYTECH_IPN_SECRET', ''));
+        $expectedSecret = trim((string) config('services.paytech.ipn_secret', ''));
         $providedSecret = trim((string) $request->query('secret', ''));
 
         // Si le secret n'est pas configuré, on préfère bloquer en production.
@@ -263,8 +263,8 @@ class PaymentController extends Controller
         $apiKeySha256Provided = (string) $request->input('api_key_sha256', '');
         $apiSecretSha256Provided = (string) $request->input('api_secret_sha256', (string) $request->input('api_secret_sha2566', ''));
 
-        $apiKey = trim((string) env('PAYTECH_API_KEY', ''));
-        $apiSecret = trim((string) env('PAYTECH_API_SECRET', ''));
+        $apiKey = trim((string) config('services.paytech.api_key', ''));
+        $apiSecret = trim((string) config('services.paytech.api_secret', ''));
 
         // Si la config n'est pas présente, on bloque (évite d'accepter un IPN non vérifiable).
         if ($apiKey === '' || $apiSecret === '') {
