@@ -22,10 +22,6 @@
             padding-right: env(safe-area-inset-right);
         }
 
-        .hero-bg {
-            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 40%, #2563eb 70%, #3b82f6 100%);
-        }
-
         .card-popular {
             background: linear-gradient(145deg, #2563eb, #1d4ed8);
             box-shadow: 0 20px 60px rgba(37, 99, 235, 0.45);
@@ -101,7 +97,7 @@
 <body class="bg-slate-50 min-h-screen">
 
     {{-- HERO --}}
-    <div class="hero-bg dot-pattern relative overflow-hidden">
+    <div class="dot-pattern relative overflow-hidden" style="background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 40%, #2563eb 70%, #3b82f6 100%)">
 
         {{-- Orbes décoratifs --}}
         <div class="absolute -top-20 -right-20 w-64 h-64 bg-white/5 rounded-full blur-3xl pointer-events-none"></div>
@@ -111,9 +107,7 @@
 
             {{-- Logo --}}
             <div class="inline-flex items-center gap-2 bg-white/15 rounded-2xl px-4 py-2 mb-8">
-                <div class="w-7 h-7 bg-white rounded-lg flex items-center justify-center">
-                    <span class="text-blue-700 font-black text-xs">M</span>
-                </div>
+                <img src="/favicon.svg" alt="MIO" class="w-8 h-8 rounded-lg">
                 <span class="text-white font-bold text-sm tracking-wide">MIO Ressources</span>
             </div>
 
