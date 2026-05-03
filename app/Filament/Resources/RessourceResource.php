@@ -16,6 +16,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Get;
 use Filament\Forms\Components\Section;
+use Illuminate\Database\Eloquent\Builder;
 
 class RessourceResource extends Resource
 {
@@ -195,6 +196,11 @@ class RessourceResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->with(['matiere.semestre', 'user']);
     }
 
     public static function getPages(): array

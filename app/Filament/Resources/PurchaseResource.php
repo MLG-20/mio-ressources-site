@@ -112,11 +112,14 @@ Tables\Columns\TextColumn::make('gains_admin')
     ->weight('bold'),
         ]);
 }
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->with(['user', 'ressource.user', 'publication.user']);
+    }
+
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

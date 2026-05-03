@@ -10,6 +10,8 @@ use App\Models\FinancialTransaction;
 use App\Models\DownloadHistory;
 use App\Models\SubscriptionPayment;
 use App\Models\User;
+use App\Jobs\SendPurchaseInvoiceJob;
+use App\Jobs\SendSubscriptionConfirmationJob;
 use App\Notifications\PurchaseInvoiceNotification;
 use Illuminate\Http\Client\Response as HttpResponse;
 use Illuminate\Support\Facades\Auth;
@@ -451,47 +453,7 @@ class PaymentController extends Controller
             DownloadHistory::updateOrCreate(['user_id' => $userId, 'ressource_id' => $item->id], ['downloaded_at' => now()]);
         }
 
-        // --- ENVOI DU MAIL AVEC PDF ---
-        try {
-            // Charger les relations pour le PDF
-            $purchase->load(['user', 'ressource.user', 'publication.user']);
-
-            $pdf = Pdf::loadView('invoices.template', compact('purchase'));
-            $pdfContent = $pdf->output();
-
-            // Déterminer l'email destinataire
-            $user = $userId ? \App\Models\User::find($userId) : null;
-            $destinataire = $user ? $user->email : $guestEmail;
-
-            $downloadLink = null;
-            if (! $user && $guestEmail) {
-                $downloadLink = URL::temporarySignedRoute(
-                    'guest.download',
-                    now()->addHours(24),
-                    ['token' => $ref, 'type' => $type, 'id' => $itemId]
-                );
-            }
-
-            if ($destinataire) {
-                Mail::send([], [], function ($message) use ($destinataire, $pdfContent, $item, $downloadLink) {
-                    $message->to($destinataire)
-                            ->subject('✅ Votre commande MIO : ' . $item->titre)
-                            ->attachData($pdfContent, 'Facture_MIO.pdf', ['mime' => 'application/pdf'])
-                            ->html(
-                                $downloadLink
-                                    ? ("<h2>Merci !</h2><p>Votre paiement a été validé.</p><p><a href=\"" . e($downloadLink) . "\">Télécharger votre document</a> (lien valable 24h)</p><p>Voici votre facture en pièce jointe.</p>")
-                                    : ("<h2>Merci !</h2><p>Voici votre document et votre facture.</p>")
-                            );
-
-                    // Si c'est un fichier local, on l'attache aussi
-                    if (file_exists(storage_path('app/public/' . $item->file_path))) {
-                         $message->attach(storage_path('app/public/' . $item->file_path));
-                    }
-                });
-            }
-        } catch (\Exception $e) {
-            Log::error("Erreur Mail : " . $e->getMessage());
-        }
+        SendPurchaseInvoiceJob::dispatch($purchase, $userId, $guestEmail, $type, $itemId, $ref);
     }
 
     private function activateStudentSubscription(int $userId, int $months, string $paymentId): void
@@ -530,42 +492,6 @@ class PaymentController extends Controller
             'paid_at' => now(),
         ]);
 
-        try {
-            $prenom = explode(' ', $user->name)[0];
-            $dateExpiration = $newPaidUntil->translatedFormat('d F Y');
-
-            Mail::send([], [], function ($message) use ($user, $prenom, $dateExpiration) {
-                $message->to($user->email)
-                    ->subject('Merci pour votre abonnement MIO Ressources !')
-                    ->html("
-                        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 30px; border-radius: 8px; background: #f9fafb;'>
-                            <div style='text-align: center; margin-bottom: 24px;'>
-                                <h1 style='color: #1e40af; font-size: 24px;'>MIO Ressources</h1>
-                            </div>
-                            <h2 style='color: #1e293b;'>Merci {$prenom} ! 🎉</h2>
-                            <p style='color: #475569; font-size: 16px; line-height: 1.6;'>
-                                Nous sommes vraiment touchés par la confiance que vous nous accordez.
-                                Votre abonnement étudiant est désormais <strong>actif</strong>.
-                            </p>
-                            <div style='background: #dbeafe; border-left: 4px solid #1e40af; padding: 16px; border-radius: 4px; margin: 24px 0;'>
-                                <p style='margin: 0; color: #1e40af; font-weight: bold;'>
-                                    ✅ Abonnement valide jusqu'au : {$dateExpiration}
-                                </p>
-                            </div>
-                            <p style='color: #475569; font-size: 16px; line-height: 1.6;'>
-                                Vous avez maintenant accès à l'ensemble de votre espace étudiant : cours, groupes, messagerie, cours particuliers et bien plus encore.
-                            </p>
-                            <p style='color: #475569; font-size: 16px; line-height: 1.6;'>
-                                Nous mettons tout en œuvre pour vous offrir les meilleurs outils pour réussir votre parcours académique. Merci de faire partie de la communauté MIO.
-                            </p>
-                            <p style='color: #64748b; font-size: 14px; margin-top: 32px;'>
-                                L'équipe MIO Ressources 💙
-                            </p>
-                        </div>
-                    ");
-            });
-        } catch (\Exception $e) {
-            Log::error('Erreur envoi mail abonnement étudiant : ' . $e->getMessage());
-        }
+        SendSubscriptionConfirmationJob::dispatch($user, $newPaidUntil);
     }
 }

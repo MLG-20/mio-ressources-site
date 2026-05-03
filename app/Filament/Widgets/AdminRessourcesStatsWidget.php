@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\Ressource;
 use App\Models\User;
+use Carbon\Carbon;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -28,6 +29,12 @@ class AdminRessourcesStatsWidget extends BaseWidget
                 User::query()
                     ->where('role', 'admin')
                     ->withCount('ressources')
+                    ->addSelect([
+                        'latest_ressource_at' => Ressource::select('created_at')
+                            ->whereColumn('user_id', 'users.id')
+                            ->latest()
+                            ->limit(1),
+                    ])
                     ->orderByDesc('ressources_count')
             )
             ->columns([
@@ -50,10 +57,12 @@ class AdminRessourcesStatsWidget extends BaseWidget
                         default      => 'success',
                     }),
 
-                Tables\Columns\TextColumn::make('latest_ressource')
+                Tables\Columns\TextColumn::make('latest_ressource_at')
                     ->label('Dernière ressource')
                     ->getStateUsing(fn (User $record) =>
-                        $record->ressources()->latest()->first()?->created_at?->format('d/m/Y H:i') ?? '—'
+                        $record->latest_ressource_at
+                            ? Carbon::parse($record->latest_ressource_at)->format('d/m/Y H:i')
+                            : '—'
                     )
                     ->color('gray'),
             ])

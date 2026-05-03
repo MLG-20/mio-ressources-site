@@ -50,7 +50,7 @@ class RessourceController extends Controller
     public function index(): JsonResponse
     {
         $limit = min((int) request('limit', 15), 100);
-        $ressources = Ressource::paginate($limit);
+        $ressources = Ressource::with(['matiere.semestre'])->paginate($limit);
 
         return response()->json($ressources);
     }
@@ -83,7 +83,7 @@ class RessourceController extends Controller
      */
     public function show($id): JsonResponse
     {
-        $ressource = Ressource::findOrFail($id);
+        $ressource = Ressource::with(['matiere.semestre'])->findOrFail($id);
         return response()->json($ressource);
     }
 }

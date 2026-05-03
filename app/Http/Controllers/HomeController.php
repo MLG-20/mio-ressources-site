@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
+use App\Jobs\SendPurchaseConfirmationJob;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -245,49 +246,8 @@ class HomeController extends Controller
         // ... (Transaction financière) ...
     }
 
-    // 5. ENVOI MAIL AVEC *DEUX* PIÈCES JOINTES
-    try {
-        // Charger les relations nécessaires pour le template
-        $purchase->load(['ressource.user', 'publication.user', 'user']);
-
-        $pdf = Pdf::loadView('invoices.template', compact('purchase'));
-
-        // Chemin physique du fichier à envoyer
-        $filePath = storage_path('app/public/' . $item->file_path);
-
-        Mail::send([], [], function ($message) use ($emailDest, $nomDest, $item, $pdf, $filePath) {
-            $email = $message
-                    ->from(env('MAIL_FROM_ADDRESS', 'noreply@mio.sn'), env('MAIL_FROM_NAME', 'MIO Ressources'))
-                    ->to($emailDest)
-                    ->subject('✅ Votre commande est arrivée : ' . $item->titre)
-                    ->html("<h2>Merci $nomDest !</h2>
-                            <p>Voici votre commande MIO Ressources.</p>
-                            <p>Vous trouverez ci-joint :</p>
-                            <ul>
-                                <li>Votre Facture (Preuve d'achat)</li>
-                                <li><strong>Le Document acheté</strong> (PDF)</li>
-                            </ul>
-                            <p>Bonne lecture !</p>");
-
-            // Pièce jointe 1 : La Facture
-            $email->attachData($pdf->output(), 'Facture_MIO.pdf', ['mime' => 'application/pdf']);
-
-            // Pièce jointe 2 : Le Document (Si c'est un fichier, pas une vidéo)
-            if ($item->type !== 'Vidéo') {
-                if (file_exists($filePath)) {
-                    $email->attach($filePath);
-                } else {
-                    \Illuminate\Support\Facades\Log::warning("Fichier document non trouvé: $filePath");
-                }
-            }
-        });
-
-        \Illuminate\Support\Facades\Log::info("Email d'achat envoyé avec succès à: $emailDest");
-
-    } catch (\Exception $e) {
-        \Illuminate\Support\Facades\Log::error("Erreur Mail Achat : " . $e->getMessage() . " - " . $e->getFile() . ":" . $e->getLine());
-        \Illuminate\Support\Facades\Log::error("Stack trace: " . $e->getTraceAsString());
-    }
+    // 5. ENVOI MAIL EN QUEUE
+    SendPurchaseConfirmationJob::dispatch($purchase, $emailDest, $nomDest);
 
     // 6. REDIRECTION UNIVERSELLE VERS "MERCI"
     // On envoie tout le monde vers la page Merci, avec le lien de téléchargement direct en bonus

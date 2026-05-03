@@ -5,6 +5,7 @@ use App\Models\Purchase;
 use App\Models\SubscriptionPayment;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Support\Facades\Cache;
 
 class FinanceOverview extends BaseWidget
 {
@@ -19,17 +20,28 @@ class FinanceOverview extends BaseWidget
 
     protected function getStats(): array
     {
-        // Ressources n'ont pas d'auteur (pas de user_id) → 100% plateforme
-        $ventesRessources = Purchase::where('item_type', 'ressource')->sum('amount');
+        $data = Cache::remember('finance_overview', 600, function () {
+            $ventesRessources   = Purchase::where('item_type', 'ressource')->sum('amount');
+            $ventesPublications = Purchase::where('item_type', 'publication')->sum('amount');
+            $revenusAbonnements = SubscriptionPayment::where('status', 'paid')->sum('amount');
 
-        // Publications ont un auteur (user_id) → split 30% plateforme / 70% prof
-        $ventesPublications = Purchase::where('item_type', 'publication')->sum('amount');
-        $maCommission       = $ventesPublications * 0.30;
-        $duAuxProfs         = $ventesPublications * 0.70;
+            return [
+                'ventesRessources'   => $ventesRessources,
+                'ventesPublications' => $ventesPublications,
+                'maCommission'       => $ventesPublications * 0.30,
+                'duAuxProfs'         => $ventesPublications * 0.70,
+                'revenusAbonnements' => $revenusAbonnements,
+                'totalPlateforme'    => $ventesRessources + ($ventesPublications * 0.30) + $revenusAbonnements,
+            ];
+        });
 
-        $revenusAbonnements = SubscriptionPayment::where('status', 'paid')->sum('amount');
-
-        $totalPlateforme = $ventesRessources + $maCommission + $revenusAbonnements;
+        [
+            'ventesRessources'   => $ventesRessources,
+            'maCommission'       => $maCommission,
+            'duAuxProfs'         => $duAuxProfs,
+            'revenusAbonnements' => $revenusAbonnements,
+            'totalPlateforme'    => $totalPlateforme,
+        ] = $data;
 
         return [
             Stat::make('Ventes ressources', number_format($ventesRessources, 0, ',', ' ') . ' F')
