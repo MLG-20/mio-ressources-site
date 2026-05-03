@@ -132,17 +132,17 @@
                     <span class="font-semibold">{{ optional($subscriptionPaidUntil)->format('d/m/Y') ?? 'Non actif' }}</span>
                 </span>
             </div>
+
+            @if(session('error'))
+                <div class="mt-6 mx-auto max-w-md p-4 rounded-2xl text-sm text-center font-medium" style="background:rgba(254,226,226,0.15); border:1px solid rgba(254,202,202,0.4); color:#fecaca;">
+                    ⚠️ {{ session('error') }}
+                </div>
+            @endif
         </div>
     </div>
 
     {{-- CONTENU PRINCIPAL --}}
-    <div class="max-w-4xl mx-auto px-5 -mt-6 pb-16">
-
-        @if(session('error'))
-            <div class="mb-6 p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-sm text-center font-medium">
-                ⚠️ {{ session('error') }}
-            </div>
-        @endif
+    <div class="max-w-4xl mx-auto px-5 pt-8 pb-16">
 
         {{-- CARTES --}}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
