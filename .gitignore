@@ -21,6 +21,7 @@
 /storage/pail
 /storage/api-docs/
 /storage/app/public/
+/storage/app/purifier/
 /storage/framework/cache/
 /storage/framework/sessions/*
 /storage/framework/testing/*
