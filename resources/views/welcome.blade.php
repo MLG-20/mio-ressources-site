@@ -389,13 +389,7 @@
                 <p class="mt-6 text-slate-600 dark:text-slate-300 text-lg max-w-2xl mx-auto">Découvrez les 5 derniers cours particuliers disponibles. Des sessions de révision personnalisées avec les meilleurs enseignants</p>
             </div>
 
-            @php
-                $privateLessons = \App\Models\PrivateLesson::with('teacher', 'matiere')
-                    ->active()
-                    ->latest()
-                    ->take(6)
-                    ->get();
-            @endphp
+
 
             @if($privateLessons->count() > 0)
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-12 relative z-10 w-full">

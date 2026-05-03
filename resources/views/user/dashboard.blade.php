@@ -449,9 +449,7 @@
 
             <!-- Liste des groupes -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @php
-                    $myWorkGroups = Auth::user()->workGroups ?? collect();
-                @endphp
+
                 @if($myWorkGroups->count() > 0)
                     @foreach($myWorkGroups as $group)
                     <div class="bg-white rounded-2xl p-6 shadow-xl border border-slate-100 hover:shadow-2xl transition">

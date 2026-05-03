@@ -104,7 +104,13 @@ class HomeController extends Controller
                 ->get();
         }
 
-        return view('welcome', compact('sliders', 'semestres', 'settings', 'heroStats', 'testimonials'));
+        $privateLessons = PrivateLesson::with(['teacher', 'matiere'])
+            ->active()
+            ->latest()
+            ->take(6)
+            ->get();
+
+        return view('welcome', compact('sliders', 'semestres', 'settings', 'heroStats', 'testimonials', 'privateLessons'));
     }
 
     public function showPage(Request $request, $slug) {

@@ -102,9 +102,12 @@ class UserSpaceController extends Controller
                 $query->where('niveau', $user->student_level);
             })->latest()->take(5)->get();
 
+        $myWorkGroups = $user->workGroups()->with('members')->get();
+
         return view('user.dashboard', compact(
             'user', 'mesSujets', 'mesMessages', 'downloads', 'nouveautes',
-            'mesMemoires', 'userMessages', 'mesCoursParticuliers', 'sujetsDeMaClasse'
+            'mesMemoires', 'userMessages', 'mesCoursParticuliers', 'sujetsDeMaClasse',
+            'myWorkGroups'
         ));
 
     }
