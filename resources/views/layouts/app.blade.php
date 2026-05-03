@@ -6,7 +6,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{ config('app.name', 'Laravel') }}</title>
-        <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+        @include('layouts.pwa-meta')
 
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-78BH3ZYRMR"></script>
         <script>
