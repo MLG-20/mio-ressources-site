@@ -850,26 +850,26 @@
             </div>
 
             <!-- PUBLIER UN MÉMOIRE -->
-            <div class="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-xl md:rounded-[2.5rem] p-6 md:p-10 shadow-xl border border-indigo-200">
-                <h3 class="text-base md:text-lg font-black text-slate-800 uppercase mb-6 flex items-center gap-2">
-                    <i class="fas fa-book text-indigo-600"></i> Publier votre mémoire
+            <div class="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-950 dark:to-slate-900 rounded-xl md:rounded-[2.5rem] p-6 md:p-10 shadow-xl border border-indigo-200 dark:border-indigo-800">
+                <h3 class="text-base md:text-lg font-black text-slate-800 dark:text-white uppercase mb-6 flex items-center gap-2">
+                    <i class="fas fa-book text-indigo-500 dark:text-indigo-400"></i> Publier votre mémoire
                 </h3>
                 <form action="{{ route('user.memoire.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4 md:space-y-5">
                     @csrf
                     <div>
-                        <input type="text" name="titre" placeholder="Titre de votre mémoire" class="w-full bg-white border-0 rounded-2xl p-3 md:p-4 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none text-sm md:text-base" required>
+                        <input type="text" name="titre" placeholder="Titre de votre mémoire" class="w-full bg-white dark:bg-slate-800 dark:text-white dark:placeholder-slate-400 border-0 rounded-2xl p-3 md:p-4 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none text-sm md:text-base" required>
                     </div>
                     <div>
-                        <textarea name="description" placeholder="Résumé ou description (optionnel)" class="w-full bg-white border-0 rounded-2xl p-3 md:p-4 text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none resize-none h-20 text-sm md:text-base"></textarea>
+                        <textarea name="description" placeholder="Résumé ou description (optionnel)" class="w-full bg-white dark:bg-slate-800 dark:text-slate-200 dark:placeholder-slate-400 border-0 rounded-2xl p-3 md:p-4 text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none resize-none h-20 text-sm md:text-base"></textarea>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-[10px] font-black text-slate-500 uppercase mb-2 ml-1">Fichier PDF*</label>
-                            <input type="file" name="file_path" accept=".pdf" class="w-full text-slate-600 text-sm cursor-pointer file:mr-4 file:py-2 md:py-3 file:px-3 md:file:px-4 file:rounded-xl file:border-0 file:font-bold file:text-indigo-600 file:bg-indigo-100 hover:file:bg-indigo-200 transition" required>
+                            <label class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase mb-2 ml-1">Fichier PDF*</label>
+                            <input type="file" name="file_path" accept=".pdf" class="w-full text-slate-600 dark:text-slate-300 text-sm cursor-pointer file:mr-4 file:py-2 md:py-3 file:px-3 md:file:px-4 file:rounded-xl file:border-0 file:font-bold file:text-indigo-600 dark:file:text-indigo-300 file:bg-indigo-100 dark:file:bg-indigo-900 hover:file:bg-indigo-200 dark:hover:file:bg-indigo-800 transition" required>
                         </div>
                         <div>
-                            <label class="block text-[10px] font-black text-slate-500 uppercase mb-2 ml-1">Couverture</label>
-                            <input type="file" name="cover_image" accept=".jpg,.jpeg,.png" class="w-full text-slate-600 text-sm cursor-pointer file:mr-4 file:py-2 md:py-3 file:px-3 md:file:px-4 file:rounded-xl file:border-0 file:font-bold file:text-indigo-600 file:bg-indigo-100 hover:file:bg-indigo-200 transition">
+                            <label class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase mb-2 ml-1">Couverture</label>
+                            <input type="file" name="cover_image" accept=".jpg,.jpeg,.png" class="w-full text-slate-600 dark:text-slate-300 text-sm cursor-pointer file:mr-4 file:py-2 md:py-3 file:px-3 md:file:px-4 file:rounded-xl file:border-0 file:font-bold file:text-indigo-600 dark:file:text-indigo-300 file:bg-indigo-100 dark:file:bg-indigo-900 hover:file:bg-indigo-200 dark:hover:file:bg-indigo-800 transition">
                         </div>
                     </div>
                     <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-black py-3 md:py-4 rounded-2xl shadow-lg transition-all transform active:scale-95 uppercase tracking-widest text-sm md:text-base">
