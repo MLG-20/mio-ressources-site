@@ -197,13 +197,13 @@ return [
          *
          * When set to 'default', we'll use AES-256 if available on your system.
          */
-        'encryption' => 'default',
+        'encryption' => 'none',
 
         /*
          * After creating the zip, verify it can be opened and contains files.
          * Recommended for critical backups but adds a small overhead.
          */
-        'verify_backup' => true,
+        'verify_backup' => false,
 
         /*
          * The number of attempts, in case the backup command encounters an exception
