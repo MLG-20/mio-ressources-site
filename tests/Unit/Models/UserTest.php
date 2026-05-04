@@ -43,7 +43,7 @@ class UserTest extends TestCase
     public function test_super_admin_detection(): void
     {
         $admin = User::factory()->create([
-            'email' => 'admin@mio-ressources.com',
+            'email' => config('app.admin_email'),
             'role' => 'admin'
         ]);
         $this->assertTrue($admin->isSuperAdmin());
