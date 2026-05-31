@@ -40,7 +40,7 @@ jobs:
           key: composer-${{ hashFiles('composer.lock') }}
 
       - name: Install dependencies
-        run: composer install --no-dev --optimize-autoloader --no-interaction
+        run: composer install --optimize-autoloader --no-interaction
 
       - name: Prepare .env
         run: |
@@ -65,7 +65,7 @@ jobs:
           DB_PASSWORD: root
 
       - name: Run tests
-        run: php artisan test --env=testing
+        run: vendor/bin/phpunit
         env:
           DB_CONNECTION: mysql
           DB_HOST: 127.0.0.1
