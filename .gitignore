@@ -32,3 +32,9 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Docs d'infra / déploiement contenant des infos sensibles (à garder en local uniquement)
+VPS_RECAP_MLG.md
+CONTABO_GUIDE_RAPIDE.md
+DEPLOIEMENT.md
+deploy-contabo.sh
