@@ -5,6 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\EnsureRole;
 use App\Http\Middleware\EnsureStudentSubscriptionActive;
+use App\Http\Middleware\TrackLastSeen;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -15,6 +16,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         // Faire confiance à tous les proxies (ngrok en dev, reverse proxy en prod)
         $middleware->trustProxies(at: '*');
+
+        // Suivi de la dernière activité (détection des utilisateurs en ligne)
+        $middleware->web(append: [
+            TrackLastSeen::class,
+        ]);
 
         // SÉCURITÉ : middleware d'autorisation basé sur le rôle (admin/professeur/etudiant)
         // Utilisation: ->middleware('role:professeur')

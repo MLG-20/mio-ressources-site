@@ -48,7 +48,33 @@ class User extends Authenticatable implements FilamentUser, CanResetPasswordCont
             'is_blocked'        => 'boolean',
             'trial_ends_at'     => 'datetime',
             'subscription_paid_until' => 'datetime',
+            'last_seen_at'      => 'datetime',
         ];
+    }
+
+    /**
+     * UTILISATEURS EN LIGNE
+     * Délai d'inactivité (en minutes) au-delà duquel on considère
+     * un utilisateur comme déconnecté.
+     */
+    public const ONLINE_THRESHOLD_MINUTES = 5;
+
+    /**
+     * L'utilisateur est-il actuellement en ligne ?
+     */
+    public function isOnline(): bool
+    {
+        return $this->last_seen_at !== null
+            && $this->last_seen_at->gt(now()->subMinutes(self::ONLINE_THRESHOLD_MINUTES));
+    }
+
+    /**
+     * Scope : uniquement les utilisateurs actifs récemment.
+     * Usage : User::online()->get()
+     */
+    public function scopeOnline($query)
+    {
+        return $query->where('last_seen_at', '>', now()->subMinutes(self::ONLINE_THRESHOLD_MINUTES));
     }
 
     /**
