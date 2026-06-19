@@ -85,6 +85,63 @@
       @scroll.window="scrolled = (window.pageYOffset > 50)"
       :class="{ 'overflow-hidden': mobileMenuOpen }">
 
+    {{-- ÉCRAN DE CHARGEMENT (preloader) — logo MIO le temps que la page charge --}}
+    <style>
+        #mio-preloader{
+            position:fixed; inset:0; z-index:9999;
+            display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1.75rem;
+            background:radial-gradient(circle at center, #1e293b 0%, #0f172a 70%);
+            opacity:1; visibility:visible;
+            transition:opacity .6s ease, visibility .6s ease;
+        }
+        #mio-preloader.is-hidden{ opacity:0; visibility:hidden; }
+        #mio-preloader .mio-ring{
+            position:absolute; width:200px; height:200px; border-radius:9999px;
+            border:3px solid rgba(59,130,246,.18); border-top-color:#3b82f6;
+            animation:mio-spin 1s linear infinite;
+        }
+        #mio-preloader .mio-tagline{
+            color:#cbd5e1; font-size:.95rem; font-weight:600; letter-spacing:.04em; text-align:center;
+            animation:mio-fade-up .9s ease both .25s;
+        }
+        @keyframes mio-spin{ to{ transform:rotate(360deg); } }
+        @keyframes mio-fade-up{ from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:translateY(0); } }
+        html.mio-preloading{ overflow:hidden; }
+    </style>
+
+    <div id="mio-preloader" aria-hidden="true">
+        <div style="position:relative; width:200px; height:200px; display:flex; align-items:center; justify-content:center;">
+            <div class="mio-ring"></div>
+            <div style="width:150px; height:150px;">
+                <x-application-logo />
+            </div>
+        </div>
+        <p class="mio-tagline">L'humilité mon choix, l'excellence ma voie</p>
+    </div>
+
+    <script>
+        (function () {
+            document.documentElement.classList.add('mio-preloading');
+            var pre = document.getElementById('mio-preloader');
+            function hide() {
+                if (!pre || pre.classList.contains('is-hidden')) return;
+                pre.classList.add('is-hidden');
+                document.documentElement.classList.remove('mio-preloading');
+                setTimeout(function () { if (pre) pre.style.display = 'none'; }, 650);
+            }
+            // Temps d'affichage minimum pour qu'on profite de l'animation (même si la page charge vite).
+            var MIN_MS = 2200;
+            var start = Date.now();
+            function scheduleHide() {
+                var wait = Math.max(0, MIN_MS - (Date.now() - start));
+                setTimeout(hide, wait);
+            }
+            window.addEventListener('load', scheduleHide);
+            // Filet de sécurité : ne jamais rester bloqué au-delà de 6 s.
+            setTimeout(hide, 6000);
+        })();
+    </script>
+
     <!-- NAVBAR PREMIUM -->
     <nav class="fixed w-full z-[100] transition-all duration-500 px-2 md:px-4 lg:px-8 py-2 md:py-3"
          :class="scrolled ? (theme === 'dark' ? 'bg-slate-900/95 backdrop-blur-md shadow-lg py-1' : 'bg-white/95 backdrop-blur-md shadow-lg py-1') : 'bg-transparent py-2 md:py-3 lg:py-4'">
