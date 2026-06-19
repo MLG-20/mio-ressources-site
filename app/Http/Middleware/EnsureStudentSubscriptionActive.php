@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Setting;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,6 +17,13 @@ class EnsureStudentSubscriptionActive
         $user = $request->user();
 
         if (! $user || $user->user_type !== 'student') {
+            return $next($request);
+        }
+
+        // INTERRUPTEUR GLOBAL (Réglages admin) : tant que l'abonnement n'est pas
+        // exigé (ex. phase sandbox Paytech sans vraies clés API), aucun étudiant
+        // n'est bloqué — tous gardent l'accès complet à leur espace.
+        if (! Setting::where('key', 'student_subscription_required')->value('is_enabled')) {
             return $next($request);
         }
 
