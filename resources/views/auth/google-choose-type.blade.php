@@ -21,7 +21,7 @@
             <label class="block text-xs font-black uppercase text-slate-600 mb-2 tracking-wider">Vous êtes :</label>
             <select name="user_type" x-model="type" class="w-full bg-white border-2 border-slate-300 rounded-xl font-bold p-4 focus:border-blue-600">
                 <option value="student">Étudiant</option>
-                <option value="teacher">Professeur / Chercheur</option>
+                <option value="teacher">Enseignant / Chercheur</option>
             </select>
             <x-input-error :messages="$errors->get('user_type')" class="mt-2 text-sm font-bold text-red-600" />
         </div>
