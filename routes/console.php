@@ -15,12 +15,16 @@ Schedule::command('app:send-private-lesson-reminders')
     ->withoutOverlapping();
 
 // Backup DB chaque nuit à 2h
+// withoutOverlapping() : verrou atomique empêchant deux dumps concurrents
+// (ex. si schedule:run est lancé par plusieurs crons) → évite les dumps vides.
 Schedule::command('backup:run')
     ->dailyAt('02:00')
+    ->withoutOverlapping()
     ->onFailure(function () {
         Log::critical('Backup échoué !');
     });
 
 // Nettoyage des vieux backups à 3h
 Schedule::command('backup:clean')
-    ->dailyAt('03:00');
+    ->dailyAt('03:00')
+    ->withoutOverlapping();
