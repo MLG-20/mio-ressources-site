@@ -80,7 +80,8 @@
     <!-- Si Étudiant, on affiche le niveau -->
     <div x-show="type === 'student'" class="mt-4 animate-in fade-in duration-500">
         <label class="block text-xs font-black uppercase text-slate-600 mb-2 tracking-wider">Votre Niveau :</label>
-        <select name="student_level" class="w-full bg-white border-2 border-slate-300 rounded-xl font-bold p-4 focus:border-blue-600">
+        <select name="student_level" :required="type === 'student'" class="w-full bg-white border-2 border-slate-300 rounded-xl font-bold p-4 focus:border-blue-600">
+            <option value="" disabled selected>— Choisis ton niveau —</option>
             <option value="L1">Licence 1</option>
             <option value="L2">Licence 2</option>
             <option value="L3">Licence 3</option>

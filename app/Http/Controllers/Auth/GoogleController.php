@@ -31,6 +31,11 @@ class GoogleController extends Controller
         try {
             $googleUser = Socialite::driver('google')->user();
         } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Échec connexion Google', [
+                'exception' => get_class($e),
+                'message'   => $e->getMessage(),
+            ]);
+
             return redirect()->route('login')->withErrors([
                 'email' => "La connexion Google a échoué. Veuillez réessayer.",
             ]);
@@ -91,7 +96,7 @@ class GoogleController extends Controller
     {
         $request->validate([
             'user_type'     => ['required', 'in:student,teacher'],
-            'student_level' => ['nullable', 'in:L1,L2,L3'],
+            'student_level' => ['nullable', 'required_if:user_type,student', 'in:L1,L2,L3'],
         ]);
 
         $google = $request->session()->get('google_oauth');

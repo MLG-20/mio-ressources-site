@@ -80,6 +80,23 @@ class GoogleAuthTest extends TestCase
         $this->assertNotNull($user->email_verified_at); // e-mail vérifié par Google
     }
 
+    public function test_choose_type_store_requires_level_for_student(): void
+    {
+        $response = $this->withSession(['google_oauth' => [
+            'google_id' => 'g-nolevel',
+            'name'      => 'Sans Niveau',
+            'email'     => 'nolevel@gmail.com',
+            'avatar'    => null,
+        ]])->post(route('google.store'), [
+            'user_type' => 'student',
+            // student_level absent
+        ]);
+
+        $response->assertSessionHasErrors('student_level');
+        $this->assertGuest();
+        $this->assertDatabaseMissing('users', ['email' => 'nolevel@gmail.com']);
+    }
+
     public function test_choose_type_store_creates_teacher_without_trial(): void
     {
         $response = $this->withSession(['google_oauth' => [
