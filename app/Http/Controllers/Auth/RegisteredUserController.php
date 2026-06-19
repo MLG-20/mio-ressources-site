@@ -35,6 +35,7 @@ class RegisteredUserController extends Controller
         'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
         'password' => ['required', 'confirmed', Rules\Password::defaults()],
         'user_type' => ['required', Rule::in(['student', 'teacher'])],
+        'student_level' => ['nullable', 'required_if:user_type,student', Rule::in(['L1', 'L2', 'L3'])],
     ]);
 
     // LOGIQUE DE RÔLE : 

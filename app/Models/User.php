@@ -24,6 +24,7 @@ class User extends Authenticatable implements FilamentUser, CanResetPasswordCont
         'email',
         'password',
         'role',          // admin, professeur, etudiant
+        'google_id',     // Identifiant du compte Google (connexion OAuth)
         'avatar',        // Photo de profil
         'user_type',     // student, teacher
         'student_level', // L1, L2, L3

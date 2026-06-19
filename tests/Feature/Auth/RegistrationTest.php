@@ -24,9 +24,25 @@ class RegistrationTest extends TestCase
             'password' => 'password',
             'password_confirmation' => 'password',
             'user_type' => 'student',
+            'student_level' => 'L1',
         ]);
 
         $this->assertAuthenticated();
         $response->assertRedirect('/mon-espace');
+    }
+
+    public function test_student_must_choose_a_level(): void
+    {
+        $response = $this->post('/register', [
+            'name' => 'Sans Niveau',
+            'email' => 'sansniveau@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+            'user_type' => 'student',
+            // student_level volontairement absent
+        ]);
+
+        $response->assertSessionHasErrors('student_level');
+        $this->assertGuest();
     }
 }

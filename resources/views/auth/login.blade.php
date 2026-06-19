@@ -70,6 +70,8 @@
         </button>
     </form>
 
+    @include('auth.partials.google-button')
+
     <script>
         function togglePassword() {
             const input = document.getElementById('password');
