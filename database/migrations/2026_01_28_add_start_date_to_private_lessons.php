@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasColumn('private_lessons', 'start_date')) {
+            return; // Colonne déjà présente (ajoutée par une autre migration)
+        }
+
         Schema::table('private_lessons', function (Blueprint $table) {
             $table->dateTime('start_date')->nullable()->comment('Date et heure de début du cours');
         });

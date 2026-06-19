@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasColumn('private_lessons', 'type')) {
+            return; // Colonne déjà présente (ajoutée par une autre migration)
+        }
+
         Schema::table('private_lessons', function (Blueprint $table) {
             // Ajouter la colonne type (payant/tutoriel)
             $table->enum('type', ['payant', 'tutoriel'])->default('payant')->after('statut');
