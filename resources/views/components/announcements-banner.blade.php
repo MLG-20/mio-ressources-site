@@ -25,7 +25,7 @@
     }
     @media (max-width: 768px) {
         .scroll-text {
-            animation-duration: 20s;
+            animation-duration: 40s;
         }
     }
 </style>
