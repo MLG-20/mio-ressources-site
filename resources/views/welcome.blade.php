@@ -753,6 +753,9 @@
     <!-- BANNER CONSENTEMENT COOKIES -->
     <x-cookie-consent-banner />
 
+    <!-- INSTALLATION PWA (bouton flottant + fenêtre d'instructions) -->
+    <x-pwa-install />
+
     <!-- Service Worker Registration (PWA) -->
     <script>
         if ('serviceWorker' in navigator) {
