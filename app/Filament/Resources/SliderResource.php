@@ -31,7 +31,7 @@ class SliderResource extends Resource
         return $form
             ->schema([
                 Section::make('Visuel du Slider')
-                    ->description('L\'image principale qui sera affichée sur l\'accueil.')
+                    ->description('L\'image principale qui sera affichée sur l\'accueil. Vous pouvez aussi ajouter une courte vidéo : si une vidéo est présente, elle remplace l\'image (qui sert alors d\'affiche pendant le chargement).')
                     ->schema([
                         Forms\Components\FileUpload::make('image_path')
                             ->label('Image (Format large conseillé)')
@@ -46,6 +46,15 @@ class SliderResource extends Resource
                                 '1:1',       // Format carré
                             ])
                             ->required()
+                            ->columnSpanFull(),
+
+                        Forms\Components\FileUpload::make('video_path')
+                            ->label('Vidéo (optionnel — mp4 ou webm)')
+                            ->helperText('Conseillé : clip court, muet, qui tourne en boucle. Max 8 Mo pour rester rapide à charger. Si une vidéo est ajoutée, elle s\'affiche à la place de l\'image.')
+                            ->acceptedFileTypes(['video/mp4', 'video/webm'])
+                            ->maxSize(8192) // 8 Mo (en Ko)
+                            ->disk('public')
+                            ->directory('sliders/videos')
                             ->columnSpanFull(),
                     ]),
 
@@ -77,6 +86,11 @@ class SliderResource extends Resource
                 Tables\Columns\ImageColumn::make('image_path')
                     ->label('Aperçu')
                     ->square(), // Ou circular() si tu préfères
+                Tables\Columns\IconColumn::make('video_path')
+                    ->label('Vidéo')
+                    ->boolean() // ✅ si une vidéo est présente, sinon ✖
+                    ->trueIcon('heroicon-o-film')
+                    ->falseIcon('heroicon-o-minus'),
                 Tables\Columns\TextColumn::make('titre')
                     ->label('Titre')
                     ->searchable(),

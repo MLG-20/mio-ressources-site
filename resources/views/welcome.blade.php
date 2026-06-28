@@ -322,7 +322,17 @@
         @foreach($sliders as $index => $slide)
             <div class="absolute inset-0 transition-all duration-[1500ms]" x-show="activeSlide === {{ $index }}" x-cloak
                  x-transition:enter="opacity-0 scale-110" x-transition:enter-end="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-90">
-                <img src="{{ asset('storage/' . $slide->image_path) }}" class="w-full h-full object-cover opacity-50">
+                @if($slide->video_path)
+                    <video class="w-full h-full object-cover opacity-50"
+                           autoplay muted loop playsinline
+                           poster="{{ asset('storage/' . $slide->image_path) }}">
+                        <source src="{{ asset('storage/' . $slide->video_path) }}" type="video/mp4">
+                        {{-- Fallback si la vidéo ne peut pas être lue --}}
+                        <img src="{{ asset('storage/' . $slide->image_path) }}" class="w-full h-full object-cover opacity-50">
+                    </video>
+                @else
+                    <img src="{{ asset('storage/' . $slide->image_path) }}" class="w-full h-full object-cover opacity-50">
+                @endif
                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40"></div>
                 <div class="absolute inset-0 flex flex-col justify-center items-center text-center text-white px-6">
                     <h1 class="text-4xl md:text-7xl font-black mb-4 uppercase tracking-tighter">{{ $slide->titre }}</h1>
