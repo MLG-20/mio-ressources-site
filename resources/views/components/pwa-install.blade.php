@@ -26,12 +26,15 @@
     @open-pwa-install.window="open = true"
     @pwa-installable.window="canInstall = true; deferredPrompt = window.__deferredPwaPrompt"
 >
-    {{-- Bouton flottant (placé AU-DESSUS du bouton "remonter en haut" pour ne pas le masquer) --}}
-    <button x-show="!isStandalone" x-cloak
+    {{-- Bouton flottant icône seule, empilé AU-DESSUS du bouton "remonter en haut".
+         Même comportement que lui : n'apparaît qu'après avoir scrollé (variable "scrolled" du <body>). --}}
+    <button x-show="scrolled && !isStandalone" x-cloak
+            x-transition:enter="transition scale-0 rotate-180"
+            x-transition:enter-end="scale-100 rotate-0"
             @click="open = true"
-            class="fixed bottom-24 right-6 md:bottom-28 md:right-10 z-[90] flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white pl-4 pr-5 py-3 rounded-full shadow-2xl shadow-blue-600/40 transition-all active:scale-95">
-        <span class="text-lg">📲</span>
-        <span class="text-sm font-semibold">Installer l'app</span>
+            aria-label="Installer l'application"
+            class="fixed bottom-24 right-6 md:bottom-28 md:right-10 z-[90] bg-blue-600 text-white w-12 h-12 md:w-14 md:h-14 rounded-2xl shadow-2xl flex items-center justify-center text-2xl hover:bg-blue-700 transition-all transform hover:-translate-y-2 border-4 border-white/20">
+        📲
     </button>
 
     {{-- Fenêtre (téléportée dans <body> pour ne pas être rognée par un parent en overflow-hidden) --}}
