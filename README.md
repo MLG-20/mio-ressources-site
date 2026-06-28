@@ -1,6 +1,6 @@
 # MIO Ressources
  
- Plateforme web (Laravel) pour consulter et acheter des ressources pédagogiques (cours/TD) et des publications (livres/mémoires), avec un espace étudiant, un espace enseignant, un forum, et un back-office d’administration (Filament).
+ Plateforme web (Laravel) **installable en PWA** pour consulter et acheter des ressources pédagogiques (cours/TD) et des publications (livres/mémoires), destinée aux étudiants de l’Université Iba Der Thiam de Thiès. Elle propose un espace étudiant, un espace enseignant, un forum, des **cours particuliers**, des **réunions/visioconférences**, des **groupes de travail**, un **abonnement étudiant**, la connexion **Google (OAuth)**, et un back-office d’administration complet (Filament).
  
  ## Sommaire
  
@@ -12,9 +12,13 @@
  - **Lancer le projet (dev / prod)**
  - **Structure du projet**
  - **Back-office (Filament)**
- - **Paiement (PayTech)**
+ - **PWA (application installable)**
+ - **Paiement (PayTech) & Abonnement étudiant**
+ - **Connexion Google (OAuth)**
  - **Stockage des fichiers & PDF**
  - **Sécurité (checklist)**
+ - **Sauvegardes & monitoring**
+ - **CI/CD & déploiement**
  - **Tests & qualité**
  - **Troubleshooting**
  
@@ -22,9 +26,13 @@
  
  **MIO Ressources** permet :
  
+ - L’**installation comme application** (PWA) sur mobile et bureau, avec écran de démarrage (splash) et préchargement.
  - La navigation par **semestres** et **matières**.
  - La consultation d’une **bibliothèque** de publications.
  - L’achat de contenu premium (ressources / publications) via **PayTech**.
+ - L’**abonnement étudiant** (mensuel / trimestriel / annuel) débloquant l’accès complet.
+ - La connexion / inscription via **Google (OAuth)** en plus de l’email/mot de passe.
+ - Les **cours particuliers**, **réunions/visioconférences** et **groupes de travail**.
  - La génération et l’envoi de **factures PDF**.
  - Un **forum** réservé aux utilisateurs connectés.
  - Un espace **étudiant** et un espace **enseignant**.
@@ -35,38 +43,55 @@
  - **Contenu**
    - Gestion des **semestres**, **matières**, **ressources** (cours/TD) et **publications** (livres/mémoires).
    - Support de documents (PDF) et liens externes (ex: vidéos via URL).
+   - **Slider d’accueil** géré depuis l’admin, supportant **image ou vidéo** (mp4/webm muet en boucle, image en poster/fallback).
+   - **Bannière d’annonces** et **avis / notations** (ratings) sur les ressources.
+
+ - **PWA (Progressive Web App)**
+   - Application **installable** (manifest + service worker `public/js/service-worker.js`).
+   - **Splash screen** sombre et **préchargement** (preloader) sur l’accueil.
+   - Mode `standalone`, thème personnalisé (`theme_color`, icônes).
  
  - **Paiement**
-   - Démarrage d’un paiement via PayTech.
-   - Webhook IPN (`/paiement/ipn`) pour valider la commande côté serveur.
-   - Gestion des achats (`purchases`) et historique de téléchargement.
+   - Démarrage d’un paiement via PayTech (achats **et** abonnement étudiant).
+   - Webhooks IPN : `POST /api/paytech/callback` (achats) et `POST /api/paytech/subscription-callback` (abonnement).
+   - Gestion des achats (`purchases`), transactions financières et historique de téléchargement.
+
+ - **Abonnement étudiant**
+   - Formules **mensuelle / trimestrielle / annuelle**.
+   - **Paywall** dédié + middleware `student.subscription` protégeant le contenu réservé.
+   - **Interrupteur global** « Exiger l’abonnement étudiant » activable depuis l’admin.
  
  - **Facturation**
    - Génération de facture PDF (`barryvdh/laravel-dompdf`).
    - Téléchargement de facture pour l’admin / l’acheteur / le vendeur.
  
- - **Forum**
-   - Catégories, sujets, messages.
-   - Modération via Filament.
+ - **Forum & collaboration**
+   - Forum : catégories, sujets, messages, modération via Filament.
+   - **Cours particuliers** (inscription + suivi), **réunions/visioconférences** (planifiées), **groupes de travail**.
  
  - **Comptes & rôles**
-   - Auth Breeze (login/register/reset password).
-   - Rôle `admin` pour Filament.
+   - Auth Breeze (login/register/reset password) **+ connexion Google (OAuth via Socialite)**.
+   - Rôle `admin` pour Filament + système de **permissions**.
    - Types `student` / `teacher` + `student_level` (L1/L2/L3).
+   - Suivi des **utilisateurs en ligne** (`last_seen_at`) et des **visites**.
  
  - **Espace enseignant**
    - Publication de documents (PDF) + image de couverture.
-   - Suivi revenus (wallet) et ventes.
+   - Suivi revenus (wallet) et ventes (l’enseignant perçoit 70 % du prix).
  
  ## Stack technique
 
  - **Backend**: Laravel 12, PHP >= 8.2
  - **Admin**: Filament v3
- - **Auth**: Laravel Breeze
- - **Front**: Vite + TailwindCSS + AlpineJS
+ - **Auth**: Laravel Breeze + **Laravel Socialite** (Google OAuth)
+ - **Front**: Vite + TailwindCSS + AlpineJS, **PWA** (manifest + service worker)
  - **PDF**: barryvdh/laravel-dompdf
  - **DB**: MySQL (recommandé en prod)
  - **Cache & Queue**: Redis (via predis/predis)
+ - **Sauvegardes**: spatie/laravel-backup
+ - **Monitoring**: Sentry (optionnel, voir `config/monitoring/SENTRY.md`)
+ - **CDN / Réseau**: Cloudflare (HTTP/2) devant le VPS
+ - **CI/CD**: GitHub Actions (tests + déploiement auto sur VPS)
  
  ## Installation (étape par étape)
  
@@ -198,35 +223,50 @@
  
  Les ressources Filament sont dans `app/Filament/Resources`.
  
- Exemples :
- 
- - `UserResource`
- - `RessourceResource`
- - `PublicationResource`
- - `PurchaseResource`
- - `ForumCategoryResource`, `ForumSujetResource`
- 
- Accès admin : `User::canAccessPanel()` autorise uniquement `role === 'admin'`.
+ Ressources disponibles (extrait) :
+
+ - **Contenu** : `SemestreResource`, `MatiereResource`, `RessourceResource`, `PublicationResource`, `SliderResource`, `PageResource`, `LegalPageResource`, `AnnouncementResource`
+ - **Ventes** : `PurchaseResource`, `FinancialTransactionResource`, `DownloadHistoryResource`, `ResourceRatingResource`
+ - **Forum** : `ForumCategoryResource`, `ForumSujetResource`, `ForumMessageResource`
+ - **Collaboration** : `PrivateLessonResource`, `PrivateLessonEnrollmentResource`, `MeetingResource`, `WorkGroupResource`
+ - **Utilisateurs & réglages** : `UserResource`, `VisitResource`, `ContactMessageResource`, `SettingResource`
+
+ Accès admin : `User::canAccessPanel()` autorise uniquement `role === 'admin'` ; les ressources sont en plus filtrées par un système de **permissions** (ex. `hasPermission('sliders')`).
  
  ## Paiement (PayTech)
  
  ### Flux simplifié
  
- 1. L’utilisateur clique “Payer” → `GET /payer/{id}/{type}`
- 2. L’app appelle l’API PayTech et redirige vers l’URL de paiement.
- 3. PayTech notifie l’app via IPN : `POST /paiement/ipn`
- 4. L’app crée un `Purchase`, génère la facture PDF, et envoie l’email.
- 
+ 1. L’utilisateur clique “Payer” → `GET /payer/{id}/{type}` (ou démarre un **abonnement étudiant**).
+ 2. L’app appelle l’API PayTech (`env` = `test` ou `prod`) et redirige vers l’URL de paiement.
+ 3. PayTech notifie l’app via IPN :
+    - **Achats** : `POST /api/paytech/callback`
+    - **Abonnement** : `POST /api/paytech/subscription-callback`
+ 4. L’app crée le `Purchase` (ou active l’abonnement), génère la facture PDF, et envoie l’email.
+
  ### Variables d’environnement à prévoir
- 
+
  Dans `.env` (noms utilisés dans le code) :
- 
+
  - `PAYTECH_API_KEY`
  - `PAYTECH_API_SECRET`
- - `PAYTECH_ENV` (ex: `test` / `prod`)
+ - `PAYTECH_IPN_SECRET` (secret applicatif ajouté à l’URL IPN — **obligatoire**)
+ - `PAYTECH_ENV` (`test` en sandbox / `prod` en production)
  - `APP_URL` (doit être l’URL publique en prod)
- 
- L’endpoint IPN est exempté CSRF (normal pour un webhook). La vérification est double : secret dans l’URL + SHA256 des clés API PayTech via `hash_equals`.
+
+ Les endpoints IPN sont exemptés CSRF (normal pour un webhook). La vérification est **double** : `PAYTECH_IPN_SECRET` présent dans l’URL + comparaison du SHA256 des clés API PayTech via `hash_equals`.
+
+ > **Passage en production** : il suffit de renseigner les clés de prod, mettre `PAYTECH_ENV=prod`, puis `php artisan config:cache`. Aucun changement de code n’est nécessaire (la vérification SHA256 suit automatiquement les nouvelles clés).
+
+ ## Connexion Google (OAuth)
+
+ Connexion / inscription via Google (Laravel Socialite). Variables `.env` :
+
+ - `GOOGLE_CLIENT_ID`
+ - `GOOGLE_CLIENT_SECRET`
+ - `GOOGLE_REDIRECT_URI` (par défaut `"${APP_URL}/auth/google/callback"`)
+
+ Pour un **nouveau** compte Google, l’utilisateur choisit son type (étudiant / enseignant) avant la création (`auth/google/choose-type`).
  
  ## Stockage des fichiers & PDF
  
@@ -252,6 +292,30 @@
  - **Redis** : démarrer les workers queue en production (voir section dédiée)
  - **APP_DEBUG=false** en production obligatoire
  
+ ## PWA (application installable)
+
+ L’application est installable sur mobile et bureau (Add to Home Screen).
+
+ - **Manifest** : `public/manifest.json` (nom, icônes, `theme_color`, mode `standalone`, orientation).
+ - **Service worker** : `public/js/service-worker.js`.
+ - **Splash screen** sombre + **preloader** affiché au chargement de l’accueil.
+ - Vérifier que le manifest et le service worker sont bien servis en HTTPS en production.
+
+ ## Sauvegardes & monitoring
+
+ - **Sauvegardes** : `spatie/laravel-backup` (`config/backup.php`). Lancement : `php artisan backup:run`.
+   - ⚠️ La commande doit tourner sous l’utilisateur **`www-data`** (et non `root`) pour éviter les erreurs de permissions sur les dossiers de stockage.
+ - **Monitoring** : intégration **Sentry** optionnelle, documentée dans `config/monitoring/SENTRY.md`.
+
+ ## CI/CD & déploiement
+
+ Le pipeline **GitHub Actions** (`.github/workflows/ci-cd.yml`) se déclenche à chaque push sur `main` :
+
+ 1. **Tests** : installation des dépendances, migrations sur une base MySQL de test, puis `phpunit`.
+ 2. **Déploiement** (si les tests passent) : connexion SSH au VPS et exécution de `deploy.sh`.
+
+ `deploy.sh` effectue sur le serveur : `git pull origin main`, `php artisan migrate --force`, puis reconstruit les caches (`config:cache`, `route:cache`, `view:cache`). Les migrations s’appliquent donc **automatiquement** en production.
+
  ## Tests & qualité
  
  - Lancer les tests : `composer test`
@@ -273,4 +337,11 @@
  - **Emails non envoyés**
    - Configure `MAIL_*` dans `.env`
    - Vérifie le driver queue si tu en utilises un
-Dashboard_Laravel
+
+ - **L’app ne s’installe pas (PWA)**
+   - Le site doit être servi en **HTTPS**
+   - Vérifie que `public/manifest.json` et `public/js/service-worker.js` sont bien accessibles
+
+ - **L’abonnement n’est pas activé après paiement**
+   - Vérifie que `PAYTECH_IPN_SECRET` est configuré (les IPN sont sinon rejetés avec `invalid_secret`)
+   - Vérifie qu’aucune règle CDN/WAF ne bloque les `POST` vers `/api/paytech/subscription-callback`
