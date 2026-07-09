@@ -63,12 +63,13 @@ return [
 
             /*
              * Middleware allows to prevent unexpected access to API documentation
+             * SÉCURITÉ : la doc Swagger est réservée aux admins connectés.
              */
             'middleware' => [
-                'api' => [],
+                'api' => ['web', 'auth', 'role:admin'],
                 'asset' => [],
-                'docs' => [],
-                'oauth2_callback' => [],
+                'docs' => ['web', 'auth', 'role:admin'],
+                'oauth2_callback' => ['web', 'auth', 'role:admin'],
             ],
 
             /*
